@@ -68,7 +68,7 @@
         Create a popup, specify its options 
         and properties, and add it to the map.
     */
-    var address = feature.properties.AddressLine1;
+    var address = feature.properties.address;
     var rentDiv = constructRentTable(address, data[address]);
     const popup = new mapboxgl.Popup({ offset: [0, -15] })
     .setLngLat(feature.geometry.coordinates)
