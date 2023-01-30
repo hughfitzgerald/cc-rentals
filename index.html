@@ -32,6 +32,8 @@
       zoom: 10.7
     });
 
+    const data = [{"4396 KEYSTONE AVE":[[1.0,1.0,1.0,1952.0,750.0,"2022/08/07","No","Rented"]],"9770 CULVER BLVD":[[111.0,3.0,2.0,1951.0,950.0,"2020/03/31","No","Rented"]],"6605 GREEN VALLEY CIR":[[null,null,null,null,null,"",null,null]]}];
+
     /* 
     Add an event listener that runs
     when a user clicks on the map element.
@@ -53,7 +55,8 @@
     const popup = new mapboxgl.Popup({ offset: [0, -15] })
     .setLngLat(feature.geometry.coordinates)
     .setHTML(
-        `<h3>${feature.properties.AddressLine1}</h3><p>${feature.properties.AddressLine2}</p>`
+        /* do loop that goes thorugh all values of x to print out all units [0][feature.properties.AddressLine1][x][4] */
+        `<h3>${feature.properties.AddressLine1}</h3><p>${feature.properties.AddressLine2}</p><p>Rent: ${data[0][feature.properties.AddressLine1][0][4]}</p>`
     )
     .addTo(map);
     });
