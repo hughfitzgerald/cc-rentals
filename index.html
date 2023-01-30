@@ -27,7 +27,7 @@
     const map = new mapboxgl.Map({
       container: 'map',
       // Replace YOUR_STYLE_URL with your style URL.
-      style: 'mapbox://styles/hughfitzgerald/cldjb8bxr000401qj6k5l6bki', 
+      style: 'mapbox://styles/hughfitzgerald/cldjdvxl7000001qqfr6kpnpv', 
       center: [-118.385796, 33.97883],
       zoom: 10.7
     });
@@ -57,7 +57,7 @@
     map.on('click', (event) => {
     // If the user clicked on one of your markers, get its information.
     const features = map.queryRenderedFeatures(event.point, {
-        layers: ['test'] // replace with your layer name
+        layers: ['ccrr-20221014'] // replace with your layer name
     });
     if (!features.length) {
         return;
