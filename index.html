@@ -101,7 +101,9 @@
     .setLngLat(feature.geometry.coordinates)
     .setDOMContent(rentDiv)
     .addTo(map);
+    sorttable.makeSortable(document.getElementById('rentTable'));
     });
+
 
     function constructRentTable(address, units) {
       var rentDiv = document.createElement('div');
@@ -113,6 +115,7 @@
       var rentTable = document.createElement('table');
       //rentTable.style.border = '1px solid black'
       rentTable.className = 'sortable'
+      rentTable.id = 'rentTable'
       
       var tableHead = document.createElement('thead');
       var headerRow = document.createElement('tr');
