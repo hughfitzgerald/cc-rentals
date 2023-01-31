@@ -133,11 +133,11 @@
       for (var i = 0; i < units.length; i++) {
         var row = document.createElement('tr');
         
-        if(firstRow && units[i][0] == 'null') {
+        if(firstRow && units[i][0] == null) {
            rentDiv.appendChild(document.createTextNode('No rent information available.'));
            return rentDiv;
          }
-        if(!firstRow && units[i][0] == 'null') {
+        if(!firstRow && units[i][0] == null) {
           continue;
         }
         firstRow = false;
