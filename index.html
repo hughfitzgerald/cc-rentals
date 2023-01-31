@@ -101,7 +101,11 @@
     .setLngLat(feature.geometry.coordinates)
     .setDOMContent(rentDiv)
     .addTo(map);
-    sorttable.makeSortable(document.getElementById('rentTable'));
+      
+    var rentTable = document.getElementById('rentTable');
+    if (rentTable != null) {
+      sorttable.makeSortable(rentTable);
+    }
     });
 
 
