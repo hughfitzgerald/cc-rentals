@@ -21,6 +21,13 @@
       .mapboxgl-popup-content {
         width: 500px;
       }
+      /* Sortable tables */
+      table.sortable thead {
+          background-color:#eee;
+          color:#666666;
+          font-weight: bold;
+          cursor: default;
+      }
     </style>
   </head>
   <body>
@@ -88,7 +95,7 @@
       rentDiv.appendChild(rentHeader);
 
       var rentTable = document.createElement('table');
-      rentTable.style.border = '1px solid black'
+      //rentTable.style.border = '1px solid black'
       rentTable.className = 'sortable'
       var tableBody = document.createElement('tbody');
       var headerRow = document.createElement('tr');
