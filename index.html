@@ -135,6 +135,7 @@
         
         if(firstRow && units[i][0] == null) {
            rentDiv.appendChild(document.createTextNode('No rent information available.'));
+          rentTable = null;
            return rentDiv;
          }
         if(!firstRow && units[i][0] == null) {
