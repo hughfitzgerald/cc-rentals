@@ -23,7 +23,7 @@
         width: 500px;
       }
       /* Sortable tables */
-      table.sortable th {
+      table thead {
           background-color:#eee;
           color:#666666;
           font-weight: bold;
@@ -98,15 +98,18 @@
       var rentTable = document.createElement('table');
       //rentTable.style.border = '1px solid black'
       rentTable.className = 'sortable'
-      var tableBody = document.createElement('tbody');
+      
+      var tableHead = document.createElement('thead');
       var headerRow = document.createElement('tr');
       for (var i = 0; i < headers.length; i++) {
         var cell = document.createElement('th');
         cell.appendChild(document.createTextNode(headers[i]));
         headerRow.appendChild(cell);
       }
-      tableBody.appendChild(headerRow);
+      tableHead.appendChild(headerRow);
+      rentTable.appendChild(tableHead)
 
+      var tableBody = document.createElement('tbody');
       for (var i = 0; i < units.length; i++) {
         var row = document.createElement('tr');
         for (var j = 0; j < units[i].length; j++) {
