@@ -113,9 +113,6 @@
       rentDiv.appendChild(rentHeader);
 
       var rentTable = document.createElement('table');
-      //rentTable.style.border = '1px solid black'
-      rentTable.className = 'sortable'
-      rentTable.id = 'rentTable'
          
       var tableHead = document.createElement('thead');
       var headerRow = document.createElement('tr');
@@ -135,7 +132,6 @@
         
         if(firstRow && units[i][0] == null) {
            rentDiv.appendChild(document.createTextNode('No rent information available.'));
-          rentTable = null;
            return rentDiv;
          }
         if(!firstRow && units[i][0] == null) {
@@ -150,6 +146,9 @@
         tableBody.appendChild(row);
       }
       
+      //rentTable.style.border = '1px solid black'
+      rentTable.className = 'sortable'
+      rentTable.id = 'rentTable'
       rentTable.appendChild(tableBody);
       rentDiv.appendChild(rentTable);
       return rentDiv;
