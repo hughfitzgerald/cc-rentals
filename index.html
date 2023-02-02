@@ -63,28 +63,52 @@
       });
       
       map.on('load', function() {
+        /*
         map.addLayer({
           id: 'ccrr-20221014-geojson',
           source: {
             type: 'geojson',
-            data: 'https://hughfitzgerald.github.io/cc-rentals/ccrr-20230202-105339.json'
+            data: 'https://hughfitzgerald.github.io/cc-rentals/ccrr-20230202-121439.json'
           },
           layout: {
             visibility: 'none'
           },
           type: 'circle'
         });
+        */
+
+        map.addSource('units', {
+            type: 'geojson',
+            data: 'https://hughfitzgerald.github.io/cc-rentals/ccrr-flat-20230202-121439.json',
+            //cluster: true,
+            //clusterMaxZoom: 27,
+            //clusterRadius: 0
+        });
         map.addLayer({
           id: 'ccrr-units-geojson',
-          source: {
-            type: 'geojson',
-            data: 'https://hughfitzgerald.github.io/cc-rentals/ccrr-flat-20230202-105339.json'
-          },
+          source: 'units',
           layout: {
             visibility: 'visible'
           },
           type: 'circle'
         });
+        map.addLayer({
+          id: 'cluster-count',
+          type: 'symbol',
+          source: 'units',
+          filter: ['has', 'point_count'],
+          layout: {
+          'text-field': ['get', 'point_count_abbreviated'],
+          'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
+          'text-size': 8,
+          'visibility': 'none'
+          },
+            "paint": {
+                "text-color": "#202",
+                "text-halo-color": "#fff",
+                "text-halo-width": 2
+            }
+          });
       });
 
       //const data = {"4396 KEYSTONE AVE":[[1.0,1.0,1.0,1952.0,750.0,"2022/08/07","No","Rented"]],"9770 CULVER BLVD":[[111.0,3.0,2.0,1951.0,950.0,"2020/03/31","No","Rented"]],"6605 GREEN VALLEY CIR":[[null,null,null,null,null,"",null,null]]};
@@ -124,7 +148,7 @@
       map.on("click", (event) => {
         // If the user clicked on one of your markers, get its information.
         const features = map.queryRenderedFeatures(event.point, {
-          layers: ["ccrr-20221014-geojson"], // replace with your layer name
+          layers: ["ccrr-units-geojson"], // replace with your layer name
         });
         if (!features.length) {
           return;
@@ -136,7 +160,11 @@
         and properties, and add it to the map.
     */
         var address = feature.properties.address;
-        var units = JSON.parse(feature.properties.units);
+        const units = map.queryRenderedFeatures(event.point, {
+          layers: ['ccrr-units-geojson'],
+          filter: ['in',address,['get','address']]
+        })
+        //var units = JSON.parse(feature.properties.units);
         //var rentDiv = constructRentTable(address, data[address]);
         var rentDiv = constructRentTable(address, units);
         const popup = new mapboxgl.Popup({ offset: [0, -15] })
@@ -155,6 +183,7 @@
         style: 'currency',
         currency: 'USD'
       });
+
       function constructRentTable(address, units) {
         var rentDiv = document.createElement("div");
 
@@ -179,17 +208,19 @@
         var tableBody = document.createElement("tbody");
         for (var i = 0; i < units.length; i++) {
           var row = document.createElement("tr");
+          var unit = units[i]['properties']
 
-          if (firstRow && units[i][0] == null) {
+          if (firstRow && unit['unit'] == null && unit['rent'] == null) {
             rentDiv.appendChild(
               document.createTextNode("No rent information available.")
             );
             return rentDiv;
           }
-          if (!firstRow && units[i][0] == null) {
+          if (!firstRow && unit['unit'] == null && unit['rent'] == null) {
             continue;
           }
           firstRow = false;
+          const unitKeys = ['']
           for (var j = 0; j < units[i].length; j++) {
             var cell = document.createElement("td");
             if (j == 4) {
