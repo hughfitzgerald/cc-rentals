@@ -61,15 +61,17 @@
         center: [-118.385796, 33.97883],
         zoom: 10.7,
       });
-
-      map.addLayer({
-        id: 'ccrr-20221014-geojson',
-        source: {
-          type: 'geojson',
-          data: 'https://hughfitzgerald.github.io/cc-rentals/ccrr-20230201-154407.json'
-        },
-        type: 'circle'
-      })
+      
+      map.on('load', function() {
+        map.addLayer({
+          id: 'ccrr-20221014-geojson',
+          source: {
+            type: 'geojson',
+            data: 'https://hughfitzgerald.github.io/cc-rentals/ccrr-20230201-154407.json'
+          },
+          type: 'circle'
+        });
+      });
 
       //const data = {"4396 KEYSTONE AVE":[[1.0,1.0,1.0,1952.0,750.0,"2022/08/07","No","Rented"]],"9770 CULVER BLVD":[[111.0,3.0,2.0,1951.0,950.0,"2020/03/31","No","Rented"]],"6605 GREEN VALLEY CIR":[[null,null,null,null,null,"",null,null]]};
       const headers = [
@@ -82,6 +84,7 @@
         "Encumbered Unit",
         "Vacancy Status",
       ];
+      /*
       //var data = {"4396 KEYSTONE AVE":[[1.0,1.0,1.0,1952.0,750.0,"2022/08/07","No","Rented"]],"9770 CULVER BLVD":[[4109,1.0,1.0,1940.0,2500.0,"2022/10/15","No","Rented"],[4111,2.0,1.0,1940.0,4000.0,"2022/06/18","No","Rented"],[201,2.0,2.0,1968.0,3000.0,"2022/09/28","No","Rented"],[105,1.0,1.0,1900.0,1200.0,"2022/09/14","No","Rented"],[205,2.0,2.0,1968.0,2100.0,"2022/08/24","No","Rented"],[306,2.0,2.0,1965.0,2595.0,"2022/07/13","No","Rented"],[106,2.0,2.0,1968.0,2000.0,"2022/07/06","No","Rented"],[314,1.0,1.0,1968.0,1800.0,"2022/07/02","No","Rented"],[1,3.0,2.5,0.0,3500.0,"2022/07/01","No","Rented"],[215,3.0,2.5,1968.0,2500.0,"2022/06/28","No","Rented"],[117,2.0,2.0,1968.0,1895.0,"2022/06/28","No","Rented"],[217,1.0,1.0,1968.0,2350.0,"2022/06/21","No","Rented"],[103,2.0,2.0,1968.0,2400.0,"2020/05/30","No","Vacant"],[104,1.0,1.0,1964.0,2100.0,"2020/05/29","No","Rented"],[202,2.0,2.0,1985.0,0.0,"2020/04/30","No","Rented"],[208,2.0,2.0,1970.0,100.0,"2020/04/27","No","Rented"],[203,2.0,2.0,1968.0,1850.0,"2020/04/19","No","Rented"],[null,null,null,null,null,"",null,null]],"6605 GREEN VALLEY CIR":[[null,null,null,null,null,"",null,null]]};
       var data = [];
       const pr = new Promise((resolve, reject) => {
@@ -98,6 +101,7 @@
       pr.then(function (result) {
         data = result;
       });
+      */
 
       /* 
     Add an event listener that runs
@@ -118,7 +122,9 @@
         and properties, and add it to the map.
     */
         var address = feature.properties.address;
-        var rentDiv = constructRentTable(address, data[address]);
+        var units = feature.properties.units;
+        //var rentDiv = constructRentTable(address, data[address]);
+        var rentDiv = constructRentTable(address, units);
         const popup = new mapboxgl.Popup({ offset: [0, -15] })
           .setLngLat(feature.geometry.coordinates)
           .setDOMContent(rentDiv)
@@ -130,6 +136,11 @@
         }
       });
 
+      // Create our number formatter.
+      const formatter = new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: 'USD'
+      });
       function constructRentTable(address, units) {
         var rentDiv = document.createElement("div");
 
@@ -167,7 +178,11 @@
           firstRow = false;
           for (var j = 0; j < units[i].length; j++) {
             var cell = document.createElement("td");
-            cell.appendChild(document.createTextNode(units[i][j]));
+            if (j == 4) {
+              cell.appendChild(document.createTextNode(formatter.format(units[i][j])));
+            } else {
+              cell.appendChild(document.createTextNode(units[i][j]));
+            }
             row.appendChild(cell);
           }
           tableBody.appendChild(row);
