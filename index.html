@@ -132,6 +132,11 @@
         }
       });
 
+      // Create our number formatter.
+      const formatter = new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: 'USD'
+      });
       function constructRentTable(address, units) {
         var rentDiv = document.createElement("div");
 
@@ -169,7 +174,11 @@
           firstRow = false;
           for (var j = 0; j < units[i].length; j++) {
             var cell = document.createElement("td");
-            cell.appendChild(document.createTextNode(units[i][j]));
+            if (j == 4) {
+              cell.appendChild(document.createTextNode(formatter.format(units[i][j])));
+            } else {
+              cell.appendChild(document.createTextNode(units[i][j]));
+            }
             row.appendChild(cell);
           }
           tableBody.appendChild(row);
