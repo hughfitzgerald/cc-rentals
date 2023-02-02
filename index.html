@@ -11,15 +11,35 @@
       rel="stylesheet"
     />
     <style>
+      * {
+        box-sizing: border-box;
+      }
+      .sidebar {
+        position: absolute;
+        width: 20%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        overflow: hidden;
+        border-right: 1px solid rgba(0, 0, 0, 0.25);
+      }
       body {
         margin: 0;
         padding: 0;
       }
-      #map {
+      .map {
         position: absolute;
         top: 0;
         bottom: 0;
-        width: 100%;
+        left: 20%;
+        width: 80%;
+      }
+      .heading {
+        background: #fff;
+        border-bottom: 1px solid #eee;
+        height: 60px;
+        line-height: 60px;
+        padding: 0 10px;
       }
       .mapboxgl-popup-content {
         width: 600px;
@@ -49,7 +69,11 @@
     </style>
   </head>
   <body>
-    <div id="map"></div>
+    <div class="sidebar">
+      <div class="heading">Culver City Rental Registry</div>
+      <div id="filters" class="filters"></div>
+    </div>
+    <div id="map" class="map"></div>
     <script>
       // The value for 'accessToken' begins with 'pk...'
       mapboxgl.accessToken =
@@ -61,8 +85,8 @@
         center: [-118.385796, 33.97883],
         zoom: 10.7,
       });
-      
-      map.on('load', function() {
+
+      map.on("load", function () {
         /*
         map.addLayer({
           id: 'ccrr-20221014-geojson',
@@ -77,38 +101,38 @@
         });
         */
 
-        map.addSource('units', {
-            type: 'geojson',
-            data: 'https://hughfitzgerald.github.io/cc-rentals/ccrr-flat-20230202-122812.json',
-            //cluster: true,
-            //clusterMaxZoom: 27,
-            //clusterRadius: 0
+        map.addSource("units", {
+          type: "geojson",
+          data: "https://hughfitzgerald.github.io/cc-rentals/ccrr-flat-20230202-122812.json",
+          //cluster: true,
+          //clusterMaxZoom: 27,
+          //clusterRadius: 0
         });
         map.addLayer({
-          id: 'ccrr-units-geojson',
-          source: 'units',
+          id: "ccrr-units-geojson",
+          source: "units",
           layout: {
-            visibility: 'visible'
+            visibility: "visible",
           },
-          type: 'circle'
+          type: "circle",
         });
         map.addLayer({
-          id: 'cluster-count',
-          type: 'symbol',
-          source: 'units',
-          filter: ['has', 'point_count'],
+          id: "cluster-count",
+          type: "symbol",
+          source: "units",
+          filter: ["has", "point_count"],
           layout: {
-          'text-field': ['get', 'point_count_abbreviated'],
-          'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
-          'text-size': 8,
-          'visibility': 'none'
+            "text-field": ["get", "point_count_abbreviated"],
+            "text-font": ["DIN Offc Pro Medium", "Arial Unicode MS Bold"],
+            "text-size": 8,
+            visibility: "none",
           },
-            "paint": {
-                "text-color": "#202",
-                "text-halo-color": "#fff",
-                "text-halo-width": 2
-            }
-          });
+          paint: {
+            "text-color": "#202",
+            "text-halo-color": "#fff",
+            "text-halo-width": 2,
+          },
+        });
       });
 
       //const data = {"4396 KEYSTONE AVE":[[1.0,1.0,1.0,1952.0,750.0,"2022/08/07","No","Rented"]],"9770 CULVER BLVD":[[111.0,3.0,2.0,1951.0,950.0,"2020/03/31","No","Rented"]],"6605 GREEN VALLEY CIR":[[null,null,null,null,null,"",null,null]]};
@@ -123,15 +147,15 @@
         "Vacancy Status",
       ];
       const unitKeys = [
-        'unit',
-        'beds',
-        'baths',
-        'built',
-        'rent',
-        'rentdate',
-        'encumbered',
-        'status'
-      ]
+        "unit",
+        "beds",
+        "baths",
+        "built",
+        "rent",
+        "rentdate",
+        "encumbered",
+        "status",
+      ];
       /*
       //var data = {"4396 KEYSTONE AVE":[[1.0,1.0,1.0,1952.0,750.0,"2022/08/07","No","Rented"]],"9770 CULVER BLVD":[[4109,1.0,1.0,1940.0,2500.0,"2022/10/15","No","Rented"],[4111,2.0,1.0,1940.0,4000.0,"2022/06/18","No","Rented"],[201,2.0,2.0,1968.0,3000.0,"2022/09/28","No","Rented"],[105,1.0,1.0,1900.0,1200.0,"2022/09/14","No","Rented"],[205,2.0,2.0,1968.0,2100.0,"2022/08/24","No","Rented"],[306,2.0,2.0,1965.0,2595.0,"2022/07/13","No","Rented"],[106,2.0,2.0,1968.0,2000.0,"2022/07/06","No","Rented"],[314,1.0,1.0,1968.0,1800.0,"2022/07/02","No","Rented"],[1,3.0,2.5,0.0,3500.0,"2022/07/01","No","Rented"],[215,3.0,2.5,1968.0,2500.0,"2022/06/28","No","Rented"],[117,2.0,2.0,1968.0,1895.0,"2022/06/28","No","Rented"],[217,1.0,1.0,1968.0,2350.0,"2022/06/21","No","Rented"],[103,2.0,2.0,1968.0,2400.0,"2020/05/30","No","Vacant"],[104,1.0,1.0,1964.0,2100.0,"2020/05/29","No","Rented"],[202,2.0,2.0,1985.0,0.0,"2020/04/30","No","Rented"],[208,2.0,2.0,1970.0,100.0,"2020/04/27","No","Rented"],[203,2.0,2.0,1968.0,1850.0,"2020/04/19","No","Rented"],[null,null,null,null,null,"",null,null]],"6605 GREEN VALLEY CIR":[[null,null,null,null,null,"",null,null]]};
       var data = [];
@@ -171,9 +195,9 @@
     */
         var address = feature.properties.address;
         const units = map.queryRenderedFeatures(event.point, {
-          layers: ['ccrr-units-geojson'],
-          filter: ['in',address,['get','address']]
-        })
+          layers: ["ccrr-units-geojson"],
+          filter: ["in", address, ["get", "address"]],
+        });
         //var units = JSON.parse(feature.properties.units);
         //var rentDiv = constructRentTable(address, data[address]);
         var rentDiv = constructRentTable(address, units);
@@ -189,9 +213,9 @@
       });
 
       // Create our number formatter.
-      const formatter = new Intl.NumberFormat('en-US', {
-        style: 'currency',
-        currency: 'USD'
+      const formatter = new Intl.NumberFormat("en-US", {
+        style: "currency",
+        currency: "USD",
       });
 
       function constructRentTable(address, units) {
@@ -218,23 +242,25 @@
         var tableBody = document.createElement("tbody");
         for (var i = 0; i < units.length; i++) {
           var row = document.createElement("tr");
-          var unit = units[i]['properties']
+          var unit = units[i]["properties"];
 
-          if (firstRow && unit['unit'] == null && unit['rent'] == null) {
+          if (firstRow && unit["unit"] == null && unit["rent"] == null) {
             rentDiv.appendChild(
               document.createTextNode("No rent information available.")
             );
             return rentDiv;
           }
-          if (!firstRow && unit['unit'] == null && unit['rent'] == null) {
+          if (!firstRow && unit["unit"] == null && unit["rent"] == null) {
             continue;
           }
           firstRow = false;
-          
+
           unitKeys.forEach(function (key, index) {
             var cell = document.createElement("td");
-            if (key == 'rent') {
-              cell.appendChild(document.createTextNode(formatter.format(unit[key])));
+            if (key == "rent") {
+              cell.appendChild(
+                document.createTextNode(formatter.format(unit[key]))
+              );
             } else {
               cell.appendChild(document.createTextNode(unit[key]));
             }
