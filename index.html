@@ -67,7 +67,7 @@
           id: 'ccrr-20221014-geojson',
           source: {
             type: 'geojson',
-            data: 'https://hughfitzgerald.github.io/cc-rentals/ccrr-20230201-154407.json'
+            data: 'https://hughfitzgerald.github.io/cc-rentals/ccrr-20230201-203103.json'
           },
           type: 'circle'
         });
@@ -122,7 +122,7 @@
         and properties, and add it to the map.
     */
         var address = feature.properties.address;
-        var units = feature.properties.units;
+        var units = JSON.parse(feature.properties.units);
         //var rentDiv = constructRentTable(address, data[address]);
         var rentDiv = constructRentTable(address, units);
         const popup = new mapboxgl.Popup({ offset: [0, -15] })
