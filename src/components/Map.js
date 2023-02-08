@@ -16,7 +16,7 @@ const StyledContainer = styled.div`
 const Map = () => {
   const [content, setContent] = useState([]);
   const [popupLngLat, setPopupLngLat] = useState(null);
-  const { map, calculateStats } = useContext(mapContext);
+  const { map, calculateStats, mapFilter } = useContext(mapContext);
   const mapContainer = useRef(null);
 
   function onPopupClose() {
@@ -53,6 +53,7 @@ const Map = () => {
       map.current.addLayer({
         id: "ccrr-units-geojson",
         source: "units",
+        filter: mapFilter,
         layout: {
           visibility: "visible",
         },

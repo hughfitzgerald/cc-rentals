@@ -15,6 +15,7 @@ function MapProvider({ children }) {
   const [maxRent, setMaxRent] = useState(null);
   const map = useRef(null);
   const [lngLat, setLngLat] = useState({ lng: null, lat: null });
+  const [mapFilter, setFilter] = useState(["==", ["boolean", true], ["get", "registered"]]);
 
   const Provider = mapContext.Provider;
 
@@ -25,6 +26,7 @@ function MapProvider({ children }) {
     var max = 0.0;
     const features = map.current.queryRenderedFeatures({
       layers: ["ccrr-units-geojson"], // replace with your layer name
+      filter: mapFilter
     });
     if (!features.length) return;
     features.forEach((feature) => {
@@ -42,6 +44,54 @@ function MapProvider({ children }) {
     setMaxRent(max);
   }
 
+  function runFilters(vacancyValues, [minRent, maxRent], bedsValues, regValue) {
+    var rentValue = ["number", ["get", "rent"], -1];
+    var rentValueCondition = [
+      "all",
+      ["<=", rentValue, maxRent],
+      [">=", rentValue, minRent],
+    ];
+  
+    var bedsFeature = ["to-string", ["number", ["get", "beds"], -1]];
+    var bedsValueCondition = ["in", bedsFeature, ["literal", bedsValues]];
+  
+    var statusCondition = ["boolean", true];
+    var vacantCondition = ["in", ["literal", "Vacant"], ["get", "status"]];
+    var rentedCondition = ["in", ["literal", "Rented"], ["get", "status"]];
+    var neitherCondition = [
+      "all",
+      ["!", vacantCondition],
+      ["!", rentedCondition],
+    ];
+    if (vacancyValues.includes("vacant") && vacancyValues.includes("rented")) {
+      statusCondition = ["boolean", true];
+    } else if (vacancyValues.includes("vacant")) {
+      statusCondition = vacantCondition;
+    } else if (vacancyValues.includes("rented")) {
+      statusCondition = rentedCondition;
+    } else {
+      statusCondition = neitherCondition;
+    }
+  
+    var regCondition = ["==", ["boolean", true], ["get", "registered"]];
+  
+    var filterCondition;
+    if (regValue === "registered") {
+      filterCondition = [
+        "all",
+        bedsValueCondition,
+        rentValueCondition,
+        statusCondition,
+        regCondition
+      ];
+    } else {
+      filterCondition = ["==", ["boolean", false], ["get", "registered"]];
+    }
+    
+    setFilter(filterCondition)
+    map.current.setFilter("ccrr-units-geojson", filterCondition);
+  }
+
   return (
     <Provider
       value={{
@@ -54,6 +104,8 @@ function MapProvider({ children }) {
         avgRent,
         minRent,
         maxRent,
+        runFilters,
+        mapFilter
       }}
     >
       {children}
