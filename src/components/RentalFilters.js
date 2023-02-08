@@ -76,13 +76,31 @@ function runFilters(map, vacancyValues, [minRent, maxRent], bedsValues, regValue
     statusCondition = neitherCondition;
   }
 
-  var regCondition = ["get", "registered"]
+  var regCondition = ["boolean", true];
+  var registeredCondition = ["==", ["boolean", true], ["get", "registered"]];
+  var unregisteredCondition = ["==", ["boolean", false], ["get", "registered"]];
+  var neitherRegCondition = [
+    "all",
+    ["!", registeredCondition],
+    ["!", unregisteredCondition],
+  ];
+  if (regValues.includes("registered") && regValues.includes("unregistered")) {
+    regCondition = ["boolean", true];
+  } else if (regValues.includes("registered")) {
+    regCondition = registeredCondition;
+  } else if (regValues.includes("unregistered")) {
+    regCondition = unregisteredCondition;
+  } else {
+    regCondition = neitherRegCondition;
+  };
+
 
   var filterCondition = [
     "all",
     bedsValueCondition,
     rentValueCondition,
     statusCondition,
+    regCondition
   ];
 
   map.current.setFilter("ccrr-units-geojson", filterCondition);
