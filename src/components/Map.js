@@ -32,8 +32,8 @@ const Map = () => {
     map.current = new mapboxgl.Map({
         container: mapContainer.current,
         style: "mapbox://styles/hughfitzgerald/cldjdvxl7000001qqfr6kpnpv", // stylesheet location
-        center: [-118.385796, 33.97883], // starting position
-        zoom: 10.7, // starting zoom
+        center: [-118.404421, 34.003097], // starting position
+        zoom: 12.5, // starting zoom
       });
     }, [map]);
 
@@ -53,7 +53,7 @@ const Map = () => {
       map.current.addLayer({
         id: "ccrr-units-geojson",
         source: "units",
-        filter: mapFilter,
+        filter: mapFilter.current,
         layout: {
           visibility: "visible",
         },
@@ -88,7 +88,7 @@ const Map = () => {
           delete u["address"];
           return u;
         });
-      units.shift();
+      //units.shift();
 
       const unitsTable = (
         <PopupContent address={feature?.properties?.address} units={units} />

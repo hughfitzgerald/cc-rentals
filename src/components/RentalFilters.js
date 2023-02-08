@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect, useRef } from "react";
 import {
   createStyles,
   RangeSlider,
@@ -7,7 +7,6 @@ import {
   Stack,
   Text,
   Group,
-  Space,
   SegmentedControl
 } from "@mantine/core";
 import { mapContext } from "../context/mapContext";
@@ -50,11 +49,21 @@ const useStyles = createStyles((theme) => ({
 
 export const RentalFilters = () => {
   const { classes } = useStyles();
-  const { calculateStats, runFilters } = useContext(mapContext);
+  const { calculateStats, runFilters, setUnreg, unreg } = useContext(mapContext);
   const [vacancyValues, setVacancyValues] = useState(["rented", "vacant"]);
   const [regValue, setRegValue] = useState("registered");
   const [rentValue, setRentValue] = useState([0, 10000]);
   const [bedsValues, setBedsValues] = useState(["0", "1", "2", "3", "4", "5"]);
+  const styleLoaded = useRef(false);
+  
+  useEffect( () => {
+    if(!styleLoaded.current) {
+      runFilters(vacancyValues, rentValue, bedsValues, regValue);
+      styleLoaded.current = true;
+    }  
+  }, [runFilters, vacancyValues, rentValue, bedsValues, regValue]);
+  
+
 
   function updateBeds(bedsValues) {
     setBedsValues(bedsValues);
@@ -76,6 +85,11 @@ export const RentalFilters = () => {
 
   function updateReg(regValue) {
     setRegValue(regValue);
+    if(regValue==="unregistered") {
+      setUnreg(true)
+    } else {
+      setUnreg(false)
+    }
     runFilters(vacancyValues, rentValue, bedsValues, regValue);
     calculateStats();
   }
@@ -95,8 +109,8 @@ export const RentalFilters = () => {
       <Stack spacing="xs">
         <Text fz="sm">Rental status:</Text>
         <Chip.Group position = "center" multiple mt={15} value={vacancyValues} onChange={updateVacancy}>
-          <Chip value="rented" variant="filled" disabled={regValue==="unregistered"}>Rented</Chip>
-          <Chip value="vacant" variant="filled" disabled={regValue==="unregistered"}>Vacant</Chip>
+          <Chip value="rented" variant="filled" disabled={unreg}>Rented</Chip>
+          <Chip value="vacant" variant="filled" disabled={unreg}>Vacant</Chip>
         </Chip.Group>
       </Stack>
       <Stack spacing="xs">
@@ -108,22 +122,22 @@ export const RentalFilters = () => {
           value={bedsValues}
           onChange={updateBeds}
         >
-          <Chip value="0" variant="filled" disabled={regValue==="unregistered"}>
+          <Chip value="0" variant="filled" disabled={unreg}>
             Studio
           </Chip>
-          <Chip value="1" variant="filled" disabled={regValue==="unregistered"}>
+          <Chip value="1" variant="filled" disabled={unreg}>
             1 Bedroom
           </Chip>
-          <Chip value="2" variant="filled" disabled={regValue==="unregistered"}>
+          <Chip value="2" variant="filled" disabled={unreg}>
             2 Bedroom
           </Chip>
-          <Chip value="3" variant="filled" disabled={regValue==="unregistered"}>
+          <Chip value="3" variant="filled" disabled={unreg}>
             3 Bedroom
           </Chip>
-          <Chip value="4" variant="filled" disabled={regValue==="unregistered"}>
+          <Chip value="4" variant="filled" disabled={unreg}>
             4 Bedroom
           </Chip>
-          <Chip value="5" variant="filled" disabled={regValue==="unregistered"}>
+          <Chip value="5" variant="filled" disabled={unreg}>
             5 Bedroom
           </Chip>
         </Chip.Group>
@@ -139,7 +153,7 @@ export const RentalFilters = () => {
             max={10000}
             hideControls
             classNames={{ input: classes.input, label: classes.label }}
-            disabled={regValue==="unregistered"}
+            disabled={unreg}
             parser={(value) => value.replace(/\$\s?|(,*)/g, '')}
             formatter={(value) =>
               !Number.isNaN(parseFloat(value))
@@ -155,7 +169,7 @@ export const RentalFilters = () => {
             max={10000}
             hideControls
             classNames={{ input: classes.input, label: classes.label }}
-            disabled={regValue==="unregistered"}
+            disabled={unreg}
             parser={(value) => value.replace(/\$\s?|(,*)/g, '')}
             formatter={(value) =>
               !Number.isNaN(parseFloat(value))
@@ -175,7 +189,7 @@ export const RentalFilters = () => {
           radius={0}
           className={classes.slider}
           classNames={{ thumb: classes.thumb, track: classes.track }}
-          disabled={regValue==="unregistered"}
+          disabled={unreg}
           showLabelOnHover={false}
           label={null}
         />

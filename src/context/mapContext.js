@@ -14,36 +14,47 @@ function MapProvider({ children }) {
   const [minRent, setMinRent] = useState(null);
   const [maxRent, setMaxRent] = useState(null);
   const [totalUnits, setTotalUnits] = useState(null);
+  const [totalUnregUnits, setTotalUnregUnits] = useState(null);
+  const [unreg, setUnreg] = useState(false);
   const map = useRef(null);
   const [lngLat, setLngLat] = useState({ lng: null, lat: null });
-  const [mapFilter, setFilter] = useState(["==", ["boolean", true], ["get", "registered"]]);
+  //const [mapFilter, setFilter] = useState(["all",["==", ["boolean", true], ["get", "registered"]],["<=", ["number", ["get", "rent"], -1], 10000],[">=", ["number", ["get", "rent"], -1], 0]]);
+  const mapFilter = useRef(["boolean",true]);
 
   const Provider = mapContext.Provider;
 
   function calculateStats() {
-    var rentSum = 0.0;
-    var rentCount = 0.0;
-    var min = 10000.0;
-    var max = 0.0;
-    const features = map.current.queryRenderedFeatures({
-      layers: ["ccrr-units-geojson"], // replace with your layer name
-      filter: mapFilter
-    });
-    if (!features.length) return;
-    features.forEach((feature) => {
-      var rent = feature["properties"]["rent"];
-      if (rent != null && rent < 10000) {
-        rentSum += rent;
-        rentCount += 1.0;
-        
-        if (rent > max) max = rent;
-        if (rent < min) min = rent;
-      }
-    });
-    setAvgRent(rentSum / rentCount);
-    setMinRent(min);
-    setMaxRent(max);
-    setTotalUnits(rentCount);
+    if(unreg) {
+      const features = map.current.queryRenderedFeatures({
+        layers: ["ccrr-units-geojson"], // replace with your layer name
+        filter: mapFilter.current
+      });
+      setTotalUnregUnits(features.length)
+    } else {
+      var rentSum = 0.0;
+      var rentCount = 0.0;
+      var min = 10000.0;
+      var max = 0.0;
+      const features = map.current.queryRenderedFeatures({
+        layers: ["ccrr-units-geojson"], // replace with your layer name
+        filter: mapFilter.current
+      });
+      if (!features.length) return;
+      features.forEach((feature) => {
+        var rent = feature["properties"]["rent"];
+        if (rent != null && rent < 10000) {
+          rentSum += rent;
+          rentCount += 1.0;
+          
+          if (rent > max) max = rent;
+          if (rent < min) min = rent;
+        }
+      });
+      setAvgRent(rentSum / rentCount);
+      setMinRent(min);
+      setMaxRent(max);
+      setTotalUnits(rentCount);
+    }
   }
 
   function runFilters(vacancyValues, [minRent, maxRent], bedsValues, regValue) {
@@ -90,8 +101,9 @@ function MapProvider({ children }) {
       filterCondition = ["==", ["boolean", false], ["get", "registered"]];
     }
     
-    setFilter(filterCondition)
-    map.current.setFilter("ccrr-units-geojson", filterCondition);
+    //setFilter(filterCondition)
+    mapFilter.current = filterCondition;
+    if(map.current && map.current.isStyleLoaded() && "units" in map.current.getStyle().sources && map.current.isSourceLoaded("units")) map.current.setFilter("ccrr-units-geojson", filterCondition);
   }
 
   return (
@@ -107,8 +119,11 @@ function MapProvider({ children }) {
         minRent,
         maxRent,
         totalUnits,
+        totalUnregUnits,
         runFilters,
-        mapFilter
+        mapFilter,
+        unreg,
+        setUnreg
       }}
     >
       {children}
