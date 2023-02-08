@@ -12,14 +12,16 @@ import RentalFilters from "./components/RentalFilters";
 import RentalStats from "./components/RentalStats";
 
 export default function App() {
+  const app_id = 'parentRef'
   return (
     <MantineProvider
       withGlobalStyles
       withNormalizeCSS
     >
       <MapProvider>
-        <AppShell
+        <AppShell          
           padding="md"
+          id={app_id}
           navbar={
             <Navbar width={{ base: 300 }} p="xs">
               {

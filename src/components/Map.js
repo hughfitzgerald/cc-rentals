@@ -2,9 +2,8 @@ import React, { useContext, useEffect, useRef, useState } from "react";
 import mapboxgl from "!mapbox-gl"; // eslint-disable-line
 import "mapbox-gl/dist/mapbox-gl.css";
 import styled from "@emotion/styled";
-
 import { mapContext } from "../context/mapContext";
-import Popup from "./Popup";
+import { PopupDialog } from "./Popup";
 import PopupContent from "./PopupContent";
 
 const StyledContainer = styled.div`
@@ -15,13 +14,14 @@ const StyledContainer = styled.div`
 
 const Map = () => {
   const [content, setContent] = useState([]);
-  const [popupLngLat, setPopupLngLat] = useState(null);
+  const [opened, setOpened] = useState(false);
   const { map, calculateStats, mapFilter } = useContext(mapContext);
+  const eventsSet = useRef(false);
   const mapContainer = useRef(null);
 
   function onPopupClose() {
     setContent([]);
-    setPopupLngLat(null);
+    setOpened(false);
   }
 
   useEffect(() => {
@@ -30,18 +30,24 @@ const Map = () => {
       "pk.eyJ1IjoiaHVnaGZpdHpnZXJhbGQiLCJhIjoiY2xkZGhjaG9wMDNqdTNvdDZ5bG80OXZ3YSJ9.6njmVnJyl0zAtMnM9d8duQ";
 
     map.current = new mapboxgl.Map({
-        container: mapContainer.current,
-        style: "mapbox://styles/hughfitzgerald/cldjdvxl7000001qqfr6kpnpv", // stylesheet location
-        center: [-118.404421, 34.003097], // starting position
-        zoom: 12.5, // starting zoom
-      });
-    }, [map]);
+      container: mapContainer.current,
+      style: "mapbox://styles/hughfitzgerald/cldjdvxl7000001qqfr6kpnpv", // stylesheet location
+      center: [-118.404421, 34.003097], // starting position
+      zoom: 12.5, // starting zoom
+    });
+  }, [map]);
 
   useEffect(() => {
     if (!map.current) return;
 
+    if(eventsSet.current) {
+      return;
+    } else {
+      eventsSet.current = true;
+    }
+
     map.current.on("load", () => {
-      if(map.current.getSource('units')) return;
+      if (map.current.getSource("units")) return;
 
       // Add a data source containing GeoJSON data.
       map.current.addSource("units", {
@@ -61,8 +67,12 @@ const Map = () => {
       });
     });
 
-    map.current.on("sourcedata",() => {
-      if("units" in map.current.getStyle().sources && map.current.isSourceLoaded("units")) calculateStats();
+    map.current.on("sourcedata", () => {
+      if (
+        "units" in map.current.getStyle().sources &&
+        map.current.isSourceLoaded("units")
+      )
+        calculateStats();
     });
     map.current.on("zoomend", () => calculateStats());
     map.current.on("moveend", () => calculateStats());
@@ -78,7 +88,7 @@ const Map = () => {
       const feature = features[0];
 
       var address = feature.properties.address;
-      const units = map.current
+      var units = map.current
         .queryRenderedFeatures(event.point, {
           layers: ["ccrr-units-geojson"],
           filter: ["in", ["literal", address], ["get", "address"]],
@@ -89,26 +99,25 @@ const Map = () => {
           return u;
         });
       //units.shift();
+      if(!units[0]['registered']) units = {};
 
       const unitsTable = (
         <PopupContent address={feature?.properties?.address} units={units} />
       );
 
       setContent(unitsTable);
-      setPopupLngLat(event.lngLat);
+      setOpened(true);
+    });
   });
-});
 
   return (
     <>
-      {popupLngLat && (
-        <Popup lngLat={popupLngLat} onClose={onPopupClose}>
-          {content}
-        </Popup>
-      )}
+      <PopupDialog onClose={onPopupClose} opened={opened}>
+        {content}
+      </PopupDialog>
       <StyledContainer ref={(el) => (mapContainer.current = el)} />
     </>
   );
-}
+};
 
 export default Map;

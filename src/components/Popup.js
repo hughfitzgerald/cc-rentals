@@ -1,28 +1,35 @@
-import React, { useContext, useEffect, useRef } from "react";
-import { mapContext } from "../context/mapContext";
-import mapboxgl from "mapbox-gl";
+import { Drawer, Dialog } from "@mantine/core";
 
-export const Popup = ({children, lngLat, onClose}) => {
-    const { map } = useContext(mapContext);
-    const popupRef = useRef();
-    useEffect(() => {
-        const popup = new mapboxgl.Popup({})
-            .setLngLat(lngLat)
-            .setDOMContent(popupRef.current)
-            .addTo(map.current);
-        
-        //popup.on("close", onClose);
+const PopupDrawer = ({ children, onClose, opened }) => {
+  return (
+    <Drawer
+      opened={opened}
+      withCloseButton
+      onClose={onClose}
+      padding="xs"
+      position="bottom"
+      trapFocus={false}
+      closeOnClickOutside={false}
+      withOverlay={false}
+      zIndex={5}
+    >
+      {children}
+    </Drawer>
+  );
+};
 
-        //return popup.remove;
-        return popup.remove;
-    }, [children, lngLat, map, onClose])
-
+const PopupDialog = ({ children, onClose, opened }) => {
     return (
-        <div style={{ display: "none"}}>
-            <div ref={popupRef}>{children}</div>
-        </div>
+      <Dialog
+        opened={opened}
+        withCloseButton
+        onClose={onClose}
+        size={1000}
+        styles={{ root: { height: 280 } }}
+      >
+        {children}
+      </Dialog>
     );
   };
 
-  
-export default Popup;
+export { PopupDrawer, PopupDialog };
