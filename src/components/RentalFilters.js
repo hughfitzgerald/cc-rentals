@@ -180,7 +180,6 @@ export const RentalFilters = () => {
           label={null}
         />
       </Stack>
-      <Space h="lg" />
     </Stack>
   );
 };

@@ -3,7 +3,7 @@ import { Stack, Text, Group } from "@mantine/core";
 import { mapContext } from "../context/mapContext";
 
 export const RentalStats = () => {
-  const { avgRent, minRent, maxRent } = useContext(mapContext);
+  const { avgRent, minRent, maxRent, totalUnits } = useContext(mapContext);
   const ar = new Intl.NumberFormat("en-US", {
     style: "currency",
     currency: "USD",
@@ -16,22 +16,31 @@ export const RentalStats = () => {
     style: "currency",
     currency: "USD",
   }).format(maxRent);
+  const tu = new Intl.NumberFormat("en-US").format(totalUnits)
   return (
     <Stack>
-      <Stack align="center">
-        <Text fz="xl" fw={700}>
-          {ar}
-        </Text>
-        <Text fz="sm">Average Rent</Text>
-      </Stack>
       <Group position="center">
-        <Stack align="center">
+        <Stack align="center" spacing="xs">
+          <Text fz="xl" fw={700}>
+            {tu}
+          </Text>
+          <Text fz="sm">Rental Units</Text>
+        </Stack>
+        <Stack align="center" spacing="xs">
+          <Text fz="xl" fw={700}>
+            {ar}
+          </Text>
+          <Text fz="sm">Average Rent</Text>
+        </Stack>
+      </Group>
+      <Group position="center">
+        <Stack align="center" spacing="xs">
           <Text fz="lg" fw={500}>
             {mnr}
           </Text>
           <Text fz="xs">Lowest Rent</Text>
         </Stack>
-        <Stack align="center">
+        <Stack align="center" spacing="xs">
           <Text fz="lg" fw={500}>
             {mxr}
           </Text>

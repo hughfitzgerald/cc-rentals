@@ -13,6 +13,7 @@ function MapProvider({ children }) {
   const [avgRent, setAvgRent] = useState(null);
   const [minRent, setMinRent] = useState(null);
   const [maxRent, setMaxRent] = useState(null);
+  const [totalUnits, setTotalUnits] = useState(null);
   const map = useRef(null);
   const [lngLat, setLngLat] = useState({ lng: null, lat: null });
   const [mapFilter, setFilter] = useState(["==", ["boolean", true], ["get", "registered"]]);
@@ -42,6 +43,7 @@ function MapProvider({ children }) {
     setAvgRent(rentSum / rentCount);
     setMinRent(min);
     setMaxRent(max);
+    setTotalUnits(rentCount);
   }
 
   function runFilters(vacancyValues, [minRent, maxRent], bedsValues, regValue) {
@@ -104,6 +106,7 @@ function MapProvider({ children }) {
         avgRent,
         minRent,
         maxRent,
+        totalUnits,
         runFilters,
         mapFilter
       }}
