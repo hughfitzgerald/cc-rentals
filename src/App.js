@@ -4,8 +4,7 @@ import {
   Navbar,
   Header,
   Title,
-  Group,
-  Stack,
+  Accordion
 } from "@mantine/core";
 import Map from "./components/Map";
 import { MapProvider } from "./context/mapContext";
@@ -17,22 +16,27 @@ export default function App() {
     <MantineProvider
       withGlobalStyles
       withNormalizeCSS
-      theme={{
-        fontFamily: "Open Sans, sans-serif",
-        lineHeight: 1.2,
-        primaryColor: "indigo",
-      }}
     >
       <MapProvider>
         <AppShell
           padding="md"
           navbar={
-            <Navbar width={{ base: 300 }} height={500} p="xs">
+            <Navbar width={{ base: 300 }} p="xs">
               {
-                <Group>
+                <Accordion multiple defaultValue={["filters","stats"]}>
+                  <Accordion.Item value="filters">
+                    <Accordion.Control>Rental Filters</Accordion.Control>
+                    <Accordion.Panel>
                 <RentalFilters />
+                </Accordion.Panel>
+                </Accordion.Item>
+                <Accordion.Item value="stats">
+                  <Accordion.Control>Rental Statistics</Accordion.Control>
+                  <Accordion.Panel>
                 <RentalStats />
-                </Group>
+                </Accordion.Panel>
+                </Accordion.Item>
+                </Accordion>
               }
             </Navbar>
           }

@@ -1,14 +1,13 @@
 import React, { useState, useContext } from "react";
 import {
   createStyles,
-  Navbar,
   RangeSlider,
-  Checkbox,
   Chip,
   NumberInput,
-  Group,
+  Stack,
   Text,
-  Title
+  Group,
+  Space
 } from "@mantine/core";
 import { mapContext } from "../context/mapContext";
 
@@ -48,7 +47,7 @@ const useStyles = createStyles((theme) => ({
   },
 }));
 
-function runFilters(map, vacancyValues, [minRent, maxRent], bedsValues) {
+function runFilters(map, vacancyValues, [minRent, maxRent], bedsValues, regValues) {
   var rentValue = ["number", ["get", "rent"], -1];
   var rentValueCondition = [
     "all",
@@ -77,6 +76,8 @@ function runFilters(map, vacancyValues, [minRent, maxRent], bedsValues) {
     statusCondition = neitherCondition;
   }
 
+  var regCondition = ["get", "registered"]
+
   var filterCondition = [
     "all",
     bedsValueCondition,
@@ -89,36 +90,52 @@ function runFilters(map, vacancyValues, [minRent, maxRent], bedsValues) {
 
 export const RentalFilters = () => {
   const { classes } = useStyles();
-  const { map } = useContext(mapContext);
+  const { map, calculateStats } = useContext(mapContext);
   const [vacancyValues, setVacancyValues] = useState(["rented", "vacant"]);
+  const [regValues, setRegValues] = useState(["registered", "unregistered"]);
   const [rentValue, setRentValue] = useState([0, 10000]);
   const [bedsValues, setBedsValues] = useState(["0", "1", "2", "3", "4", "5"]);
 
   function updateBeds(bedsValues) {
     setBedsValues(bedsValues);
-    runFilters(map, vacancyValues, rentValue, bedsValues);
+    runFilters(map, vacancyValues, rentValue, bedsValues, regValues);
+    calculateStats();
   }
 
   function updateRent(rentValue) {
     setRentValue(rentValue);
-    runFilters(map, vacancyValues, rentValue, bedsValues);
+    runFilters(map, vacancyValues, rentValue, bedsValues, regValues);
+    calculateStats();
   }
 
   function updateVacancy(vacancyValues) {
     setVacancyValues(vacancyValues);
-    runFilters(map, vacancyValues, rentValue, bedsValues);
+    runFilters(map, vacancyValues, rentValue, bedsValues, regValues);
+    calculateStats();
+  }
+
+  function updateReg(regValues) {
+    setRegValues(regValues);
+    runFilters(map, vacancyValues, rentValue, bedsValues, regValues);
+    calculateStats();
   }
   return (
-    <div>
-      <Title order={2}>Rental Filters</Title>
-      <Navbar.Section mt="xs">
+    <Stack>
+      <Stack spacing="xs">
+      <Text fz="sm">Registration status:</Text>
+        <Chip.Group position = "center" multiple mt={15} value={regValues} onChange={updateReg}>
+          <Chip value="registered" variant="filled">Registered</Chip>
+          <Chip value="unregistered" variant="filled">Unregistered</Chip>
+        </Chip.Group>
+      </Stack>
+      <Stack spacing="xs">
         <Text fz="sm">Rental status:</Text>
-        <Checkbox.Group value={vacancyValues} onChange={updateVacancy}>
-          <Checkbox value="rented" label="Rented" />
-          <Checkbox value="vacant" label="Vacant" />
-        </Checkbox.Group>
-      </Navbar.Section>
-      <Navbar.Section mt="xs">
+        <Chip.Group position = "center" multiple mt={15} value={vacancyValues} onChange={updateVacancy}>
+          <Chip value="rented" variant="filled">Rented</Chip>
+          <Chip value="vacant" variant="filled">Vacant</Chip>
+        </Chip.Group>
+      </Stack>
+      <Stack spacing="xs">
         <Text fz="sm">Number of Bedrooms:</Text>
         <Chip.Group
           position="center"
@@ -146,8 +163,8 @@ export const RentalFilters = () => {
             5 Bedroom
           </Chip>
         </Chip.Group>
-      </Navbar.Section>
-      <Navbar.Section mt="xs">
+      </Stack>
+      <Stack spacing="xs">
         <Text fz="sm">Rent:</Text>
         <Group noWrap>
           <NumberInput
@@ -171,7 +188,8 @@ export const RentalFilters = () => {
         </Group>
         <RangeSlider
           value={rentValue}
-          onChange={updateRent}
+          onChange={setRentValue}
+          onChangeEnd={updateRent}
           min={0}
           max={10000}
           step={100}
@@ -184,8 +202,9 @@ export const RentalFilters = () => {
           className={classes.slider}
           classNames={{ thumb: classes.thumb, track: classes.track }}
         />
-      </Navbar.Section>
-    </div>
+      </Stack>
+      <Space h="lg" />
+    </Stack>
   );
 };
 

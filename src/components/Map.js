@@ -16,7 +16,7 @@ const StyledContainer = styled.div`
 const Map = () => {
   const [content, setContent] = useState([]);
   const [popupLngLat, setPopupLngLat] = useState(null);
-  const { map } = useContext(mapContext);
+  const { map, calculateStats } = useContext(mapContext);
   const mapContainer = useRef(null);
 
   function onPopupClose() {
@@ -46,7 +46,7 @@ const Map = () => {
       // Add a data source containing GeoJSON data.
       map.current.addSource("units", {
         type: "geojson",
-        data: "https://hughfitzgerald.github.io/cc-rentals/ccrr-flat-20230202-122812.json",
+        data: "https://hughfitzgerald.github.io/cc-rentals/ccrr-flat-20230207-162635.json",
       });
 
       // Add a new layer with dots for the units.
@@ -59,6 +59,12 @@ const Map = () => {
         type: "circle",
       });
     });
+
+    map.current.on("sourcedata",() => {
+      if("units" in map.current.getStyle().sources && map.current.isSourceLoaded("units")) calculateStats();
+    });
+    map.current.on("zoomend", () => calculateStats());
+    map.current.on("moveend", () => calculateStats());
 
     map.current.on("click", "ccrr-units-geojson", (event) => {
       // If the user clicked on one of your markers, get its information.
