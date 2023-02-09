@@ -10,7 +10,7 @@ export default function PopupContent() {
     direction: "asc",
   });
   const { popupAddress, popupUnits } = useContext(mapContext);
-  const [records, setRecords] = useState(sortBy(popupUnits, "unit"));
+  const [sortedRecords, setRecords] = useState(sortBy(popupUnits, "unit"));
 
   useEffect(() => {
     const data = sortBy(popupUnits, sortStatus.columnAccessor);
@@ -30,7 +30,7 @@ export default function PopupContent() {
           idAccessor="unit"
           noRecordsText="No rent information available."
           shadow="sm"
-          records={records}
+          records={sortedRecords}
           columns={[
             {
               accessor: "unit",

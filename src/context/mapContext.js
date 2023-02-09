@@ -9,7 +9,6 @@ const mapContext = createContext(undefined);
 // A "provider" is used to encapsulate only the
 // components that needs the state in this context
 function MapProvider({ children }) {
-  const [popupContent, setPopupContent] = useState([]);
   const [avgRent, setAvgRent] = useState(null);
   const [minRent, setMinRent] = useState(null);
   const [maxRent, setMaxRent] = useState(null);
@@ -17,7 +16,6 @@ function MapProvider({ children }) {
   const [totalUnregUnits, setTotalUnregUnits] = useState(null);
   const [unreg, setUnreg] = useState(false);
   const map = useRef(null);
-  const [lngLat, setLngLat] = useState({ lng: null, lat: null });
   //const [mapFilter, setFilter] = useState(["all",["==", ["boolean", true], ["get", "registered"]],["<=", ["number", ["get", "rent"], -1], 10000],[">=", ["number", ["get", "rent"], -1], 0]]);
   const mapFilter = useRef(["boolean", true]);
   const popupAddress = useRef(null);
@@ -166,11 +164,7 @@ function MapProvider({ children }) {
   return (
     <Provider
       value={{
-        popupContent,
-        setPopupContent,
         map,
-        lngLat,
-        setLngLat,
         calculateStats,
         avgRent,
         minRent,
