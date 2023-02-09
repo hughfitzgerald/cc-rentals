@@ -43,7 +43,7 @@ function MapProvider({ children }) {
     
     var seen_units = [];
     var unique_units = [];
-    var units = map.current
+    map.current
     .querySourceFeatures("units",{
       filter: ["all",["in", ["literal", popupAddress.current], ["get", "address"]],mapFilter.current]
     })
