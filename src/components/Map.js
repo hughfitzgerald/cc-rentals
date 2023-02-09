@@ -80,15 +80,15 @@ const Map = () => {
         },
       });
 
-      map.loadImage(
-        "https://hughfitzgerald.github.io/cc-rentals/building.svg",
+      map.current.loadImage(
+        "https://hughfitzgerald.github.io/cc-rentals/building.png",
         (error, image) => {
           if (error) throw error;
-          map.addImage("custom-marker", image);
+          map.current.addImage("custom-marker", image);
           // Add a GeoJSON source with 2 points
           
           // Add a symbol layer
-          map.addLayer({
+          map.current.addLayer({
             id: "selected-address",
             type: "symbol",
             source: "units",
