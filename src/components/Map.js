@@ -14,12 +14,13 @@ const StyledContainer = styled.div`
 
 const Map = () => {
   const [opened, setOpened] = useState(false);
-  const { map, calculateStats, mapFilter, newPopup } = useContext(mapContext);
+  const { map, calculateStats, mapFilter, newPopup, popupAddress } = useContext(mapContext);
   const eventsSet = useRef(false);
   const mapContainer = useRef(null);
 
   function onPopupClose() {
     setOpened(false);
+    popupAddress.current = null;
   }
 
   useEffect(() => {
@@ -76,42 +77,7 @@ const Map = () => {
     map.current.on("moveend", () => calculateStats());
 
     map.current.on("click", "ccrr-units-geojson", (event) => {
-      // If the user clicked on one of your markers, get its information.
-      /*
-      const features = map.current.queryRenderedFeatures(event.point, {
-        layers: ["ccrr-units-geojson"], // replace with your layer name
-      });
-      if (!features.length) {
-        return;
-      }
-      const feature = features[0];
-
-      var address = feature.properties.address;
-      var units = map.current
-        .queryRenderedFeatures(event.point, {
-          layers: ["ccrr-units-geojson"],
-          filter: ["in", ["literal", address], ["get", "address"]],
-        })
-        .map((f) => {
-          var u = f["properties"];
-          delete u["address"];
-          return u;
-        });
-      //units.shift();
-      if(!units[0]['registered']) units = {};
-
-      setUnits(units);
-      setAddress(feature.properties.address);
-      */
       if (newPopup(event)) setOpened(true);
-
-      /*
-      const unitsTable = (
-        <PopupContent address={feature?.properties?.address} units={units} />
-      );
-
-      setContent(unitsTable);
-      */
     });
   });
 

@@ -27,24 +27,39 @@ function MapProvider({ children }) {
 
   function filterPopup() {
     if (!popupAddress.current) return;
+    
+    /*
     var units = map.current
       .queryRenderedFeatures({
         layers: ["ccrr-units-geojson"],
-        filter: [
-          "all",
-          ["in", ["literal", popupAddress.current], ["get", "address"]],
-          mapFilter.current,
-        ],
+        filter: ["all",["in", ["literal", popupAddress.current], ["get", "address"]],mapFilter.current]
       })
       .map((f) => {
         var u = f["properties"];
         delete u["address"];
         return u;
       });
-    //units.shift();
-    if (!units[0]["registered"]) units = {};
+      */
+    
+    var seen_units = [];
+    var unique_units = [];
+    var units = map.current
+    .querySourceFeatures("units",{
+      filter: ["all",["in", ["literal", popupAddress.current], ["get", "address"]],mapFilter.current]
+    })
+    .map((f) => {
+      var u = f["properties"];
+      delete u["address"];
+      if(!seen_units.includes(u['unit'])) {
+        seen_units.push(u['unit']);
+        unique_units.push(u);
+      }
+      return u;
+    });
+    
+    if (!unique_units.length || !unique_units[0]["registered"]) unique_units = [];
 
-    setUnits(units);
+    setUnits(unique_units);
   }
 
   function newPopup(event) {
@@ -138,7 +153,6 @@ function MapProvider({ children }) {
       filterCondition = ["==", ["boolean", false], ["get", "registered"]];
     }
 
-    //setFilter(filterCondition)
     mapFilter.current = filterCondition;
     if (
       map.current &&
