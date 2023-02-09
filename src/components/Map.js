@@ -13,14 +13,12 @@ const StyledContainer = styled.div`
 `;
 
 const Map = () => {
-  const [content, setContent] = useState([]);
   const [opened, setOpened] = useState(false);
-  const { map, calculateStats, mapFilter } = useContext(mapContext);
+  const { map, calculateStats, mapFilter, newPopup } = useContext(mapContext);
   const eventsSet = useRef(false);
   const mapContainer = useRef(null);
 
   function onPopupClose() {
-    setContent([]);
     setOpened(false);
   }
 
@@ -40,7 +38,7 @@ const Map = () => {
   useEffect(() => {
     if (!map.current) return;
 
-    if(eventsSet.current) {
+    if (eventsSet.current) {
       return;
     } else {
       eventsSet.current = true;
@@ -79,6 +77,7 @@ const Map = () => {
 
     map.current.on("click", "ccrr-units-geojson", (event) => {
       // If the user clicked on one of your markers, get its information.
+      /*
       const features = map.current.queryRenderedFeatures(event.point, {
         layers: ["ccrr-units-geojson"], // replace with your layer name
       });
@@ -101,19 +100,25 @@ const Map = () => {
       //units.shift();
       if(!units[0]['registered']) units = {};
 
+      setUnits(units);
+      setAddress(feature.properties.address);
+      */
+      if (newPopup(event)) setOpened(true);
+
+      /*
       const unitsTable = (
         <PopupContent address={feature?.properties?.address} units={units} />
       );
 
       setContent(unitsTable);
-      setOpened(true);
+      */
     });
   });
 
   return (
     <>
       <PopupDialog onClose={onPopupClose} opened={opened}>
-        {content}
+        <PopupContent />
       </PopupDialog>
       <StyledContainer ref={(el) => (mapContainer.current = el)} />
     </>

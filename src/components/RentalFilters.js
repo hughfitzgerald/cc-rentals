@@ -7,7 +7,7 @@ import {
   Stack,
   Text,
   Group,
-  SegmentedControl
+  SegmentedControl,
 } from "@mantine/core";
 import { mapContext } from "../context/mapContext";
 
@@ -49,68 +49,81 @@ const useStyles = createStyles((theme) => ({
 
 export const RentalFilters = () => {
   const { classes } = useStyles();
-  const { calculateStats, runFilters, setUnreg, unreg } = useContext(mapContext);
+  const { calculateStats, runFilters, setUnreg, unreg, filterPopup } =
+    useContext(mapContext);
   const [vacancyValues, setVacancyValues] = useState(["rented", "vacant"]);
   const [regValue, setRegValue] = useState("registered");
   const [rentValue, setRentValue] = useState([0, 10000]);
   const [bedsValues, setBedsValues] = useState(["0", "1", "2", "3", "4", "5"]);
   const styleLoaded = useRef(false);
-  
-  useEffect( () => {
-    if(!styleLoaded.current) {
+
+  useEffect(() => {
+    if (!styleLoaded.current) {
       runFilters(vacancyValues, rentValue, bedsValues, regValue);
       styleLoaded.current = true;
-    }  
+    }
   }, [runFilters, vacancyValues, rentValue, bedsValues, regValue]);
-  
-
 
   function updateBeds(bedsValues) {
     setBedsValues(bedsValues);
     runFilters(vacancyValues, rentValue, bedsValues, regValue);
     calculateStats();
+    filterPopup();
   }
 
   function updateRent(rentValue) {
     setRentValue(rentValue);
     runFilters(vacancyValues, rentValue, bedsValues, regValue);
     calculateStats();
+    filterPopup();
   }
 
   function updateVacancy(vacancyValues) {
     setVacancyValues(vacancyValues);
     runFilters(vacancyValues, rentValue, bedsValues, regValue);
     calculateStats();
+    filterPopup();
   }
 
   function updateReg(regValue) {
     setRegValue(regValue);
-    if(regValue==="unregistered") {
-      setUnreg(true)
+    if (regValue === "unregistered") {
+      setUnreg(true);
     } else {
-      setUnreg(false)
+      setUnreg(false);
     }
     runFilters(vacancyValues, rentValue, bedsValues, regValue);
     calculateStats();
+    filterPopup();
   }
   return (
     <Stack>
       <Stack spacing="xs">
-      <Text fz="sm">Registration status:</Text>
+        <Text fz="sm">Registration status:</Text>
         <SegmentedControl
           value={regValue}
           onChange={updateReg}
           data={[
-            {label: "Registered", value: "registered"},
-            {label: "Unregistered", value: "unregistered"}
+            { label: "Registered", value: "registered" },
+            { label: "Unregistered", value: "unregistered" },
           ]}
-          />
+        />
       </Stack>
       <Stack spacing="xs">
         <Text fz="sm">Rental status:</Text>
-        <Chip.Group position = "center" multiple mt={15} value={vacancyValues} onChange={updateVacancy}>
-          <Chip value="rented" variant="filled" disabled={unreg}>Rented</Chip>
-          <Chip value="vacant" variant="filled" disabled={unreg}>Vacant</Chip>
+        <Chip.Group
+          position="center"
+          multiple
+          mt={15}
+          value={vacancyValues}
+          onChange={updateVacancy}
+        >
+          <Chip value="rented" variant="filled" disabled={unreg}>
+            Rented
+          </Chip>
+          <Chip value="vacant" variant="filled" disabled={unreg}>
+            Vacant
+          </Chip>
         </Chip.Group>
       </Stack>
       <Stack spacing="xs">
@@ -154,11 +167,11 @@ export const RentalFilters = () => {
             hideControls
             classNames={{ input: classes.input, label: classes.label }}
             disabled={unreg}
-            parser={(value) => value.replace(/\$\s?|(,*)/g, '')}
+            parser={(value) => value.replace(/\$\s?|(,*)/g, "")}
             formatter={(value) =>
               !Number.isNaN(parseFloat(value))
-                ? `$ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
-                : '$ '
+                ? `$ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+                : "$ "
             }
           />
           <NumberInput
@@ -170,11 +183,11 @@ export const RentalFilters = () => {
             hideControls
             classNames={{ input: classes.input, label: classes.label }}
             disabled={unreg}
-            parser={(value) => value.replace(/\$\s?|(,*)/g, '')}
+            parser={(value) => value.replace(/\$\s?|(,*)/g, "")}
             formatter={(value) =>
               !Number.isNaN(parseFloat(value))
-                ? `$ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
-                : '$ '
+                ? `$ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+                : "$ "
             }
           />
         </Group>

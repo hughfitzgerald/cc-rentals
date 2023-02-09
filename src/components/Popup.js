@@ -19,17 +19,17 @@ const PopupDrawer = ({ children, onClose, opened }) => {
 };
 
 const PopupDialog = ({ children, onClose, opened }) => {
-    return (
-      <Dialog
-        opened={opened}
-        withCloseButton
-        onClose={onClose}
-        size={1000}
-        styles={{ root: { height: 280 } }}
-      >
-        {children}
-      </Dialog>
-    );
-  };
+  return (
+    <Dialog
+      opened={opened}
+      withCloseButton
+      onClose={onClose}
+      size={1000}
+      styles={{ root: { height: 280 } }}
+    >
+      {children}
+    </Dialog>
+  );
+};
 
 export { PopupDrawer, PopupDialog };

@@ -19,17 +19,54 @@ function MapProvider({ children }) {
   const map = useRef(null);
   const [lngLat, setLngLat] = useState({ lng: null, lat: null });
   //const [mapFilter, setFilter] = useState(["all",["==", ["boolean", true], ["get", "registered"]],["<=", ["number", ["get", "rent"], -1], 10000],[">=", ["number", ["get", "rent"], -1], 0]]);
-  const mapFilter = useRef(["boolean",true]);
+  const mapFilter = useRef(["boolean", true]);
+  const popupAddress = useRef(null);
+  const [popupUnits, setUnits] = useState(null);
 
   const Provider = mapContext.Provider;
 
+  function filterPopup() {
+    if (!popupAddress.current) return;
+    var units = map.current
+      .queryRenderedFeatures({
+        layers: ["ccrr-units-geojson"],
+        filter: [
+          "all",
+          ["in", ["literal", popupAddress.current], ["get", "address"]],
+          mapFilter.current,
+        ],
+      })
+      .map((f) => {
+        var u = f["properties"];
+        delete u["address"];
+        return u;
+      });
+    //units.shift();
+    if (!units[0]["registered"]) units = {};
+
+    setUnits(units);
+  }
+
+  function newPopup(event) {
+    const features = map.current.queryRenderedFeatures(event.point, {
+      layers: ["ccrr-units-geojson"], // replace with your layer name
+    });
+    if (!features.length) {
+      return false;
+    }
+    const feature = features[0];
+    popupAddress.current = feature.properties.address;
+    filterPopup();
+    return true;
+  }
+
   function calculateStats() {
-    if(unreg) {
+    if (unreg) {
       const features = map.current.queryRenderedFeatures({
         layers: ["ccrr-units-geojson"], // replace with your layer name
-        filter: mapFilter.current
+        filter: mapFilter.current,
       });
-      setTotalUnregUnits(features.length)
+      setTotalUnregUnits(features.length);
     } else {
       var rentSum = 0.0;
       var rentCount = 0.0;
@@ -37,7 +74,7 @@ function MapProvider({ children }) {
       var max = 0.0;
       const features = map.current.queryRenderedFeatures({
         layers: ["ccrr-units-geojson"], // replace with your layer name
-        filter: mapFilter.current
+        filter: mapFilter.current,
       });
       if (!features.length) return;
       features.forEach((feature) => {
@@ -45,7 +82,7 @@ function MapProvider({ children }) {
         if (rent != null && rent < 10000) {
           rentSum += rent;
           rentCount += 1.0;
-          
+
           if (rent > max) max = rent;
           if (rent < min) min = rent;
         }
@@ -64,10 +101,10 @@ function MapProvider({ children }) {
       ["<=", rentValue, maxRent],
       [">=", rentValue, minRent],
     ];
-  
+
     var bedsFeature = ["to-string", ["number", ["get", "beds"], -1]];
     var bedsValueCondition = ["in", bedsFeature, ["literal", bedsValues]];
-  
+
     var statusCondition = ["boolean", true];
     var vacantCondition = ["in", ["literal", "Vacant"], ["get", "status"]];
     var rentedCondition = ["in", ["literal", "Rented"], ["get", "status"]];
@@ -85,9 +122,9 @@ function MapProvider({ children }) {
     } else {
       statusCondition = neitherCondition;
     }
-  
+
     var regCondition = ["==", ["boolean", true], ["get", "registered"]];
-  
+
     var filterCondition;
     if (regValue === "registered") {
       filterCondition = [
@@ -95,15 +132,21 @@ function MapProvider({ children }) {
         bedsValueCondition,
         rentValueCondition,
         statusCondition,
-        regCondition
+        regCondition,
       ];
     } else {
       filterCondition = ["==", ["boolean", false], ["get", "registered"]];
     }
-    
+
     //setFilter(filterCondition)
     mapFilter.current = filterCondition;
-    if(map.current && map.current.isStyleLoaded() && "units" in map.current.getStyle().sources && map.current.isSourceLoaded("units")) map.current.setFilter("ccrr-units-geojson", filterCondition);
+    if (
+      map.current &&
+      map.current.isStyleLoaded() &&
+      "units" in map.current.getStyle().sources &&
+      map.current.isSourceLoaded("units")
+    )
+      map.current.setFilter("ccrr-units-geojson", filterCondition);
   }
 
   return (
@@ -123,7 +166,12 @@ function MapProvider({ children }) {
         runFilters,
         mapFilter,
         unreg,
-        setUnreg
+        setUnreg,
+        popupUnits,
+        setUnits,
+        newPopup,
+        filterPopup,
+        popupAddress,
       }}
     >
       {children}
