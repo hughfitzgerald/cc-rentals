@@ -14,13 +14,15 @@ const StyledContainer = styled.div`
 
 const Map = () => {
   const [opened, setOpened] = useState(false);
-  const { map, mapFilter, newPopup, popupAddress, forceStatsUpdate } = useContext(mapContext);
+  const { map, mapFilter, newPopup, popupAddress, forceStatsUpdate } =
+    useContext(mapContext);
   const eventsSet = useRef(false);
   const mapContainer = useRef(null);
 
   function onPopupClose() {
     setOpened(false);
     popupAddress.current = null;
+    map.current.setLayoutProperty("selected-address", "visibility", "none");
   }
 
   useEffect(() => {
@@ -64,6 +66,58 @@ const Map = () => {
         },
         type: "circle",
       });
+
+      map.current.addLayer({
+        id: "selected-address",
+        source: "units",
+        layout: {
+          visibility: "none",
+        },
+        type: "circle",
+        paint: {
+          "circle-radius": 2,
+          "circle-color": "#fbb03b",
+        },
+      });
+
+      map.loadImage(
+        "https://hughfitzgerald.github.io/cc-rentals/building.svg",
+        (error, image) => {
+          if (error) throw error;
+          map.addImage("custom-marker", image);
+          // Add a GeoJSON source with 2 points
+          
+          // Add a symbol layer
+          map.addLayer({
+            id: "selected-address",
+            type: "symbol",
+            source: "units",
+            layout: {
+              "icon-image": "custom-marker",
+              // get the title name from the source's "title" property
+              "text-field": ["get", "address"],
+              "text-font": ["Open Sans Semibold", "Arial Unicode MS Bold"],
+              "text-offset": [0, 1.25],
+              "text-anchor": "top",
+            },
+          });
+        }
+      );
+
+      /*
+      map.current.addLayer({
+        id: "selected-address",
+        source: "units",
+        layout: {
+          visibility: "none",
+        },
+        type: "circle",
+        paint: {
+          "circle-radius": 2,
+          "circle-color": "#fbb03b"
+        }
+      });
+      */
     });
 
     map.current.on("sourcedata", () => {
@@ -71,13 +125,15 @@ const Map = () => {
         "units" in map.current.getStyle().sources &&
         map.current.isSourceLoaded("units")
       )
-      forceStatsUpdate();
+        forceStatsUpdate();
     });
     map.current.on("zoomend", () => forceStatsUpdate());
     map.current.on("moveend", () => forceStatsUpdate());
 
     map.current.on("click", "ccrr-units-geojson", (event) => {
-      if (newPopup(event)) setOpened(true);
+      if (newPopup(event)) {
+        setOpened(true);
+      }
     });
   });
 

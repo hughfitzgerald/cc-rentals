@@ -80,6 +80,8 @@ function MapProvider({ children }) {
     const feature = features[0];
     popupAddress.current = feature.properties.address;
     filterPopup();
+    map.current.setFilter('selected-address',["in", ["literal", feature.properties.address], ["get", "address"]]);
+    map.current.setLayoutProperty('selected-address','visibility','visible');
     return true;
   }
 
