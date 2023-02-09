@@ -14,7 +14,7 @@ const StyledContainer = styled.div`
 
 const Map = () => {
   const [opened, setOpened] = useState(false);
-  const { map, calculateStats, mapFilter, newPopup, popupAddress } = useContext(mapContext);
+  const { map, mapFilter, newPopup, popupAddress, forceStatsUpdate } = useContext(mapContext);
   const eventsSet = useRef(false);
   const mapContainer = useRef(null);
 
@@ -51,14 +51,14 @@ const Map = () => {
       // Add a data source containing GeoJSON data.
       map.current.addSource("units", {
         type: "geojson",
-        data: "https://hughfitzgerald.github.io/cc-rentals/ccrr-flat-20230207-162635.json",
+        data: "https://hughfitzgerald.github.io/cc-rentals/ccrr-flat-20230209-135513.json",
       });
 
       // Add a new layer with dots for the units.
       map.current.addLayer({
         id: "ccrr-units-geojson",
         source: "units",
-        filter: mapFilter.current,
+        filter: mapFilter,
         layout: {
           visibility: "visible",
         },
@@ -71,10 +71,10 @@ const Map = () => {
         "units" in map.current.getStyle().sources &&
         map.current.isSourceLoaded("units")
       )
-        calculateStats();
+      forceStatsUpdate();
     });
-    map.current.on("zoomend", () => calculateStats());
-    map.current.on("moveend", () => calculateStats());
+    map.current.on("zoomend", () => forceStatsUpdate());
+    map.current.on("moveend", () => forceStatsUpdate());
 
     map.current.on("click", "ccrr-units-geojson", (event) => {
       if (newPopup(event)) setOpened(true);

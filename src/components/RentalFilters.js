@@ -49,7 +49,7 @@ const useStyles = createStyles((theme) => ({
 
 export const RentalFilters = () => {
   const { classes } = useStyles();
-  const { calculateStats, runFilters, setUnreg, unreg, filterPopup } =
+  const { runFilters, setUnreg, unreg } =
     useContext(mapContext);
   const [vacancyValues, setVacancyValues] = useState(["rented", "vacant"]);
   const [regValue, setRegValue] = useState("registered");
@@ -67,22 +67,16 @@ export const RentalFilters = () => {
   function updateBeds(bedsValues) {
     setBedsValues(bedsValues);
     runFilters(vacancyValues, rentValue, bedsValues, regValue);
-    calculateStats();
-    filterPopup();
   }
 
   function updateRent(rentValue) {
     setRentValue(rentValue);
     runFilters(vacancyValues, rentValue, bedsValues, regValue);
-    calculateStats();
-    filterPopup();
   }
 
   function updateVacancy(vacancyValues) {
     setVacancyValues(vacancyValues);
     runFilters(vacancyValues, rentValue, bedsValues, regValue);
-    calculateStats();
-    filterPopup();
   }
 
   function updateReg(regValue) {
@@ -93,8 +87,6 @@ export const RentalFilters = () => {
       setUnreg(false);
     }
     runFilters(vacancyValues, rentValue, bedsValues, regValue);
-    calculateStats();
-    filterPopup();
   }
   return (
     <Stack>

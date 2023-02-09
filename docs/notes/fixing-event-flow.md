@@ -2,7 +2,7 @@
 id: 2rfic0706phl86pmvjsz1c6
 title: Fixing Event Flow
 desc: ''
-updated: 1675964276556
+updated: 1675966546788
 created: 1675960564149
 ---
 1. Make list of variables.
@@ -99,6 +99,8 @@ created: 1675960564149
     * Map
 
 1. Make mapFilter a state again.
-2. Write a useEffect() for RentalFilters that depends on the filter values and make this calculate the mapFilter and set it.
-3. Write a useEffect() for mapContext that depends on mapFilter and runs the filtering (and calculates stats?)
-4. Write a useEffect() for mapContext that depends on mapFilter and unreg and calculates the stats... USE querySourceFeatures!!!
+2. Make RentalFilters change the states (including via calling runFilters) but don't run any other functions like calculateStats or filterPopups.
+3. Make runFilters change mapFilter but not run the filtering.
+3. Write a useEffect() for mapContext that depends on mapFilter and runs the filtering
+4. Write a useEffect() for mapContext that depends on mapFilter and unreg and calculates the stats... 
+5. change it so it USES querySourceFeatures!!!
