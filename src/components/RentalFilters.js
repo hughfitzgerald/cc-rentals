@@ -17,7 +17,7 @@ import {
   HoverCard,
 } from "@mantine/core";
 import { mapContext } from "../context/mapContext";
-import { IconInfoSquare } from "@tabler/icons-react";
+import { IconInfoCircle } from "@tabler/icons-react";
 
 const useStyles = createStyles((theme) => ({
   wrapper: {
@@ -57,12 +57,12 @@ const useStyles = createStyles((theme) => ({
 
 const InfoIcon = forwardRef((props, ref) => (
   <span ref={ref} {...props}>
-    <IconInfoSquare
+    <Text span color="dimmed">
+    <IconInfoCircle
       ref={ref}
       size={16} // set custom `width` and `height`
-      color="black" // set `stroke` color
-      stroke={2} // set `stroke-width`
     />
+    </Text>
   </span>
 ));
 
