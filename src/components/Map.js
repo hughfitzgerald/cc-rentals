@@ -67,6 +67,7 @@ const Map = () => {
         type: "circle",
       });
 
+      /*
       map.current.addLayer({
         id: "selected-address",
         source: "units",
@@ -79,9 +80,10 @@ const Map = () => {
           "circle-color": "#fbb03b",
         },
       });
+      */
 
       map.current.loadImage(
-        "https://hughfitzgerald.github.io/cc-rentals/building.png",
+        "https://hughfitzgerald.github.io/cc-rentals/building_blue.png",
         (error, image) => {
           if (error) throw error;
           map.current.addImage("custom-marker", image);
@@ -93,13 +95,20 @@ const Map = () => {
             type: "symbol",
             source: "units",
             layout: {
+              "visibility": "none",
               "icon-image": "custom-marker",
               // get the title name from the source's "title" property
               "text-field": ["get", "address"],
               "text-font": ["Open Sans Semibold", "Arial Unicode MS Bold"],
               "text-offset": [0, 1.25],
-              "text-anchor": "top",
+              "text-anchor": "top"
             },
+            paint: {
+              "text-color": "#07748c",
+              "text-halo-width":2,
+              "text-halo-color":"#ffffff",
+              "text-halo-blur":1
+            }
           });
         }
       );
