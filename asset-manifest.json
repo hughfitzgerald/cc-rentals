@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.css": "/cc-rentals/static/css/main.ab9b934e.css",
+    "main.js": "/cc-rentals/static/js/main.a390f92b.js",
+    "index.html": "/cc-rentals/index.html",
+    "main.ab9b934e.css.map": "/cc-rentals/static/css/main.ab9b934e.css.map",
+    "main.a390f92b.js.map": "/cc-rentals/static/js/main.a390f92b.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.ab9b934e.css",
+    "static/js/main.a390f92b.js"
+  ]
+}
