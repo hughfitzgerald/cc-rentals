@@ -70,7 +70,7 @@ function MapProvider({ children }) {
     setUnits(unique_units);
   }, [map, popupAddress, mapFilter]);
 
-  function newPopup(event) {
+  const newPopup = useCallback((event) => {
     const features = map.current.queryRenderedFeatures(event.point, {
       layers: ["ccrr-units-geojson"], // replace with your layer name
     });
@@ -83,9 +83,9 @@ function MapProvider({ children }) {
     map.current.setFilter('selected-address',["in", ["literal", feature.properties.address], ["get", "address"]]);
     map.current.setLayoutProperty('selected-address','visibility','visible');
     return true;
-  }
+  }, [filterPopup]);
 
-  function runFilters(vacancyValues, [minRent, maxRent], bedsValues, regValue) {
+  function runFilters(vacancyValues, [minRent, maxRent], bedsValues, regValue, encValues) {
     var unitRentValue = ["number", ["get", "rent"], -1];
     var rentValueCondition = [
       "all",
@@ -114,6 +114,24 @@ function MapProvider({ children }) {
       statusCondition = neitherCondition;
     }
 
+    var encCondition = ["boolean", true];
+    var affordCondition = ["in", ["literal", "Yes"], ["get", "encumbered"]];
+    var marketCondition = ["in", ["literal", "No"], ["get", "encumbered"]];
+    var neitherEncCondition = [
+      "all",
+      ["!", affordCondition],
+      ["!", marketCondition],
+    ];
+    if (encValues.includes("affordable") && encValues.includes("market")) {
+      encCondition = ["boolean", true];
+    } else if (encValues.includes("affordable")) {
+      encCondition = affordCondition;
+    } else if (encValues.includes("market")) {
+      encCondition = marketCondition;
+    } else {
+      encCondition = neitherEncCondition;
+    }
+
     var regCondition = ["==", ["boolean", true], ["get", "registered"]];
 
     var filterCondition;
@@ -124,6 +142,7 @@ function MapProvider({ children }) {
         rentValueCondition,
         statusCondition,
         regCondition,
+        encCondition
       ];
     } else {
       filterCondition = ["==", ["boolean", false], ["get", "registered"]];

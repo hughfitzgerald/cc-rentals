@@ -55,28 +55,34 @@ export const RentalFilters = () => {
   const [regValue, setRegValue] = useState("registered");
   const [rentValue, setRentValue] = useState([0, 10000]);
   const [bedsValues, setBedsValues] = useState(["0", "1", "2", "3", "4", "5"]);
+  const [encValues, setEncValues] = useState(["affordable","market"])
   const styleLoaded = useRef(false);
 
   useEffect(() => {
     if (!styleLoaded.current) {
-      runFilters(vacancyValues, rentValue, bedsValues, regValue);
+      runFilters(vacancyValues, rentValue, bedsValues, regValue, encValues);
       styleLoaded.current = true;
     }
-  }, [runFilters, vacancyValues, rentValue, bedsValues, regValue]);
+  }, [runFilters, vacancyValues, rentValue, bedsValues, regValue, encValues]);
 
   function updateBeds(bedsValues) {
     setBedsValues(bedsValues);
-    runFilters(vacancyValues, rentValue, bedsValues, regValue);
+    runFilters(vacancyValues, rentValue, bedsValues, regValue, encValues);
+  }
+  
+  function updateEnc(encValues) {
+    setEncValues(encValues);
+    runFilters(vacancyValues, rentValue, bedsValues, regValue, encValues);
   }
 
   function updateRent(rentValue) {
     setRentValue(rentValue);
-    runFilters(vacancyValues, rentValue, bedsValues, regValue);
+    runFilters(vacancyValues, rentValue, bedsValues, regValue, encValues);
   }
 
   function updateVacancy(vacancyValues) {
     setVacancyValues(vacancyValues);
-    runFilters(vacancyValues, rentValue, bedsValues, regValue);
+    runFilters(vacancyValues, rentValue, bedsValues, regValue, encValues);
   }
 
   function updateReg(regValue) {
@@ -86,7 +92,7 @@ export const RentalFilters = () => {
     } else {
       setUnreg(false);
     }
-    runFilters(vacancyValues, rentValue, bedsValues, regValue);
+    runFilters(vacancyValues, rentValue, bedsValues, regValue, encValues);
   }
   return (
     <Stack>
@@ -115,6 +121,23 @@ export const RentalFilters = () => {
           </Chip>
           <Chip value="vacant" variant="filled" disabled={unreg}>
             Vacant
+          </Chip>
+        </Chip.Group>
+      </Stack>
+      <Stack spacing="xs">
+        <Text fz="sm">Affordability restrictions:</Text>
+        <Chip.Group
+          position="center"
+          multiple
+          mt={15}
+          value={encValues}
+          onChange={updateEnc}
+        >
+          <Chip value="affordable" variant="filled" disabled={unreg}>
+            Affordable Units
+          </Chip>
+          <Chip value="market" variant="filled" disabled={unreg}>
+            Market-Rate Units
           </Chip>
         </Chip.Group>
       </Stack>

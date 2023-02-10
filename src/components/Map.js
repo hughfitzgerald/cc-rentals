@@ -18,6 +18,7 @@ const Map = () => {
     useContext(mapContext);
   const eventsSet = useRef(false);
   const mapContainer = useRef(null);
+  const onClickSet = useRef(false);
 
   function onPopupClose() {
     setOpened(false);
@@ -37,6 +38,18 @@ const Map = () => {
       zoom: 12.5, // starting zoom
     });
   }, [map]);
+
+  useEffect(() => {
+    if (!map.current) return;
+    if (onClickSet.current) map.current.off("click", "ccrr-units-geojson");
+
+    onClickSet.current = true;
+    
+    map.current.on("click", "ccrr-units-geojson", (event) => {
+      if (newPopup(event)) setOpened(true);
+    });
+    // eslint-disable-next-line
+  }, [mapFilter]);
 
   useEffect(() => {
     if (!map.current) return;
@@ -65,22 +78,11 @@ const Map = () => {
           visibility: "visible",
         },
         type: "circle",
+        paint:{
+          "circle-radius": 4,
+          "circle-color": "rgba(0, 0, 0, .75)"
+        }
       });
-
-      /*
-      map.current.addLayer({
-        id: "selected-address",
-        source: "units",
-        layout: {
-          visibility: "none",
-        },
-        type: "circle",
-        paint: {
-          "circle-radius": 2,
-          "circle-color": "#fbb03b",
-        },
-      });
-      */
 
       map.current.loadImage(
         "https://hughfitzgerald.github.io/cc-rentals/building_blue.png",
@@ -112,21 +114,6 @@ const Map = () => {
           });
         }
       );
-
-      /*
-      map.current.addLayer({
-        id: "selected-address",
-        source: "units",
-        layout: {
-          visibility: "none",
-        },
-        type: "circle",
-        paint: {
-          "circle-radius": 2,
-          "circle-color": "#fbb03b"
-        }
-      });
-      */
     });
 
     map.current.on("sourcedata", () => {
@@ -138,12 +125,6 @@ const Map = () => {
     });
     map.current.on("zoomend", () => forceStatsUpdate());
     map.current.on("moveend", () => forceStatsUpdate());
-
-    map.current.on("click", "ccrr-units-geojson", (event) => {
-      if (newPopup(event)) {
-        setOpened(true);
-      }
-    });
   });
 
   return (
