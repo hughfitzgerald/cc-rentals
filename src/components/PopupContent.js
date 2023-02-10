@@ -65,7 +65,7 @@ export default function PopupContent() {
             },
             {
               accessor: "encumbered",
-              title: "Affordable Unit",
+              title: "Restricted Unit",
               sortable: true,
             },
             {

@@ -1,4 +1,10 @@
-import React, { useState, useContext, useEffect, useRef } from "react";
+import React, {
+  useState,
+  useContext,
+  useEffect,
+  useRef,
+  forwardRef,
+} from "react";
 import {
   createStyles,
   RangeSlider,
@@ -8,8 +14,10 @@ import {
   Text,
   Group,
   SegmentedControl,
+  HoverCard,
 } from "@mantine/core";
 import { mapContext } from "../context/mapContext";
+import { IconInfoSquare } from "@tabler/icons-react";
 
 const useStyles = createStyles((theme) => ({
   wrapper: {
@@ -47,15 +55,40 @@ const useStyles = createStyles((theme) => ({
   },
 }));
 
+const InfoIcon = forwardRef((props, ref) => (
+  <span ref={ref} {...props}>
+    <IconInfoSquare
+      ref={ref}
+      size={16} // set custom `width` and `height`
+      color="black" // set `stroke` color
+      stroke={2} // set `stroke-width`
+    />
+  </span>
+));
+
+const FilterInfo = ({infoText}) => {
+  return (
+    <HoverCard width={280} shadow="md">
+      <HoverCard.Target>
+        <InfoIcon />
+      </HoverCard.Target>
+      <HoverCard.Dropdown>
+        <Text size="sm">
+          {infoText}
+        </Text>
+      </HoverCard.Dropdown>
+    </HoverCard>
+  );
+};
+
 export const RentalFilters = () => {
   const { classes } = useStyles();
-  const { runFilters, setUnreg, unreg } =
-    useContext(mapContext);
+  const { runFilters, setUnreg, unreg } = useContext(mapContext);
   const [vacancyValues, setVacancyValues] = useState(["rented", "vacant"]);
   const [regValue, setRegValue] = useState("registered");
   const [rentValue, setRentValue] = useState([0, 10000]);
   const [bedsValues, setBedsValues] = useState(["0", "1", "2", "3", "4", "5"]);
-  const [encValues, setEncValues] = useState(["affordable","market"])
+  const [encValues, setEncValues] = useState(["affordable", "market"]);
   const styleLoaded = useRef(false);
 
   useEffect(() => {
@@ -69,7 +102,7 @@ export const RentalFilters = () => {
     setBedsValues(bedsValues);
     runFilters(vacancyValues, rentValue, bedsValues, regValue, encValues);
   }
-  
+
   function updateEnc(encValues) {
     setEncValues(encValues);
     runFilters(vacancyValues, rentValue, bedsValues, regValue, encValues);
@@ -97,7 +130,7 @@ export const RentalFilters = () => {
   return (
     <Stack>
       <Stack spacing="xs">
-        <Text fz="sm">Registration status:</Text>
+        <Text fz="sm">Registration status</Text>
         <SegmentedControl
           value={regValue}
           onChange={updateReg}
@@ -108,7 +141,7 @@ export const RentalFilters = () => {
         />
       </Stack>
       <Stack spacing="xs">
-        <Text fz="sm">Rental status:</Text>
+        <Text fz="sm">Vacancy status</Text>
         <Chip.Group
           position="center"
           multiple
@@ -125,7 +158,10 @@ export const RentalFilters = () => {
         </Chip.Group>
       </Stack>
       <Stack spacing="xs">
-        <Text fz="sm">Affordability restrictions:</Text>
+        <Text fz="sm">
+          Affordability restrictions{" "}
+          <FilterInfo infoText="Is the unit encumbered by an income and affordable unit restriction?" />
+        </Text>
         <Chip.Group
           position="center"
           multiple
@@ -134,15 +170,15 @@ export const RentalFilters = () => {
           onChange={updateEnc}
         >
           <Chip value="affordable" variant="filled" disabled={unreg}>
-            Affordable Units
+            Restricted
           </Chip>
           <Chip value="market" variant="filled" disabled={unreg}>
-            Market-Rate Units
+            Unrestricted
           </Chip>
         </Chip.Group>
       </Stack>
       <Stack spacing="xs">
-        <Text fz="sm">Number of Bedrooms:</Text>
+        <Text fz="sm">Number of bedrooms</Text>
         <Chip.Group
           position="center"
           multiple
@@ -171,7 +207,7 @@ export const RentalFilters = () => {
         </Chip.Group>
       </Stack>
       <Stack spacing="xs">
-        <Text fz="sm">Rent:</Text>
+        <Text fz="sm">Rent</Text>
         <Group noWrap>
           <NumberInput
             value={rentValue[0]}
