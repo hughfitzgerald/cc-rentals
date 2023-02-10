@@ -68,7 +68,7 @@ const InfoIcon = forwardRef((props, ref) => (
 
 const FilterInfo = ({infoText}) => {
   return (
-    <HoverCard width={280} shadow="md">
+    <HoverCard shadow="md" position="top-start">
       <HoverCard.Target>
         <InfoIcon />
       </HoverCard.Target>
@@ -130,7 +130,8 @@ export const RentalFilters = () => {
   return (
     <Stack>
       <Stack spacing="xs">
-        <Text fz="sm">Registration status</Text>
+        <Text fz="sm">Registration status{" "}
+          <FilterInfo infoText="Does the address have units registered with the City of Culver City?" /></Text>
         <SegmentedControl
           value={regValue}
           onChange={updateReg}
@@ -141,7 +142,8 @@ export const RentalFilters = () => {
         />
       </Stack>
       <Stack spacing="xs">
-        <Text fz="sm">Vacancy status</Text>
+        <Text fz="sm">Vacancy status{" "}
+          <FilterInfo infoText="Is the unit vacant as of the reporting date?" /></Text>
         <Chip.Group
           position="center"
           multiple
@@ -178,7 +180,8 @@ export const RentalFilters = () => {
         </Chip.Group>
       </Stack>
       <Stack spacing="xs">
-        <Text fz="sm">Number of bedrooms</Text>
+        <Text fz="sm">Number of bedrooms{" "}
+          <FilterInfo infoText="How many bedrooms are included in the unit?" /></Text>
         <Chip.Group
           position="center"
           multiple
@@ -207,7 +210,8 @@ export const RentalFilters = () => {
         </Chip.Group>
       </Stack>
       <Stack spacing="xs">
-        <Text fz="sm">Rent</Text>
+        <Text fz="sm">Rent{" "}
+          <FilterInfo infoText="What is the most recent monthly rent reported by the landlord?" /></Text>
         <Group noWrap>
           <NumberInput
             value={rentValue[0]}
