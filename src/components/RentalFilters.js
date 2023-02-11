@@ -15,9 +15,10 @@ import {
   Group,
   SegmentedControl,
   HoverCard,
+  Center,
 } from "@mantine/core";
 import { mapContext } from "../context/mapContext";
-import { IconInfoCircle } from "@tabler/icons-react";
+import { IconFileDescription, IconInfoCircle } from "@tabler/icons-react";
 
 const useStyles = createStyles((theme) => ({
   wrapper: {
@@ -130,7 +131,7 @@ export const RentalFilters = () => {
   return (
     <Stack>
       <Stack spacing="xs">
-        <Text fz="sm">Registration status{" "}
+        <Text span fz="sm">Registration status{" "}
           <FilterInfo infoText="Does the address have units registered with the City of Culver City?" /></Text>
         <SegmentedControl
           value={regValue}

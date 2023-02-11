@@ -13,7 +13,7 @@ import {
   Group,
 } from "@mantine/core";
 import { useColorScheme } from '@mantine/hooks';
-import { IconSun, IconMoonStars } from "@tabler/icons-react";
+import { IconSun, IconMoonStars, IconBuildingEstate } from "@tabler/icons-react";
 import Map from "./components/Map";
 import { MapProvider } from "./context/mapContext";
 import RentalFilters from "./components/RentalFilters";
@@ -32,7 +32,10 @@ export default function App() {
       toggleColorScheme={toggleColorScheme}
     >
       <MantineProvider
-        theme={{ colorScheme }}
+        theme={{
+          colorScheme,
+          headings: { fontFamily: 'Greycliff CF, sans-serif' },
+        }}
         withGlobalStyles
         withNormalizeCSS
       >
@@ -41,6 +44,24 @@ export default function App() {
             padding="md"
             id={app_id}
             fixed={false}
+            header={
+              <Header height={60}>
+                <Group sx={{ height: "100%" }} px={20} position="apart">
+                  <Title order={2}><IconBuildingEstate /> Culver City Rental Registry</Title>
+                  <ActionIcon
+                    variant="default"
+                    onClick={() => toggleColorScheme()}
+                    size={30}
+                  >
+                    {colorScheme === "dark" ? (
+                      <IconSun size={16} />
+                    ) : (
+                      <IconMoonStars size={16} />
+                    )}
+                  </ActionIcon>
+                </Group>
+              </Header>
+            }
             navbar={
               <Navbar width={{ base: 300 }} p="xs">
                 {
@@ -60,24 +81,6 @@ export default function App() {
                   </Accordion>
                 }
               </Navbar>
-            }
-            header={
-              <Header height={60}>
-                <Group sx={{ height: "100%" }} px={20} position="apart">
-                  <Title order={1}>Culver City Rental Registry</Title>
-                  <ActionIcon
-                    variant="default"
-                    onClick={() => toggleColorScheme()}
-                    size={30}
-                  >
-                    {colorScheme === "dark" ? (
-                      <IconSun size={16} />
-                    ) : (
-                      <IconMoonStars size={16} />
-                    )}
-                  </ActionIcon>
-                </Group>
-              </Header>
             }
             styles={(theme) => ({
               main: {
