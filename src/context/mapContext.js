@@ -72,11 +72,20 @@ function MapProvider({ children }) {
   }, [map, popupAddress, mapFilter]);
 
   const newPopup = useCallback((event) => {
-    const features = map.current.queryRenderedFeatures(event.point, {
+    var features = map.current.queryRenderedFeatures(event.point, {
       layers: ["ccrr-units-geojson"], // replace with your layer name
     });
     if (!features.length) {
-      return false;
+      const bbox = [
+        [event.point.x - 15, event.point.y - 15],
+        [event.point.x + 15, event.point.y + 15]
+      ];
+      features = map.current.queryRenderedFeatures(bbox, {
+        layers: ["ccrr-units-geojson"], // replace with your layer name
+      });
+      if(!features.length) {
+        return false;
+      }
     }
     const feature = features[0];
     popupAddress.current = feature.properties.address;

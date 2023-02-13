@@ -37,11 +37,11 @@ const Map = ({ className }) => {
 
   useEffect(() => {
     if (!map.current) return;
-    if (onClickSet.current) map.current.off("click", "ccrr-units-geojson");
+    if (onClickSet.current) map.current.off("click");
 
     onClickSet.current = true;
 
-    map.current.on("click", "ccrr-units-geojson", (event) => {
+    map.current.on("click", (event) => {
       if (newPopup(event)) setOpened(true);
     });
     // eslint-disable-next-line
