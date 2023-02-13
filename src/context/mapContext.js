@@ -48,6 +48,7 @@ function MapProvider({ children }) {
     var unique_units = [];
     map.current
       .querySourceFeatures("units", {
+        sourceLayer: "ccrr-units-geojson",
         filter: [
           "all",
           ["in", ["literal", popupAddress.current], ["get", "address"]],
@@ -181,7 +182,12 @@ function MapProvider({ children }) {
       const features = map.current.queryRenderedFeatures({
         layers: ["ccrr-units-geojson"], // replace with your layer name
         filter: mapFilter,
-      });
+      })
+      .filter(
+        (value, index, self) =>
+          index ===
+          self.findIndex((t) => t.properties.address === value.properties.address && t.properties.unit === value.properties.unit)
+      );
       if (!features.length) return;
       features.forEach((feature) => {
         var rent = feature["properties"]["rent"];

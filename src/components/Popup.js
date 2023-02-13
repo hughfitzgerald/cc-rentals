@@ -1,6 +1,23 @@
-import { Drawer, Dialog } from "@mantine/core";
+import { Drawer, Dialog, createStyles } from "@mantine/core";
+
+const useStyles = createStyles((theme) => ({
+  drawer: {
+    [theme.fn.largerThan("sm")]: {
+      display: "none",
+    },
+  },
+
+  dialog: {
+    height: 280,
+    
+    [theme.fn.smallerThan("sm")]: {
+      display: "none",
+    },
+  }
+}));
 
 const PopupDrawer = ({ children, onClose, opened }) => {
+  const { classes } = useStyles();
   return (
     <Drawer
       opened={opened}
@@ -11,7 +28,7 @@ const PopupDrawer = ({ children, onClose, opened }) => {
       trapFocus={false}
       closeOnClickOutside={false}
       withOverlay={false}
-      zIndex={5}
+      className={classes.drawer}
     >
       {children}
     </Drawer>
@@ -19,17 +36,35 @@ const PopupDrawer = ({ children, onClose, opened }) => {
 };
 
 const PopupDialog = ({ children, onClose, opened }) => {
+  const { classes } = useStyles();
   return (
     <Dialog
       opened={opened}
       withCloseButton
       onClose={onClose}
       size={1000}
-      styles={{ root: { height: 280 } }}
+      className={classes.dialog}
     >
       {children}
     </Dialog>
   );
 };
 
-export { PopupDrawer, PopupDialog };
+const Popup = ({ children, onClose, opened }) => {
+  return (
+    <>
+        <PopupDialog
+          children={children}
+          onClose={onClose}
+          opened={opened}
+        />
+        <PopupDrawer
+          children={children}
+          onClose={onClose}
+          opened={opened}
+        />
+    </>
+  );
+};
+
+export { Popup };

@@ -1,18 +1,14 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
 import mapboxgl from "!mapbox-gl"; // eslint-disable-line
 import "mapbox-gl/dist/mapbox-gl.css";
-import styled from "@emotion/styled";
+//import styled from "@emotion/styled";
 import { mapContext } from "../context/mapContext";
-import { PopupDialog } from "./Popup";
+import { Popup } from "./Popup";
 import PopupContent from "./PopupContent";
+import { Container } from "@mantine/core";
 
-const StyledContainer = styled.div`
-  width: 100%;
-  min-width: 600px;
-  height: calc(100vh - 100px);
-`;
 
-const Map = () => {
+const Map = ({ className }) => {
   const [opened, setOpened] = useState(false);
   const { map, mapFilter, newPopup, popupAddress, forceStatsUpdate } =
     useContext(mapContext);
@@ -44,7 +40,7 @@ const Map = () => {
     if (onClickSet.current) map.current.off("click", "ccrr-units-geojson");
 
     onClickSet.current = true;
-    
+
     map.current.on("click", "ccrr-units-geojson", (event) => {
       if (newPopup(event)) setOpened(true);
     });
@@ -78,10 +74,10 @@ const Map = () => {
           visibility: "visible",
         },
         type: "circle",
-        paint:{
+        paint: {
           "circle-radius": 4,
-          "circle-color": "rgba(0, 0, 0, .75)"
-        }
+          "circle-color": "rgba(0, 0, 0, .75)",
+        },
       });
 
       map.current.loadImage(
@@ -90,30 +86,33 @@ const Map = () => {
           if (error) throw error;
           map.current.addImage("custom-marker", image);
           // Add a GeoJSON source with 2 points
-          
+
           // Add a symbol layer
           map.current.addLayer({
             id: "selected-address",
             type: "symbol",
             source: "units",
             layout: {
-              "visibility": "none",
+              visibility: "none",
               "icon-image": "custom-marker",
               // get the title name from the source's "title" property
               "text-field": ["get", "address"],
               "text-font": ["Open Sans Semibold", "Arial Unicode MS Bold"],
               "text-offset": [0, 1.25],
-              "text-anchor": "top"
+              "text-anchor": "top",
             },
             paint: {
               "text-color": "#07748c",
-              "text-halo-width":2,
-              "text-halo-color":"#ffffff",
-              "text-halo-blur":1
-            }
+              "text-halo-width": 2,
+              "text-halo-color": "#ffffff",
+              "text-halo-blur": 1,
+            },
           });
         }
+        
       );
+
+      map.current.addControl(new mapboxgl.NavigationControl());
     });
 
     map.current.on("sourcedata", () => {
@@ -126,13 +125,18 @@ const Map = () => {
     map.current.on("zoomend", () => forceStatsUpdate());
     map.current.on("moveend", () => forceStatsUpdate());
   });
+  
 
   return (
     <>
-      <PopupDialog onClose={onPopupClose} opened={opened}>
+      <Popup onClose={onPopupClose} opened={opened}>
         <PopupContent />
-      </PopupDialog>
-      <StyledContainer ref={(el) => (mapContainer.current = el)} />
+      </Popup>
+      <Container
+        fluid
+        ref={(el) => (mapContainer.current = el)}
+        className={className}
+      />
     </>
   );
 };
