@@ -1,10 +1,4 @@
-import React, {
-  useState,
-  useContext,
-  useEffect,
-  useRef,
-  forwardRef,
-} from "react";
+import React, { useContext, forwardRef } from "react";
 import {
   createStyles,
   RangeSlider,
@@ -15,10 +9,9 @@ import {
   Group,
   SegmentedControl,
   HoverCard,
-  Center,
 } from "@mantine/core";
 import { mapContext } from "../context/mapContext";
-import { IconFileDescription, IconInfoCircle } from "@tabler/icons-react";
+import { IconInfoCircle } from "@tabler/icons-react";
 
 const useStyles = createStyles((theme) => ({
   wrapper: {
@@ -59,24 +52,22 @@ const useStyles = createStyles((theme) => ({
 const InfoIcon = forwardRef((props, ref) => (
   <span ref={ref} {...props}>
     <Text span color="dimmed">
-    <IconInfoCircle
-      ref={ref}
-      size={16} // set custom `width` and `height`
-    />
+      <IconInfoCircle
+        ref={ref}
+        size={16} // set custom `width` and `height`
+      />
     </Text>
   </span>
 ));
 
-const FilterInfo = ({infoText}) => {
+const FilterInfo = ({ infoText }) => {
   return (
     <HoverCard shadow="md" position="top-start">
       <HoverCard.Target>
         <InfoIcon />
       </HoverCard.Target>
       <HoverCard.Dropdown>
-        <Text size="sm">
-          {infoText}
-        </Text>
+        <Text size="sm">{infoText}</Text>
       </HoverCard.Dropdown>
     </HoverCard>
   );
@@ -84,20 +75,21 @@ const FilterInfo = ({infoText}) => {
 
 export const RentalFilters = () => {
   const { classes } = useStyles();
-  const { runFilters, setUnreg, unreg } = useContext(mapContext);
-  const [vacancyValues, setVacancyValues] = useState(["rented", "vacant"]);
-  const [regValue, setRegValue] = useState("registered");
-  const [rentValue, setRentValue] = useState([0, 10000]);
-  const [bedsValues, setBedsValues] = useState(["0", "1", "2", "3", "4", "5"]);
-  const [encValues, setEncValues] = useState(["affordable", "market"]);
-  const styleLoaded = useRef(false);
-
-  useEffect(() => {
-    if (!styleLoaded.current) {
-      runFilters(vacancyValues, rentValue, bedsValues, regValue, encValues);
-      styleLoaded.current = true;
-    }
-  }, [runFilters, vacancyValues, rentValue, bedsValues, regValue, encValues]);
+  const {
+    runFilters,
+    setUnreg,
+    unreg,
+    vacancyValues,
+    setVacancyValues,
+    regValue,
+    setRegValue,
+    rentValue,
+    setRentValue,
+    bedsValues,
+    setBedsValues,
+    encValues,
+    setEncValues,
+  } = useContext(mapContext);
 
   function updateBeds(bedsValues) {
     setBedsValues(bedsValues);
@@ -131,8 +123,10 @@ export const RentalFilters = () => {
   return (
     <Stack>
       <Stack spacing="xs">
-        <Text span fz="sm">Registration status{" "}
-          <FilterInfo infoText="Does the address have units registered with the City of Culver City?" /></Text>
+        <Text span fz="sm">
+          Registration status{" "}
+          <FilterInfo infoText="Does the address have units registered with the City of Culver City?" />
+        </Text>
         <SegmentedControl
           value={regValue}
           onChange={updateReg}
@@ -143,8 +137,10 @@ export const RentalFilters = () => {
         />
       </Stack>
       <Stack spacing="xs">
-        <Text fz="sm">Vacancy status{" "}
-          <FilterInfo infoText="Is the unit vacant as of the reporting date?" /></Text>
+        <Text fz="sm">
+          Vacancy status{" "}
+          <FilterInfo infoText="Is the unit vacant as of the reporting date?" />
+        </Text>
         <Chip.Group
           position="center"
           multiple
@@ -181,8 +177,10 @@ export const RentalFilters = () => {
         </Chip.Group>
       </Stack>
       <Stack spacing="xs">
-        <Text fz="sm">Number of bedrooms{" "}
-          <FilterInfo infoText="How many bedrooms are included in the unit?" /></Text>
+        <Text fz="sm">
+          Number of bedrooms{" "}
+          <FilterInfo infoText="How many bedrooms are included in the unit?" />
+        </Text>
         <Chip.Group
           position="center"
           multiple
@@ -211,8 +209,10 @@ export const RentalFilters = () => {
         </Chip.Group>
       </Stack>
       <Stack spacing="xs">
-        <Text fz="sm">Rent{" "}
-          <FilterInfo infoText="What is the most recent monthly rent reported by the landlord?" /></Text>
+        <Text fz="sm">
+          Rent{" "}
+          <FilterInfo infoText="What is the most recent monthly rent reported by the landlord?" />
+        </Text>
         <Group noWrap>
           <NumberInput
             value={rentValue[0]}

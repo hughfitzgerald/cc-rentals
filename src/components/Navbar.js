@@ -21,10 +21,10 @@ const NavbarContent = () => {
   );
 };
 
-const NavbarStatic = ({className, width}) => {
+const NavbarStatic = ({className, width, filters}) => {
   return (
     <Navbar width={{ base: width }} p="xs" hiddenBreakpoint="sm" hidden fixed={false} className={className}>
-      <NavbarContent />
+      {filters}
     </Navbar>
   );
 };

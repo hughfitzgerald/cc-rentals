@@ -127,6 +127,8 @@ export default function App() {
   const [opened, { toggle }] = useDisclosure(false);
   const { classes } = useStyles();
 
+  const filters = (<NavbarContent />);
+
   return (
     <ColorSchemeProvider
       colorScheme={colorScheme}
@@ -162,7 +164,7 @@ export default function App() {
             </Header>
 
             <div className={classes.body}>
-              <NavbarStatic className={classes.navbar} width={NAVBAR_WIDTH} />
+              <NavbarStatic className={classes.navbar} width={NAVBAR_WIDTH} filters={filters} />
               <main className={classes.main}>
                 <Map className={classes.map} />
                 <Burger
@@ -184,7 +186,7 @@ export default function App() {
                     <IconBuildingEstate /> Culver City Rental Registry
                   </Title>
                   
-                    <NavbarContent />
+                    {filters}
                   </Paper>
                   </div>
                 )}

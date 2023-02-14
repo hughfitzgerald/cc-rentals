@@ -5,7 +5,6 @@ import React, {
   useEffect,
   useCallback,
 } from "react";
-import mapboxgl from "!mapbox-gl"; // eslint-disable-line
 
 // Create two context:
 // UserContext: to query the context state
@@ -24,15 +23,30 @@ function MapProvider({ children }) {
   const map = useRef(null);
   //const [mapFilter, setFilter] = useState(["boolean", true]);
   const [mapFilter, setFilter] = useState([
-    "all", 
-    ['in',['to-string',['number',['get','beds'],-1]],['literal',['0', '1', '2', '3', '4', '5']]],
-    ['all',['<=',['number',['get','rent'],-1],10000],['>=',['number',['get','rent'],-1],0]],
-    ['boolean',true],
-    ['==',['boolean',true],['get','registered']]
+    "all",
+    [
+      "in",
+      ["to-string", ["number", ["get", "beds"], -1]],
+      ["literal", ["0", "1", "2", "3", "4", "5"]],
+    ],
+    [
+      "all",
+      ["<=", ["number", ["get", "rent"], -1], 10000],
+      [">=", ["number", ["get", "rent"], -1], 0],
+    ],
+    ["boolean", true],
+    ["==", ["boolean", true], ["get", "registered"]],
   ]);
   const popupAddress = useRef(null);
   const [popupUnits, setUnits] = useState(null);
   const [forceStats, setForceStats] = useState(0);
+  const styleLoaded = useRef(false);
+
+  const [vacancyValues, setVacancyValues] = useState(["rented", "vacant"]);
+  const [regValue, setRegValue] = useState("registered");
+  const [rentValue, setRentValue] = useState([0, 10000]);
+  const [bedsValues, setBedsValues] = useState(["0", "1", "2", "3", "4", "5"]);
+  const [encValues, setEncValues] = useState(["affordable", "market"]);
 
   const Provider = mapContext.Provider;
 
@@ -71,95 +85,112 @@ function MapProvider({ children }) {
     setUnits(unique_units);
   }, [map, popupAddress, mapFilter]);
 
-  const newPopup = useCallback((event) => {
-    var features = map.current.queryRenderedFeatures(event.point, {
-      layers: ["ccrr-units-geojson"], // replace with your layer name
-    });
-    if (!features.length) {
-      const bbox = [
-        [event.point.x - 15, event.point.y - 15],
-        [event.point.x + 15, event.point.y + 15]
-      ];
-      features = map.current.queryRenderedFeatures(bbox, {
+  const newPopup = useCallback(
+    (event) => {
+      var features = map.current.queryRenderedFeatures(event.point, {
         layers: ["ccrr-units-geojson"], // replace with your layer name
       });
-      if(!features.length) {
-        return false;
+      if (!features.length) {
+        const bbox = [
+          [event.point.x - 15, event.point.y - 15],
+          [event.point.x + 15, event.point.y + 15],
+        ];
+        features = map.current.queryRenderedFeatures(bbox, {
+          layers: ["ccrr-units-geojson"], // replace with your layer name
+        });
+        if (!features.length) {
+          return false;
+        }
       }
-    }
-    const feature = features[0];
-    popupAddress.current = feature.properties.address;
-    filterPopup();
-    map.current.setFilter('selected-address',["in", ["literal", feature.properties.address], ["get", "address"]]);
-    map.current.setLayoutProperty('selected-address','visibility','visible');
-    return true;
-  }, [filterPopup]);
+      const feature = features[0];
+      popupAddress.current = feature.properties.address;
+      filterPopup();
+      map.current.setFilter("selected-address", [
+        "in",
+        ["literal", feature.properties.address],
+        ["get", "address"],
+      ]);
+      map.current.setLayoutProperty(
+        "selected-address",
+        "visibility",
+        "visible"
+      );
+      return true;
+    },
+    [filterPopup]
+  );
 
-  function runFilters(vacancyValues, [minRent, maxRent], bedsValues, regValue, encValues) {
-    var unitRentValue = ["number", ["get", "rent"], -1];
-    var rentValueCondition = [
-      "all",
-      ["<=", unitRentValue, maxRent],
-      [">=", unitRentValue, minRent],
-    ];
-
-    var bedsFeature = ["to-string", ["number", ["get", "beds"], -1]];
-    var bedsValueCondition = ["in", bedsFeature, ["literal", bedsValues]];
-
-    var statusCondition = ["boolean", true];
-    var vacantCondition = ["in", ["literal", "Vacant"], ["get", "status"]];
-    var rentedCondition = ["in", ["literal", "Rented"], ["get", "status"]];
-    var neitherCondition = [
-      "all",
-      ["!", vacantCondition],
-      ["!", rentedCondition],
-    ];
-    if (vacancyValues.includes("vacant") && vacancyValues.includes("rented")) {
-      statusCondition = ["boolean", true];
-    } else if (vacancyValues.includes("vacant")) {
-      statusCondition = vacantCondition;
-    } else if (vacancyValues.includes("rented")) {
-      statusCondition = rentedCondition;
-    } else {
-      statusCondition = neitherCondition;
-    }
-
-    var encCondition = ["boolean", true];
-    var affordCondition = ["in", ["literal", "Yes"], ["get", "encumbered"]];
-    var marketCondition = ["in", ["literal", "No"], ["get", "encumbered"]];
-    var neitherEncCondition = [
-      "all",
-      ["!", affordCondition],
-      ["!", marketCondition],
-    ];
-    if (encValues.includes("affordable") && encValues.includes("market")) {
-      encCondition = ["boolean", true];
-    } else if (encValues.includes("affordable")) {
-      encCondition = affordCondition;
-    } else if (encValues.includes("market")) {
-      encCondition = marketCondition;
-    } else {
-      encCondition = neitherEncCondition;
-    }
-
-    var regCondition = ["==", ["boolean", true], ["get", "registered"]];
-
-    var filterCondition;
-    if (regValue === "registered") {
-      filterCondition = [
+  const runFilters = useCallback(
+    (vacancyValues, [minRent, maxRent], bedsValues, regValue, encValues) => {
+      var unitRentValue = ["number", ["get", "rent"], -1];
+      var rentValueCondition = [
         "all",
-        bedsValueCondition,
-        rentValueCondition,
-        statusCondition,
-        regCondition,
-        encCondition
+        ["<=", unitRentValue, maxRent],
+        [">=", unitRentValue, minRent],
       ];
-    } else {
-      filterCondition = ["==", ["boolean", false], ["get", "registered"]];
-    }
 
-    setFilter(filterCondition);
-  }
+      var bedsFeature = ["to-string", ["number", ["get", "beds"], -1]];
+      var bedsValueCondition = ["in", bedsFeature, ["literal", bedsValues]];
+
+      var statusCondition = ["boolean", true];
+      var vacantCondition = ["in", ["literal", "Vacant"], ["get", "status"]];
+      var rentedCondition = ["in", ["literal", "Rented"], ["get", "status"]];
+      var neitherCondition = [
+        "all",
+        ["!", vacantCondition],
+        ["!", rentedCondition],
+      ];
+      if (
+        vacancyValues.includes("vacant") &&
+        vacancyValues.includes("rented")
+      ) {
+        statusCondition = ["boolean", true];
+      } else if (vacancyValues.includes("vacant")) {
+        statusCondition = vacantCondition;
+      } else if (vacancyValues.includes("rented")) {
+        statusCondition = rentedCondition;
+      } else {
+        statusCondition = neitherCondition;
+      }
+
+      var encCondition = ["boolean", true];
+      var affordCondition = ["in", ["literal", "Yes"], ["get", "encumbered"]];
+      var marketCondition = ["in", ["literal", "No"], ["get", "encumbered"]];
+      var neitherEncCondition = [
+        "all",
+        ["!", affordCondition],
+        ["!", marketCondition],
+      ];
+      if (encValues.includes("affordable") && encValues.includes("market")) {
+        encCondition = ["boolean", true];
+      } else if (encValues.includes("affordable")) {
+        encCondition = affordCondition;
+      } else if (encValues.includes("market")) {
+        encCondition = marketCondition;
+      } else {
+        encCondition = neitherEncCondition;
+      }
+
+      var regCondition = ["==", ["boolean", true], ["get", "registered"]];
+
+      var filterCondition;
+      if (regValue === "registered") {
+        filterCondition = [
+          "all",
+          bedsValueCondition,
+          rentValueCondition,
+          statusCondition,
+          regCondition,
+          encCondition,
+        ];
+      } else {
+        filterCondition = ["==", ["boolean", false], ["get", "registered"]];
+      }
+
+      setFilter(filterCondition);
+    },
+    []
+  );
 
   useEffect(() => {
     if (
@@ -180,7 +211,9 @@ function MapProvider({ children }) {
         .filter(
           (value, index, self) =>
             index ===
-            self.findIndex((t) => t.properties.address === value.properties.address)
+            self.findIndex(
+              (t) => t.properties.address === value.properties.address
+            )
         );
       setTotalUnregUnits(features.length);
     } else {
@@ -188,15 +221,20 @@ function MapProvider({ children }) {
       var rentCount = 0.0;
       var min = 10000.0;
       var max = 0.0;
-      const features = map.current.queryRenderedFeatures({
-        layers: ["ccrr-units-geojson"], // replace with your layer name
-        filter: mapFilter,
-      })
-      .filter(
-        (value, index, self) =>
-          index ===
-          self.findIndex((t) => t.properties.address === value.properties.address && t.properties.unit === value.properties.unit)
-      );
+      const features = map.current
+        .queryRenderedFeatures({
+          layers: ["ccrr-units-geojson"], // replace with your layer name
+          filter: mapFilter,
+        })
+        .filter(
+          (value, index, self) =>
+            index ===
+            self.findIndex(
+              (t) =>
+                t.properties.address === value.properties.address &&
+                t.properties.unit === value.properties.unit
+            )
+        );
       if (!features.length) return;
       features.forEach((feature) => {
         var rent = feature["properties"]["rent"];
@@ -226,6 +264,13 @@ function MapProvider({ children }) {
   }, [mapFilter]);
 
   useEffect(() => {
+    if (!styleLoaded.current) {
+      runFilters(vacancyValues, rentValue, bedsValues, regValue, encValues);
+      styleLoaded.current = true;
+    }
+  }, [runFilters, vacancyValues, rentValue, bedsValues, regValue, encValues]);
+
+  useEffect(() => {
     filterPopup();
   }, [mapFilter, filterPopup]);
 
@@ -248,7 +293,17 @@ function MapProvider({ children }) {
         newPopup,
         filterPopup,
         popupAddress,
-        forceStatsUpdate
+        forceStatsUpdate,
+        vacancyValues,
+        setVacancyValues,
+        regValue,
+        setRegValue,
+        rentValue,
+        setRentValue,
+        bedsValues,
+        setBedsValues,
+        encValues,
+        setEncValues,
       }}
     >
       {children}
