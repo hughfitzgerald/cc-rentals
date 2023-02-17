@@ -17,6 +17,7 @@ const Map = ({ className }) => {
   const onClickSet = useRef(false);
   const navigate = useNavigate();
   const [reactSearchParams] = useSearchParams();
+  const previousClick = useRef();
 
   function onPopupClose() {
     navigate({
@@ -42,14 +43,14 @@ const Map = ({ className }) => {
 
   useEffect(() => {
     if (!map.current) return;
-    if (onClickSet.current) map.current.off("click");
+    if (onClickSet.current) {
+        map.current.off("click", previousClick.current);
+    }
 
     onClickSet.current = true;
+    previousClick.current = (event) => popupFromClick(event);
 
-    map.current.on("click", (event) => {
-      //newPopup(event)
-      popupFromClick(event);
-    });
+    map.current.on("click", previousClick.current);
     // eslint-disable-next-line
   }, [mapFilter]);
 

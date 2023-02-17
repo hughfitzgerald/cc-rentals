@@ -76,8 +76,15 @@ const Popup = ({ children, onClose }) => {
   });
 
   useEffect(() => {
-    if(slugReady) popupFromSlug(slug);
-  }, [slug, popupFromSlug, slugReady]);
+    if(slugReady) {
+      popupFromSlug(slug);
+    }
+    // TODO:
+    // if popupFromSlug is in dependency array, the function gets called 1 billion times while a popup is showing (fuck that!)
+    // if popupFromSlug is NOT in the dependency array, when you load a URL that has a slug in it, the address doesn't get selected in the map...
+    // possible FIX: figure out what is causing popupFromSlug to update 1 billion times!!!!
+    // mapFilter is the problem!!! mapFilter is being constantly updated!!! why?!?!?!
+  }, [slug, slugReady, popupFromSlug]);
 
   return (
     <>

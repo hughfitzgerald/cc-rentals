@@ -5,7 +5,7 @@ import React, {
   useEffect,
   useCallback,
 } from "react";
-import { createSearchParams, useNavigate, useSearchParams } from "react-router-dom";
+import { createSearchParams, useNavigate, useNavigation, useSearchParams } from "react-router-dom";
 import { createEnumArrayParam, createEnumParam, DelimitedNumericArrayParam, useQueryParams, withDefault } from "use-query-params";
 
 // Create two context:
@@ -28,6 +28,7 @@ function MapProvider({ children }) {
   const [popupUnits, setUnits] = useState(null);
   const [forceStats, setForceStats] = useState(0);
   const [styleLoaded, setStyleLoaded] = useState(false);
+  const navigation = useNavigation();
 
   const VacancyEnumParam = createEnumArrayParam(['rented','vacant','none']);
   const RegisteredEnumParam = createEnumParam(['registered','unregistered']);
@@ -108,7 +109,7 @@ function MapProvider({ children }) {
       unique_units = [];
 
     setUnits(unique_units);
-  }, [map, popupAddress, mapFilter]);
+  }, [mapFilter]);
 
   const popupFromSlug = useCallback(
     (slug) => {
@@ -145,6 +146,7 @@ function MapProvider({ children }) {
 
   const popupFromClick = useCallback(
     (event) => {
+      if(navigation.state === "loading") return;
       var features = map.current.queryRenderedFeatures(event.point, {
         layers: ["ccrr-units-geojson"], // replace with your layer name
       });
@@ -161,14 +163,14 @@ function MapProvider({ children }) {
         }
       }
       const feature = features[0];
-      popupAddress.current = feature.properties.address;        
+      popupAddress.current = feature.properties.address;
       navigate({
         pathname:feature.properties.slug,
         search:createSearchParams(reactSearchParams).toString()
       });
       return true;
     },
-    [navigate, reactSearchParams]
+    [navigate, reactSearchParams, navigation]
   );
 
   useEffect(() => {
@@ -251,7 +253,9 @@ function MapProvider({ children }) {
 
       setFilter(filterCondition);
     },
-    [searchParams]
+    // for some reason searchParams is changing constantly, causing this function to fuck up, but reactSearchParams is all good ;)
+    // eslint-disable-next-line
+    [reactSearchParams]
   );
 
   /*
