@@ -76,7 +76,6 @@ const FilterInfo = ({ infoText }) => {
 export const RentalFilters = () => {
   const { classes } = useStyles();
   const {
-    runFilters,
     setUnreg,
     unreg,
     vacancyValues,
@@ -89,36 +88,89 @@ export const RentalFilters = () => {
     setBedsValues,
     encValues,
     setEncValues,
+    setSearchParams
   } = useContext(mapContext);
 
-  function updateBeds(bedsValues) {
-    setBedsValues(bedsValues);
+  /*
+  useEffect(() => {
+    if (searchParams["reg"] === "unregistered") {
+      setUnreg(true);
+    } else {
+      setUnreg(false);
+    }
+    setVacancyValues(searchParams["vac"].filter(e => e !== 'none'));
+    setRegValue(searchParams["reg"]);
+    setRentValue(searchParams["rent"]);
+    setBedsValues(searchParams["beds"].filter(e => e !== 'none'));
+    setEncValues(searchParams["enc"].filter(e => e !== 'none'));
+    runFilters(vacancyValues, rentValue, bedsValues, regValue, encValues)
+  }, [searchParams]);
+  */
+
+  /*
+  useEffect(() => {
+    if (searchParams["reg"] === "unregistered") {
+      setUnreg(true);
+    } else {
+      setUnreg(false);
+    }
+    setUnreg(searchParams["reg"]);
+    setVacancyValues(searchParams["vac"]);
+    setRegValue(searchParams["reg"]);
+    setRentValue(searchParams["rent"]);
+    setBedsValues(searchParams["beds"]);
+    setEncValues(searchParams["enc"]);
     runFilters(vacancyValues, rentValue, bedsValues, regValue, encValues);
+  }, []); // figure out how to get this function to only run when you load the URL and not when changing the filters changes this 
+  */
+
+  function updateBeds(bedsValues) {
+    if(!bedsValues.length) {
+      setSearchParams({beds: ["none"]});
+    } else {
+      setSearchParams({beds: bedsValues});
+    }
+    
+    setBedsValues(bedsValues);
+    //runFilters(vacancyValues, rentValue, bedsValues, regValue, encValues);
   }
 
   function updateEnc(encValues) {
+    if(!encValues.length) {
+      setSearchParams({enc: ["none"]});
+    } else {
+      setSearchParams({enc: encValues});
+    }
+    
     setEncValues(encValues);
-    runFilters(vacancyValues, rentValue, bedsValues, regValue, encValues);
+    //runFilters(vacancyValues, rentValue, bedsValues, regValue, encValues);
   }
 
   function updateRent(rentValue) {
+    setSearchParams({ rent: rentValue });
     setRentValue(rentValue);
-    runFilters(vacancyValues, rentValue, bedsValues, regValue, encValues);
+    //runFilters(vacancyValues, rentValue, bedsValues, regValue, encValues);
   }
 
   function updateVacancy(vacancyValues) {
+    if(!vacancyValues.length) {
+      setSearchParams({vac: ["none"]});
+    } else {
+      setSearchParams({vac: vacancyValues});
+    }
     setVacancyValues(vacancyValues);
-    runFilters(vacancyValues, rentValue, bedsValues, regValue, encValues);
+    //runFilters(vacancyValues, rentValue, bedsValues, regValue, encValues);
   }
 
   function updateReg(regValue) {
-    setRegValue(regValue);
     if (regValue === "unregistered") {
       setUnreg(true);
     } else {
       setUnreg(false);
     }
-    runFilters(vacancyValues, rentValue, bedsValues, regValue, encValues);
+    setSearchParams({ reg: regValue });
+    setRegValue(regValue);
+    //runFilters(vacancyValues, rentValue, bedsValues, regValue, encValues);
   }
   return (
     <Stack>

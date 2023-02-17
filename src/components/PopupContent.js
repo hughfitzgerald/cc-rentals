@@ -59,7 +59,6 @@ export default function PopupContent() {
   const [sortedRecords, setRecords] = useState(sortBy(popupUnits, "unit"));
   const theme = useMantineTheme();
   const mediaQuery = useMediaQuery(`(min-width: ${theme.breakpoints.sm}px)`);
-  
 
   useEffect(() => {
     const data = sortBy(popupUnits, sortStatus.columnAccessor);

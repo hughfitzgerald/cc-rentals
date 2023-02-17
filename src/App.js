@@ -22,6 +22,9 @@ import {
 import Map from "./components/Map";
 import { MapProvider } from "./context/mapContext";
 import { NavbarContent, NavbarStatic } from "./components/Navbar";
+import { Route, Routes } from "react-router-dom";
+import { QueryParamProvider } from "use-query-params";
+import { ReactRouter6Adapter } from "use-query-params/adapters/react-router-6";
 
 const HEADER_HEIGHT = 60;
 const NAVBAR_WIDTH = 300;
@@ -130,6 +133,7 @@ export default function App() {
   const filters = (<NavbarContent />);
 
   return (
+    <QueryParamProvider adapter={ReactRouter6Adapter}>
     <ColorSchemeProvider
       colorScheme={colorScheme}
       toggleColorScheme={toggleColorScheme}
@@ -142,6 +146,8 @@ export default function App() {
         withGlobalStyles
         withNormalizeCSS
       >
+        <Routes>
+        <Route path="/*" element={
         <MapProvider>
           <Box className={classes.root}>
             <Header height={HEADER_HEIGHT} className={classes.header}>
@@ -173,6 +179,7 @@ export default function App() {
                       className={classes.burger}
                       size="sm"
                     />
+              
               <Transition
                 transition="pop-top-left"
                 duration={200}
@@ -195,8 +202,11 @@ export default function App() {
             </div>
           </Box>
         </MapProvider>
+        } />
+        </Routes>
       </MantineProvider>
     </ColorSchemeProvider>
+    </QueryParamProvider>
   );
 
   /*

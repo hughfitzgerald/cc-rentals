@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef } from "react";
 import mapboxgl from "!mapbox-gl"; // eslint-disable-line
 import "mapbox-gl/dist/mapbox-gl.css";
 //import styled from "@emotion/styled";
@@ -6,18 +6,23 @@ import { mapContext } from "../context/mapContext";
 import { Popup } from "./Popup";
 import PopupContent from "./PopupContent";
 import { Container } from "@mantine/core";
+import { createSearchParams, Route, Routes, useNavigate, useSearchParams } from "react-router-dom";
 
 
 const Map = ({ className }) => {
-  const [opened, setOpened] = useState(false);
-  const { map, mapFilter, newPopup, popupAddress, forceStatsUpdate } =
+  const { map, mapFilter, popupAddress, forceStatsUpdate, popupFromClick, setStyleLoaded } =
     useContext(mapContext);
   const eventsSet = useRef(false);
   const mapContainer = useRef(null);
   const onClickSet = useRef(false);
+  const navigate = useNavigate();
+  const [reactSearchParams] = useSearchParams();
 
   function onPopupClose() {
-    setOpened(false);
+    navigate({
+      pathname:"",
+      search:createSearchParams(reactSearchParams).toString()
+    });
     popupAddress.current = null;
     map.current.setLayoutProperty("selected-address", "visibility", "none");
   }
@@ -42,7 +47,8 @@ const Map = ({ className }) => {
     onClickSet.current = true;
 
     map.current.on("click", (event) => {
-      if (newPopup(event)) setOpened(true);
+      //newPopup(event)
+      popupFromClick(event);
     });
     // eslint-disable-next-line
   }, [mapFilter]);
@@ -62,7 +68,7 @@ const Map = ({ className }) => {
       // Add a data source containing GeoJSON data.
       map.current.addSource("units", {
         type: "geojson",
-        data: "https://hughfitzgerald.github.io/cc-rentals/ccrr-flat-20230209-135513.json",
+        data: "https://hughfitzgerald.github.io/cc-rentals/ccrr-flat-20230215-201853.json",
       });
 
       // Add a new layer with dots for the units.
@@ -119,8 +125,10 @@ const Map = ({ className }) => {
       if (
         "units" in map.current.getStyle().sources &&
         map.current.isSourceLoaded("units")
-      )
+      ) {
         forceStatsUpdate();
+        setStyleLoaded(true);
+      }
     });
     map.current.on("zoomend", () => forceStatsUpdate());
     map.current.on("moveend", () => forceStatsUpdate());
@@ -129,9 +137,14 @@ const Map = ({ className }) => {
 
   return (
     <>
-      <Popup onClose={onPopupClose} opened={opened}>
+      <Routes>
+        <Route path="/" element={<></>} />
+        <Route path="/:slug" element={
+      <Popup onClose={onPopupClose} opened={true}>
         <PopupContent />
       </Popup>
+        } />
+      </Routes>
       <Container
         fluid
         ref={(el) => (mapContainer.current = el)}
