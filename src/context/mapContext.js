@@ -135,13 +135,9 @@ function MapProvider({ children }) {
         "visibility",
         "visible"
       );
-      navigate({
-        pathname:feature.properties.slug,
-        search:createSearchParams(reactSearchParams).toString()
-      });
       return true;
     },
-    [filterPopup, navigate, reactSearchParams]
+    [filterPopup]
   );
 
   const popupFromClick = useCallback(

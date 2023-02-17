@@ -8,6 +8,17 @@ import PopupContent from "./PopupContent";
 import { Container } from "@mantine/core";
 import { createSearchParams, Route, Routes, useNavigate, useSearchParams } from "react-router-dom";
 
+const ClearPopup = ({ popupAddress, map }) => {
+  const { styleLoaded } = useContext(mapContext);
+  useEffect(() => {
+    if(styleLoaded) {
+      popupAddress.curent = null;
+      map.current.setLayoutProperty("selected-address", "visibility", "none");
+    }
+    // eslint-disable-next-line
+  }, []);
+  return (<></>)
+}
 
 const Map = ({ className }) => {
   const { map, mapFilter, popupAddress, forceStatsUpdate, popupFromClick, setStyleLoaded } =
@@ -24,8 +35,6 @@ const Map = ({ className }) => {
       pathname:"",
       search:createSearchParams(reactSearchParams).toString()
     });
-    popupAddress.current = null;
-    map.current.setLayoutProperty("selected-address", "visibility", "none");
   }
 
   useEffect(() => {
@@ -139,7 +148,7 @@ const Map = ({ className }) => {
   return (
     <>
       <Routes>
-        <Route path="/" element={<></>} />
+        <Route path="/" element={<ClearPopup popupAddress={popupAddress} map={map} />} />
         <Route path="/:slug" element={
       <Popup onClose={onPopupClose} opened={true}>
         <PopupContent />
