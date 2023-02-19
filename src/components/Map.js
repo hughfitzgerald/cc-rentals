@@ -78,7 +78,7 @@ const Map = ({ className }) => {
       // Add a data source containing GeoJSON data.
       map.current.addSource("units", {
         type: "geojson",
-        data: "https://hughfitzgerald.github.io/cc-rentals/ccrr-flat-20230215-201853.json",
+        data: "https://hughfitzgerald.github.io/cc-rentals/ccrr-flat-20230218-170818.json",
       });
 
       // Add a new layer with dots for the units.
