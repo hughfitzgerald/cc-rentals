@@ -1,11 +1,11 @@
-import React, { useContext, useEffect, useRef } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import mapboxgl from "!mapbox-gl"; // eslint-disable-line
 import "mapbox-gl/dist/mapbox-gl.css";
 //import styled from "@emotion/styled";
 import { mapContext } from "../context/mapContext";
 import { Popup } from "./Popup";
 import PopupContent from "./PopupContent";
-import { Container } from "@mantine/core";
+import { Container, Title } from "@mantine/core";
 import { createSearchParams, Route, Routes, useNavigate, useSearchParams } from "react-router-dom";
 
 const ClearPopup = ({ popupAddress, map }) => {
@@ -29,6 +29,7 @@ const Map = ({ className }) => {
   const navigate = useNavigate();
   const [reactSearchParams] = useSearchParams();
   const previousClick = useRef();
+  const [coords, setCoords] = useState("");
 
   function onPopupClose() {
     navigate({
@@ -113,7 +114,8 @@ const Map = ({ className }) => {
               "icon-image": "custom-marker",
               // get the title name from the source's "title" property
               "text-field": ["get", "address"],
-              "text-font": ["Open Sans Semibold", "Arial Unicode MS Bold"],
+              //"text-font": ["Open Sans Semibold", "Arial Unicode MS Bold"],
+              "text-font": ["DIN Pro Medium", "Arial Unicode MS Bold"],              
               "text-offset": [0, 1.25],
               "text-anchor": "top",
             },
@@ -127,6 +129,19 @@ const Map = ({ className }) => {
         }
         
       );
+      
+      /*
+      // TODO: Would love to add these back in if I could fix the mouse events... they're off by 16 pixels in the x direction!
+      map.current.on('mouseenter', 'ccrr-units-geojson', () => {
+        map.current.getCanvas().style.cursor = 'pointer'
+      })
+      map.current.on('mouseleave', 'ccrr-units-geojson', () => {
+        map.current.getCanvas().style.cursor = ''
+      })
+      */
+      map.current.on('mousemove', (e) => {
+        setCoords(e.point.x.toString() + ", " + e.point.y.toString());
+      })
 
       map.current.addControl(new mapboxgl.NavigationControl());
     });
@@ -160,6 +175,8 @@ const Map = ({ className }) => {
         ref={(el) => (mapContainer.current = el)}
         className={className}
       />
+      
+      <Title sx = {{position:"absolute", top: 70, left: 310, display:"none"}}>{coords}</Title>
     </>
   );
 };

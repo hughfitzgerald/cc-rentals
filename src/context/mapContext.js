@@ -144,14 +144,15 @@ function MapProvider({ children }) {
     (event) => {
       const bboxLimits = 15;
       const bboxIncrement = 1;
+      const xOffset = 16; // bug somewhere makes mouse events off by 16 pixels --- TO FIX!!!
       if(navigation.state === "loading") return;
-      var features = map.current.queryRenderedFeatures(event.point, {
+      var features = map.current.queryRenderedFeatures([event.point.x + xOffset, event.point.y], {
         layers: ["ccrr-units-geojson"], // replace with your layer name
       });
       for(var i = bboxIncrement; !features.length && i <= bboxLimits; i += bboxIncrement) {
         const bbox = [
-          [event.point.x - i, event.point.y - i],
-          [event.point.x + i, event.point.y + i],
+          [event.point.x + xOffset - i, event.point.y - i],
+          [event.point.x + xOffset + i, event.point.y + i],
         ];
         features = map.current.queryRenderedFeatures(bbox, {
           layers: ["ccrr-units-geojson"], // replace with your layer name
