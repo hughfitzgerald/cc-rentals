@@ -142,21 +142,23 @@ function MapProvider({ children }) {
 
   const popupFromClick = useCallback(
     (event) => {
+      const bboxLimits = 15;
+      const bboxIncrement = 1;
       if(navigation.state === "loading") return;
       var features = map.current.queryRenderedFeatures(event.point, {
         layers: ["ccrr-units-geojson"], // replace with your layer name
       });
-      if (!features.length) {
+      for(var i = bboxIncrement; !features.length && i <= bboxLimits; i += bboxIncrement) {
         const bbox = [
-          [event.point.x - 15, event.point.y - 15],
-          [event.point.x + 15, event.point.y + 15],
+          [event.point.x - i, event.point.y - i],
+          [event.point.x + i, event.point.y + i],
         ];
         features = map.current.queryRenderedFeatures(bbox, {
           layers: ["ccrr-units-geojson"], // replace with your layer name
         });
-        if (!features.length) {
-          return false;
-        }
+      }
+      if (!features.length) {
+        return false;
       }
       const feature = features[0];
       popupAddress.current = feature.properties.address;
