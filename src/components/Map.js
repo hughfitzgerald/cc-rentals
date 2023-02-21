@@ -7,6 +7,7 @@ import { Popup } from "./Popup";
 import PopupContent from "./PopupContent";
 import { Container, Title } from "@mantine/core";
 import { createSearchParams, Route, Routes, useNavigate, useSearchParams } from "react-router-dom";
+import { useTimeout } from "@mantine/hooks";
 
 const ClearPopup = ({ popupAddress, map }) => {
   const { styleLoaded } = useContext(mapContext);
@@ -30,6 +31,7 @@ const Map = ({ className }) => {
   const [reactSearchParams] = useSearchParams();
   const previousClick = useRef();
   const [coords, setCoords] = useState("");
+  const { start, clear } = useTimeout((event) => popupFromClick(event[0]), 500);
 
   function onPopupClose() {
     navigate({
@@ -58,7 +60,7 @@ const Map = ({ className }) => {
     }
 
     onClickSet.current = true;
-    previousClick.current = (event) => popupFromClick(event);
+    previousClick.current = (event) => start(event);
 
     map.current.on("click", previousClick.current);
     // eslint-disable-next-line
@@ -129,6 +131,8 @@ const Map = ({ className }) => {
         }
         
       );
+
+      map.current.on("dblclick", (e) => clear());
       
       /*
       // TODO: Would love to add these back in if I could fix the mouse events... they're off by 16 pixels in the x direction!
