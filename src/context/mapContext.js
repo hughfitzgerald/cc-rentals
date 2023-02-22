@@ -5,8 +5,20 @@ import React, {
   useEffect,
   useCallback,
 } from "react";
-import { createSearchParams, useNavigate, useNavigation, useSearchParams } from "react-router-dom";
-import { createEnumArrayParam, createEnumParam, DelimitedNumericArrayParam, useQueryParams, withDefault } from "use-query-params";
+import {
+  createSearchParams,
+  useNavigate,
+  useNavigation,
+  useSearchParams,
+} from "react-router-dom";
+import {
+  ArrayParam,
+  createEnumArrayParam,
+  createEnumParam,
+  DelimitedNumericArrayParam,
+  useQueryParams,
+  withDefault,
+} from "use-query-params";
 
 // Create two context:
 // UserContext: to query the context state
@@ -24,23 +36,37 @@ function MapProvider({ children }) {
   const [unreg, setUnreg] = useState(false);
   const map = useRef(null);
   const popupAddress = useRef(null);
+  const popupOwner = useRef(null);
   const popupSlug = useState(null);
   const [popupUnits, setUnits] = useState(null);
   const [forceStats, setForceStats] = useState(0);
   const [styleLoaded, setStyleLoaded] = useState(false);
   const navigation = useNavigation();
 
-  const VacancyEnumParam = createEnumArrayParam(['rented','vacant','none']);
-  const RegisteredEnumParam = createEnumParam(['registered','unregistered']);
-  const BedsEnumParam = createEnumArrayParam(["0", "1", "2", "3", "4", "5", "none"]);
-  const EncumberedEnumParam = createEnumArrayParam(["affordable", "market", "none"]);
+  const VacancyEnumParam = createEnumArrayParam(["rented", "vacant", "none"]);
+  const RegisteredEnumParam = createEnumParam(["registered", "unregistered"]);
+  const BedsEnumParam = createEnumArrayParam([
+    "0",
+    "1",
+    "2",
+    "3",
+    "4",
+    "5",
+    "none",
+  ]);
+  const EncumberedEnumParam = createEnumArrayParam([
+    "affordable",
+    "market",
+    "none",
+  ]);
 
-  const defVacancy = ['rented','vacant'];
+  const defVacancy = ["rented", "vacant"];
   const defReg = "registered";
-  const defRent = [0,10000];
+  const defRent = [0, 10000];
   const defBeds = ["0", "1", "2", "3", "4", "5"];
   const defEnc = ["affordable", "market"];
-  
+  const defOwner = [];
+
   const [mapFilter, setFilter] = useState([
     "all",
     [
@@ -62,7 +88,8 @@ function MapProvider({ children }) {
     reg: withDefault(RegisteredEnumParam, defReg),
     rent: withDefault(DelimitedNumericArrayParam, defRent),
     beds: withDefault(BedsEnumParam, defBeds),
-    enc: withDefault(EncumberedEnumParam, defEnc)
+    enc: withDefault(EncumberedEnumParam, defEnc),
+    owner: withDefault(ArrayParam, defOwner),
   });
 
   const [vacancyValues, setVacancyValues] = useState(defVacancy);
@@ -70,6 +97,7 @@ function MapProvider({ children }) {
   const [rentValue, setRentValue] = useState(defRent);
   const [bedsValues, setBedsValues] = useState(defBeds);
   const [encValues, setEncValues] = useState(defEnc);
+  const [ownerValues, setOwnerValues] = useState(defOwner);
 
   const [reactSearchParams] = useSearchParams();
 
@@ -115,15 +143,12 @@ function MapProvider({ children }) {
     (slug) => {
       var features = map.current.querySourceFeatures("units", {
         sourceLayer: "ccrr-units-geojson",
-        filter: [
-          "in",
-          ["literal", slug],
-          ["get", "slug"],
-        ]
+        filter: ["in", ["literal", slug], ["get", "slug"]],
       });
       if (!features.length) return false;
       const feature = features[0];
       popupAddress.current = feature.properties.address;
+      popupOwner.current = feature.properties.owner;
       filterPopup();
       map.current.setFilter("selected-address", [
         "in",
@@ -145,11 +170,18 @@ function MapProvider({ children }) {
       const bboxLimits = 15;
       const bboxIncrement = 1;
       const xOffset = 16; // bug somewhere makes mouse events off by 16 pixels --- TO FIX!!!
-      if(navigation.state === "loading") return;
-      var features = map.current.queryRenderedFeatures([event.point.x + xOffset, event.point.y], {
-        layers: ["ccrr-units-geojson"], // replace with your layer name
-      });
-      for(var i = bboxIncrement; !features.length && i <= bboxLimits; i += bboxIncrement) {
+      if (navigation.state === "loading") return;
+      var features = map.current.queryRenderedFeatures(
+        [event.point.x + xOffset, event.point.y],
+        {
+          layers: ["ccrr-units-geojson"], // replace with your layer name
+        }
+      );
+      for (
+        var i = bboxIncrement;
+        !features.length && i <= bboxLimits;
+        i += bboxIncrement
+      ) {
         const bbox = [
           [event.point.x + xOffset - i, event.point.y - i],
           [event.point.x + xOffset + i, event.point.y + i],
@@ -163,27 +195,39 @@ function MapProvider({ children }) {
       }
       const feature = features[0];
       popupAddress.current = feature.properties.address;
+      popupOwner.current = feature.properties.owner;
       navigate({
-        pathname:feature.properties.slug,
-        search:createSearchParams(reactSearchParams).toString()
+        pathname: feature.properties.slug,
+        search: createSearchParams(reactSearchParams).toString(),
       });
       return true;
     },
     [navigate, reactSearchParams, navigation]
   );
 
-  useEffect(() => {
-    const vacancyValues = searchParams["vac"].filter(e => e !== 'none');
-    const regValue = searchParams["reg"];
-    const [minRent, maxRent] = searchParams["rent"];
-    const bedsValues = searchParams["beds"].filter(e => e !== 'none');
-    const encValues = searchParams["enc"].filter(e => e !== 'none');
+  useEffect(
+    () => {
+      const vacancyValues = searchParams["vac"].filter((e) => e !== "none");
+      const regValue = searchParams["reg"];
+      const [minRent, maxRent] = searchParams["rent"];
+      const bedsValues = searchParams["beds"].filter((e) => e !== "none");
+      const encValues = searchParams["enc"].filter((e) => e !== "none");
+      const ownerValues = searchParams["owner"];
 
-    setVacancyValues(vacancyValues);
-    setRegValue(regValue);
-    setRentValue([minRent, maxRent]);
-    setBedsValues(bedsValues);
-    setEncValues(encValues);
+      setVacancyValues(vacancyValues);
+      setRegValue(regValue);
+      setRentValue([minRent, maxRent]);
+      setBedsValues(bedsValues);
+      setEncValues(encValues);
+      setOwnerValues(ownerValues);
+
+      var ownerCondition = ["boolean", true];
+      if (ownerValues.length) {
+        ownerCondition = ["any"];
+        ownerValues.forEach( (owner) => {
+          ownerCondition.push(["in", ["literal", owner], ["to-string", ["get", "owner"]]]);
+        })
+      }
 
       var unitRentValue = ["number", ["get", "rent"], -1];
       var rentValueCondition = [
@@ -195,26 +239,19 @@ function MapProvider({ children }) {
       var bedsFeature = ["to-string", ["number", ["get", "beds"], -1]];
       var bedsValueCondition = ["in", bedsFeature, ["literal", bedsValues]];
 
-      var statusCondition = ["boolean", true];
-      var vacantCondition = ["in", ["literal", "Vacant"], ["get", "status"]];
-      var rentedCondition = ["in", ["literal", "Rented"], ["get", "status"]];
-      var neitherCondition = [
-        "all",
-        ["!", vacantCondition],
-        ["!", rentedCondition],
-      ];
-      if (
-        vacancyValues.includes("vacant") &&
-        vacancyValues.includes("rented")
-      ) {
-        statusCondition = ["boolean", true];
-      } else if (vacancyValues.includes("vacant")) {
-        statusCondition = vacantCondition;
-      } else if (vacancyValues.includes("rented")) {
-        statusCondition = rentedCondition;
-      } else {
-        statusCondition = neitherCondition;
+      var vacantCondition = ["boolean", false];
+      var rentedCondition = ["boolean", false];
+      //var sectionCondition = ["boolean", false];
+      if (vacancyValues.includes("vacant")) {
+        vacantCondition = ["in", ["literal", "Vacant"], ["get", "status"]];
       }
+      if (vacancyValues.includes("rented")) {
+        rentedCondition = ["in", ["literal", "Rented"], ["get", "status"]];
+      }
+      //if (vacancyValues.includes("section")) {
+      //  sectionCondition = ["in", ["literal", "Section 8"], ["get", "status"]];
+      //}
+      var statusCondition = ["any", vacantCondition, rentedCondition];
 
       var encCondition = ["boolean", true];
       var affordCondition = ["in", ["literal", "Yes"], ["get", "encumbered"]];
@@ -245,6 +282,7 @@ function MapProvider({ children }) {
           statusCondition,
           regCondition,
           encCondition,
+          ownerCondition
         ];
       } else {
         filterCondition = ["==", ["boolean", false], ["get", "registered"]];
@@ -256,80 +294,6 @@ function MapProvider({ children }) {
     // eslint-disable-next-line
     [reactSearchParams]
   );
-
-  /*
-  const runFilters = useCallback(
-    (vacancyValues, [minRent, maxRent], bedsValues, regValue, encValues) => {
-      var unitRentValue = ["number", ["get", "rent"], -1];
-      var rentValueCondition = [
-        "all",
-        ["<=", unitRentValue, maxRent],
-        [">=", unitRentValue, minRent],
-      ];
-
-      var bedsFeature = ["to-string", ["number", ["get", "beds"], -1]];
-      var bedsValueCondition = ["in", bedsFeature, ["literal", bedsValues]];
-
-      var statusCondition = ["boolean", true];
-      var vacantCondition = ["in", ["literal", "Vacant"], ["get", "status"]];
-      var rentedCondition = ["in", ["literal", "Rented"], ["get", "status"]];
-      var neitherCondition = [
-        "all",
-        ["!", vacantCondition],
-        ["!", rentedCondition],
-      ];
-      if (
-        vacancyValues.includes("vacant") &&
-        vacancyValues.includes("rented")
-      ) {
-        statusCondition = ["boolean", true];
-      } else if (vacancyValues.includes("vacant")) {
-        statusCondition = vacantCondition;
-      } else if (vacancyValues.includes("rented")) {
-        statusCondition = rentedCondition;
-      } else {
-        statusCondition = neitherCondition;
-      }
-
-      var encCondition = ["boolean", true];
-      var affordCondition = ["in", ["literal", "Yes"], ["get", "encumbered"]];
-      var marketCondition = ["in", ["literal", "No"], ["get", "encumbered"]];
-      var neitherEncCondition = [
-        "all",
-        ["!", affordCondition],
-        ["!", marketCondition],
-      ];
-      if (encValues.includes("affordable") && encValues.includes("market")) {
-        encCondition = ["boolean", true];
-      } else if (encValues.includes("affordable")) {
-        encCondition = affordCondition;
-      } else if (encValues.includes("market")) {
-        encCondition = marketCondition;
-      } else {
-        encCondition = neitherEncCondition;
-      }
-
-      var regCondition = ["==", ["boolean", true], ["get", "registered"]];
-
-      var filterCondition;
-      if (regValue === "registered") {
-        filterCondition = [
-          "all",
-          bedsValueCondition,
-          rentValueCondition,
-          statusCondition,
-          regCondition,
-          encCondition,
-        ];
-      } else {
-        filterCondition = ["==", ["boolean", false], ["get", "registered"]];
-      }
-
-      setFilter(filterCondition);
-    },
-    []
-  );
-  */
 
   useEffect(() => {
     if (
@@ -434,10 +398,13 @@ function MapProvider({ children }) {
         popupFromSlug,
         filterPopup,
         popupAddress,
+        popupOwner,
         popupSlug,
         forceStatsUpdate,
         vacancyValues,
         setVacancyValues,
+        ownerValues,
+        setOwnerValues,
         regValue,
         setRegValue,
         rentValue,
@@ -446,9 +413,9 @@ function MapProvider({ children }) {
         setBedsValues,
         encValues,
         setEncValues,
-        styleLoaded, 
+        styleLoaded,
         setStyleLoaded,
-        setSearchParams
+        setSearchParams,
       }}
     >
       {children}

@@ -55,7 +55,7 @@ export default function PopupContent() {
     columnAccessor: "unit",
     direction: "asc",
   });
-  const { popupAddress, popupUnits } = useContext(mapContext);
+  const { popupAddress, popupUnits, popupOwner } = useContext(mapContext);
   const [sortedRecords, setRecords] = useState(sortBy(popupUnits, "unit"));
   const theme = useMantineTheme();
   const mediaQuery = useMediaQuery(`(min-width: ${theme.breakpoints.sm}px)`);
@@ -68,7 +68,7 @@ export default function PopupContent() {
   return (
     <Center>
       <Box sx={{ height: 225, width: 1000 }}>
-        <Text>{popupAddress.current}</Text>
+        <Text>{popupAddress.current} - owned by {popupOwner.current}</Text>
         <DataTable
           withBorder
           borderRadius="sm"

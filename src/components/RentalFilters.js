@@ -9,6 +9,7 @@ import {
   Group,
   SegmentedControl,
   HoverCard,
+  MultiSelect,
 } from "@mantine/core";
 import { mapContext } from "../context/mapContext";
 import { IconInfoCircle } from "@tabler/icons-react";
@@ -88,41 +89,10 @@ export const RentalFilters = () => {
     setBedsValues,
     encValues,
     setEncValues,
+    ownerValues,
+    setOwnerValues,
     setSearchParams
   } = useContext(mapContext);
-
-  /*
-  useEffect(() => {
-    if (searchParams["reg"] === "unregistered") {
-      setUnreg(true);
-    } else {
-      setUnreg(false);
-    }
-    setVacancyValues(searchParams["vac"].filter(e => e !== 'none'));
-    setRegValue(searchParams["reg"]);
-    setRentValue(searchParams["rent"]);
-    setBedsValues(searchParams["beds"].filter(e => e !== 'none'));
-    setEncValues(searchParams["enc"].filter(e => e !== 'none'));
-    runFilters(vacancyValues, rentValue, bedsValues, regValue, encValues)
-  }, [searchParams]);
-  */
-
-  /*
-  useEffect(() => {
-    if (searchParams["reg"] === "unregistered") {
-      setUnreg(true);
-    } else {
-      setUnreg(false);
-    }
-    setUnreg(searchParams["reg"]);
-    setVacancyValues(searchParams["vac"]);
-    setRegValue(searchParams["reg"]);
-    setRentValue(searchParams["rent"]);
-    setBedsValues(searchParams["beds"]);
-    setEncValues(searchParams["enc"]);
-    runFilters(vacancyValues, rentValue, bedsValues, regValue, encValues);
-  }, []); // figure out how to get this function to only run when you load the URL and not when changing the filters changes this 
-  */
 
   function updateBeds(bedsValues) {
     if(!bedsValues.length) {
@@ -162,6 +132,12 @@ export const RentalFilters = () => {
     //runFilters(vacancyValues, rentValue, bedsValues, regValue, encValues);
   }
 
+  function updateOwner(ownerValues) {
+    setSearchParams({owner: ownerValues});
+    setOwnerValues(ownerValues);
+    //runFilters(vacancyValues, rentValue, bedsValues, regValue, encValues);
+  }
+
   function updateReg(regValue) {
     if (regValue === "unregistered") {
       setUnreg(true);
@@ -174,7 +150,7 @@ export const RentalFilters = () => {
   }
   return (
     <Stack>
-      <Stack spacing="xs">
+      <Stack spacing="xs" sx={{display: "none"}}>
         <Text span fz="sm">
           Registration status{" "}
           <FilterInfo infoText="Does the address have units registered with the City of Culver City?" />
@@ -313,6 +289,27 @@ export const RentalFilters = () => {
           disabled={unreg}
           showLabelOnHover={false}
           label={null}
+        />
+      </Stack>
+      <Stack spacing="xs" sx={{display:"none"}}>
+        <Text fz="sm">
+          Owner name{" "}
+          <FilterInfo infoText="Who is registered with the city as the owner?" />
+        </Text>
+        <MultiSelect 
+          placeholder="Rental property owners"
+          onChange={updateOwner}
+          value={ownerValues}
+          data={[
+            { value: 'FOX HILLS CANTERBURY CO LP', label: "FOX HILLS CANTERBURY CO LP", count: 1102},
+            { value: 'LLC, IVY STATION', label: "LLC, IVY STATION", count: 800},
+            { value: 'PARKWAY PLAZA 94', label: "PARKWAY PLAZA 94", count: 265},
+            { value: 'LP, MEADOWS SOUTH II', label: "", count: 234},
+            { value: 'WISSNER, PETER A', label: "WISSNER, PETER A", count: 224},
+          ]}
+          searchable
+          nothingFound="Nothing found"
+          clearable
         />
       </Stack>
     </Stack>
