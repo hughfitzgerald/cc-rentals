@@ -34,11 +34,15 @@ function MapProvider({ children }) {
   const [totalUnits, setTotalUnits] = useState(null);
   const [totalUnregUnits, setTotalUnregUnits] = useState(null);
   const [unreg, setUnreg] = useState(false);
+
   const map = useRef(null);
+
   const popupAddress = useRef(null);
   const popupOwner = useRef(null);
+  const popupMultipleOwners = useRef(null);
   const popupSlug = useState(null);
   const [popupUnits, setUnits] = useState(null);
+
   const [forceStats, setForceStats] = useState(0);
   const [styleLoaded, setStyleLoaded] = useState(false);
   const navigation = useNavigation();
@@ -149,6 +153,7 @@ function MapProvider({ children }) {
       const feature = features[0];
       popupAddress.current = feature.properties.address;
       popupOwner.current = feature.properties.owner;
+      popupMultipleOwners.current = feature.properties.multiple_owners;
       filterPopup();
       map.current.setFilter("selected-address", [
         "in",
@@ -196,6 +201,7 @@ function MapProvider({ children }) {
       const feature = features[0];
       popupAddress.current = feature.properties.address;
       popupOwner.current = feature.properties.owner;
+      popupMultipleOwners.current = feature.properties.multiple_owners;
       navigate({
         pathname: feature.properties.slug,
         search: createSearchParams(reactSearchParams).toString(),
@@ -224,9 +230,13 @@ function MapProvider({ children }) {
       var ownerCondition = ["boolean", true];
       if (ownerValues.length) {
         ownerCondition = ["any"];
-        ownerValues.forEach( (owner) => {
-          ownerCondition.push(["in", ["literal", owner], ["to-string", ["get", "owner"]]]);
-        })
+        ownerValues.forEach((owner) => {
+          ownerCondition.push([
+            "in",
+            ["literal", owner],
+            ["to-string", ["get", "owner"]],
+          ]);
+        });
       }
 
       var unitRentValue = ["number", ["get", "rent"], -1];
@@ -282,7 +292,7 @@ function MapProvider({ children }) {
           statusCondition,
           regCondition,
           encCondition,
-          ownerCondition
+          ownerCondition,
         ];
       } else {
         filterCondition = ["==", ["boolean", false], ["get", "registered"]];
@@ -400,6 +410,7 @@ function MapProvider({ children }) {
         popupAddress,
         popupOwner,
         popupSlug,
+        popupMultipleOwners,
         forceStatsUpdate,
         vacancyValues,
         setVacancyValues,

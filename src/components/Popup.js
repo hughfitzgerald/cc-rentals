@@ -12,6 +12,7 @@ const useStyles = createStyles((theme) => ({
 
   dialog: {
     height: 280,
+    width: 1180,
     
     [theme.fn.smallerThan("sm")]: {
       display: "none",
@@ -46,7 +47,6 @@ const PopupDialog = ({ children, onClose, loading }) => {
       opened
       withCloseButton
       onClose={onClose}
-      size={1000}
       className={classes.dialog}
     >
       <LoadingOverlay visible={loading}/>
