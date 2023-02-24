@@ -12,10 +12,10 @@ import {
   useSearchParams,
 } from "react-router-dom";
 import {
-  ArrayParam,
   createEnumArrayParam,
   createEnumParam,
   DelimitedNumericArrayParam,
+  StringParam,
   useQueryParams,
   withDefault,
 } from "use-query-params";
@@ -69,7 +69,7 @@ function MapProvider({ children }) {
   const defRent = [0, 10000];
   const defBeds = ["0", "1", "2", "3", "4", "5"];
   const defEnc = ["affordable", "market"];
-  const defOwner = [];
+  const defOwner = "";
 
   const [mapFilter, setFilter] = useState([
     "all",
@@ -93,7 +93,7 @@ function MapProvider({ children }) {
     rent: withDefault(DelimitedNumericArrayParam, defRent),
     beds: withDefault(BedsEnumParam, defBeds),
     enc: withDefault(EncumberedEnumParam, defEnc),
-    owner: withDefault(ArrayParam, defOwner),
+    owner: withDefault(StringParam, defOwner),
   });
 
   const [vacancyValues, setVacancyValues] = useState(defVacancy);
@@ -228,6 +228,7 @@ function MapProvider({ children }) {
       setOwnerValues(ownerValues);
 
       var ownerCondition = ["boolean", true];
+      /*
       if (ownerValues.length) {
         ownerCondition = ["any"];
         ownerValues.forEach((owner) => {
@@ -237,6 +238,13 @@ function MapProvider({ children }) {
             ["to-string", ["get", "owner"]],
           ]);
         });
+      }*/
+      if (ownerValues) {
+        ownerCondition = [
+          "in",
+          ["literal", ownerValues],
+          ["to-string", ["get","owner"]],
+        ];
       }
 
       var unitRentValue = ["number", ["get", "rent"], -1];
