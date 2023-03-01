@@ -30,7 +30,7 @@ export const AddressSelect = ({ label }) => {
   useEffect(() => {
     async function loadAddress() {
       var response = await fetch(
-        "https://hughfitzgerald.github.io/cc-rentals/address_counts.json"
+        "https://www.ccrentals.org/address_counts.json"
       ).then((res) => {
         return res.json();
       });

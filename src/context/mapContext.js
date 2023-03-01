@@ -128,7 +128,7 @@ function MapProvider({ children }) {
   useEffect(() => {
     async function loadHistData() {
       var response = await fetch(
-        "https://hughfitzgerald.github.io/cc-rentals/ccrr-hist-20230228-122637.json"
+        "https://www.ccrentals.org/ccrr-hist-20230228-122637.json"
       ).then((res) => {
         return res.json();
       })
@@ -141,7 +141,7 @@ function MapProvider({ children }) {
   useEffect(() => {
     async function loadStatsData() {
       var response = await fetch(
-        "https://hughfitzgerald.github.io/cc-rentals/ccrr-data-20230228-094223.json"
+        "https://www.ccrentals.org/ccrr-data-20230228-094223.json"
       ).then((res) => {
         return res.json();
       })

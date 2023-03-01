@@ -40,7 +40,7 @@ export const OwnerSelect = ({ label }) => {
   useEffect(() => {
     async function loadOwners() {
       var response = await fetch(
-        "https://hughfitzgerald.github.io/cc-rentals/owner_counts.json"
+        "https://www.ccrentals.org/owner_counts.json"
       ).then((res) => {
         return res.json();
       });

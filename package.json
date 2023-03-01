@@ -1,7 +1,7 @@
 {
     "name": "use-mapbox-gl-js-with-react",
     "version": "0.1.0",
-    "homepage": "https://hughfitzgerald.github.io/cc-rentals",
+    "homepage": "https://www.ccrentals.org",
     "private": true,
     "dependencies": {
         "@emotion/react": "^11.10.5",

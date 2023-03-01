@@ -139,7 +139,7 @@ const Map = ({ className, classes }) => {
     }
     previousImageLoad.current = () => {
       map.current.loadImage(
-        "https://hughfitzgerald.github.io/cc-rentals/building_blue.png",
+        "https://www.ccrentals.org/building_blue.png",
         (error, image) => {
           if (error) throw error;
 
@@ -204,7 +204,7 @@ const Map = ({ className, classes }) => {
       // Add a data source containing GeoJSON data.
       map.current.addSource("units", {
         type: "geojson",
-        data: "https://hughfitzgerald.github.io/cc-rentals/ccrr-geo-20230228-094102.json",
+        data: "https://www.ccrentals.org/ccrr-geo-20230228-094102.json",
       });
 
       // Add a new layer with dots for the units.
@@ -223,7 +223,7 @@ const Map = ({ className, classes }) => {
       });
 
       map.current.loadImage(
-        "https://hughfitzgerald.github.io/cc-rentals/building_blue.png",
+        "https://www.ccrentals.org/building_blue.png",
         (error, image) => {
           if (error) throw error;
           map.current.addImage("custom-marker", image);
