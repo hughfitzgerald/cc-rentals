@@ -1,17 +1,18 @@
 import { Autocomplete, Group, Stack, Text } from "@mantine/core";
+import { IconUser } from "@tabler/icons-react";
 import { forwardRef, useContext, useEffect, useState } from "react";
 import { mapContext } from "../../context/mapContext";
 import FilterInfo from "./FilterInfo";
 
-export const OwnerSelect = () => {
+export const OwnerSelect = ({ label }) => {
   const { setOwnerValues, ownerValues, unreg, setSearchParams } =
     useContext(mapContext);
 
-  const AutoCompleteItem = forwardRef(({ count, value, ...others }, ref) => (
+  const AutoCompleteItem = forwardRef(({ count, label, ...others }, ref) => (
     <div ref={ref} {...others}>
       <Group noWrap position="apart">
         <div style={{ width: 160 }}>
-          <Text truncate>{value}</Text>
+          <Text truncate>{label}</Text>
         </div>
 
         <Text>{count}</Text>
@@ -51,12 +52,13 @@ export const OwnerSelect = () => {
 
   return (
     <Stack spacing="xs">
-      <Text fz="sm">
+      <Text fz="sm" sx={{ display: (label) ? "block" : "none" }}>
         Owner name{" "}
         <FilterInfo infoText="Who is registered with the city as the owner?" />
       </Text>
       <Autocomplete
-        placeholder="Type the name of a landlord..."
+        sx={{width:250}}
+        placeholder="Landlord name"
         onChange={updateOwner}
         value={ownerValues}
         data={data}
@@ -65,6 +67,7 @@ export const OwnerSelect = () => {
         maxDropdownHeight={200}
         itemComponent={AutoCompleteItem}
         disabled={unreg}
+        icon={<IconUser />}
       />
     </Stack>
   );

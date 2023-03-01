@@ -40,10 +40,13 @@ function MapProvider({ children }) {
   const popupAddress = useRef(null);
   const popupOwner = useRef(null);
   const popupMultipleOwners = useRef(null);
-  const popupSlug = useState(null);
+  const popupSlug = useRef(null);
   const [popupUnits, setUnits] = useState(null);
 
-  const [forceStats, setForceStats] = useState(0);
+  const [unit, setUnit] = useState(null);
+  const [unitData, setUnitData] = useState([]);
+
+  //const [forceStats, setForceStats] = useState(0);
   const [styleLoaded, setStyleLoaded] = useState(false);
   const navigation = useNavigation();
 
@@ -70,6 +73,15 @@ function MapProvider({ children }) {
   const defBeds = ["0", "1", "2", "3", "4", "5"];
   const defEnc = ["affordable", "market"];
   const defOwner = "";
+  const defAddress = "";
+  const defaultFilters = {
+    "vac":defVacancy,
+    "reg":defReg,
+    "rent":defRent,
+    "beds":defBeds,
+    "enc":defEnc,
+    "owner":defOwner,
+    "address":defAddress};
 
   const [mapFilter, setFilter] = useState([
     "all",
@@ -94,6 +106,7 @@ function MapProvider({ children }) {
     beds: withDefault(BedsEnumParam, defBeds),
     enc: withDefault(EncumberedEnumParam, defEnc),
     owner: withDefault(StringParam, defOwner),
+    address: withDefault(StringParam, defAddress),
   });
 
   const [vacancyValues, setVacancyValues] = useState(defVacancy);
@@ -102,17 +115,144 @@ function MapProvider({ children }) {
   const [bedsValues, setBedsValues] = useState(defBeds);
   const [encValues, setEncValues] = useState(defEnc);
   const [ownerValues, setOwnerValues] = useState(defOwner);
+  const [addressValue, setAddressValue] = useState(defAddress);
 
   const [reactSearchParams] = useSearchParams();
 
   const Provider = mapContext.Provider;
 
+  const [statsData, setStatsData] = useState([]);
+  const [histData, setHistData] = useState([]);
+  const [unitRents, setUnitRents] = useState([]);
+
+  useEffect(() => {
+    async function loadHistData() {
+      var response = await fetch(
+        "https://hughfitzgerald.github.io/cc-rentals/ccrr-hist-20230228-122637.json"
+      ).then((res) => {
+        return res.json();
+      })
+
+      setHistData(response);
+    }
+    loadHistData();
+  }, []);
+
+  useEffect(() => {
+    async function loadStatsData() {
+      var response = await fetch(
+        "https://hughfitzgerald.github.io/cc-rentals/ccrr-data-20230228-094223.json"
+      ).then((res) => {
+        return res.json();
+      })
+
+      setStatsData(response);
+    }
+    loadStatsData();
+  }, []);
+
+  const thisFilterSet = useCallback((filterString) => {
+    return !(searchParams[filterString] === defaultFilters[filterString]);
+    // eslint-disable-next-line
+  }, [reactSearchParams]);
+
+  const filtersSet = useCallback(() => {
+    return !(
+      searchParams["vac"] === defVacancy &&
+      searchParams["reg"] === defReg &&
+      searchParams["rent"] === defRent &&
+      searchParams["beds"] === defBeds &&
+      searchParams["enc"] === defEnc &&
+      searchParams["owner"] === defOwner &&
+      searchParams["address"] === defAddress
+    );
+    // eslint-disable-next-line
+  }, [reactSearchParams]);
+
+  function resetFilters() {
+    setSearchParams({}, "push");
+  }
+
+  /*
   function useStatsUpdate() {
     return () => setForceStats((forceStats) => forceStats + 1);
   }
   const forceStatsUpdate = useStatsUpdate();
+  */
+
   const navigate = useNavigate();
 
+  // filter statsData
+  const filterStatistics = useCallback((o) => {
+    var _ = require("lodash")
+
+    const vacancyValues = searchParams["vac"].filter((e) => e !== "none");
+    const regValue = searchParams["reg"];
+    const [minRent, maxRent] = searchParams["rent"];
+    const bedsValues = searchParams["beds"].filter((e) => e !== "none");
+    const encValues = searchParams["enc"].filter((e) => e !== "none");
+    const ownerValues = searchParams["owner"];
+    const addressValue = searchParams["address"];
+
+    const ownerCondition = o.owner.includes(ownerValues);
+    
+    const addressCondition = o.address.includes(addressValue);
+
+    const rentCondition = o.rent <= maxRent && o.rent >= minRent;
+
+    const bedsValueCondition = _.includes(bedsValues, o.beds.toString());
+
+    var vacantCondition = false;
+    var rentedCondition = false;
+
+    if (vacancyValues.includes("vacant")) {
+      vacantCondition = o.status.includes("Vacant");
+    }
+    if (vacancyValues.includes("rented")) {
+      rentedCondition = o.status.includes("Rented");
+    }
+    var statusCondition = vacantCondition || rentedCondition;
+
+    var encCondition = true;
+    var affordCondition = o.encumbered.includes("Yes");
+    var marketCondition = o.encumbered.includes("No");
+    var neitherEncCondition = !affordCondition && !marketCondition;
+
+    if (encValues.includes("affordable") && encValues.includes("market")) {
+      encCondition = true;
+    } else if (encValues.includes("affordable")) {
+      encCondition = affordCondition;
+    } else if (encValues.includes("market")) {
+      encCondition = marketCondition;
+    } else {
+      encCondition = neitherEncCondition;
+    }
+
+    var regCondition = o.registered;
+
+    if (regValue) {
+      return ownerCondition && addressCondition && rentCondition && bedsValueCondition && statusCondition && encCondition && regCondition;
+    } else {
+      return !regCondition;
+    }
+
+    //eslint-disable-next-line
+  }, [reactSearchParams]);
+
+  // new filterPopup
+  const filterPopup = useCallback(() => {
+    if (!popupAddress.current) return;
+
+    var _ = require("lodash");
+
+    var unique_units = _.filter(statsData, (o) => o.address === popupAddress.current);
+    unique_units = _.filter(unique_units, filterStatistics);
+
+    setUnits(unique_units);
+  }, [filterStatistics, statsData]);
+
+  /*
+  // old filterPopup
   const filterPopup = useCallback(() => {
     if (!popupAddress.current) return;
 
@@ -141,8 +281,37 @@ function MapProvider({ children }) {
       unique_units = [];
 
     setUnits(unique_units);
-  }, [mapFilter]);
+  }, [mapFilter]);*/
 
+  // new popupFromSlug
+  const popupFromSlug = useCallback(
+    (slug) => {
+      var _ = require("lodash");
+      var features = _.filter(statsData,(o) => o.slug === slug);
+      if (!features.length) return false;
+      const feature = features[0];
+      popupAddress.current = feature.address;
+      popupOwner.current = feature.owner;
+      popupMultipleOwners.current = feature.multiple_owners;
+      popupSlug.current = feature.slug;
+      filterPopup();
+      map.current.setFilter("selected-address", [
+        "in",
+        ["literal", feature.address],
+        ["get", "address"],
+      ]);
+      map.current.setLayoutProperty(
+        "selected-address",
+        "visibility",
+        "visible"
+      );
+      return true;
+    },
+    [filterPopup, statsData]
+  );
+
+  // old popupFromSlug
+  /*
   const popupFromSlug = useCallback(
     (slug) => {
       var features = map.current.querySourceFeatures("units", {
@@ -168,7 +337,7 @@ function MapProvider({ children }) {
       return true;
     },
     [filterPopup]
-  );
+  );*/
 
   const popupFromClick = useCallback(
     (event) => {
@@ -201,6 +370,7 @@ function MapProvider({ children }) {
       const feature = features[0];
       popupAddress.current = feature.properties.address;
       popupOwner.current = feature.properties.owner;
+      popupSlug.current = feature.properties.slug;
       popupMultipleOwners.current = feature.properties.multiple_owners;
       navigate({
         pathname: feature.properties.slug,
@@ -219,6 +389,7 @@ function MapProvider({ children }) {
       const bedsValues = searchParams["beds"].filter((e) => e !== "none");
       const encValues = searchParams["enc"].filter((e) => e !== "none");
       const ownerValues = searchParams["owner"];
+      const addressValue = searchParams["address"];
 
       setVacancyValues(vacancyValues);
       setRegValue(regValue);
@@ -226,24 +397,23 @@ function MapProvider({ children }) {
       setBedsValues(bedsValues);
       setEncValues(encValues);
       setOwnerValues(ownerValues);
+      setAddressValue(addressValue);
 
       var ownerCondition = ["boolean", true];
-      /*
-      if (ownerValues.length) {
-        ownerCondition = ["any"];
-        ownerValues.forEach((owner) => {
-          ownerCondition.push([
-            "in",
-            ["literal", owner],
-            ["to-string", ["get", "owner"]],
-          ]);
-        });
-      }*/
       if (ownerValues) {
         ownerCondition = [
           "in",
           ["literal", ownerValues],
-          ["to-string", ["get","owner"]],
+          ["to-string", ["get", "owner"]],
+        ];
+      }
+
+      var addressCondition = ["boolean", true];
+      if (addressValue) {
+        addressCondition = [
+          "in",
+          ["literal", addressValue],
+          ["to-string", ["get", "address"]],
         ];
       }
 
@@ -301,6 +471,7 @@ function MapProvider({ children }) {
           regCondition,
           encCondition,
           ownerCondition,
+          addressCondition,
         ];
       } else {
         filterCondition = ["==", ["boolean", false], ["get", "registered"]];
@@ -313,6 +484,24 @@ function MapProvider({ children }) {
     [reactSearchParams]
   );
 
+  // new stats function
+  useEffect(() => {
+    var _ = require('lodash');
+    var filteredData = _.filter(statsData, filterStatistics);
+    if (unreg) {
+      var registeredUnits = _.map(filteredData, 'registered')
+      setTotalUnregUnits(registeredUnits.length - _.compact(filteredData).length);
+    } else {
+      var rent = _.map(filteredData, 'rent');
+      setAvgRent(_.mean(rent));
+      setMinRent(_.min(rent));
+      setMaxRent(_.max(rent));
+      setTotalUnits(rent.length);
+    }
+  }, [filterStatistics, unreg, statsData]);
+
+  // old stats function
+  /*
   useEffect(() => {
     if (
       !(
@@ -373,16 +562,20 @@ function MapProvider({ children }) {
       setTotalUnits(rentCount);
     }
   }, [mapFilter, unreg, forceStats]);
+  */
 
   useEffect(() => {
     if (
-      map.current &&
-      map.current.isStyleLoaded() &&
-      "units" in map.current.getStyle().sources &&
-      map.current.isSourceLoaded("units")
-    )
+      //map.current &&
+      //map.current.isStyleLoaded() &&
+      //map.current.getStyle() &&
+      //map.current.isSourceLoaded("units") &&
+      //"units" in map.current.getStyle().sources
+      styleLoaded
+    ) {
       map.current.setFilter("ccrr-units-geojson", mapFilter);
-  }, [mapFilter]);
+    }
+  }, [styleLoaded, mapFilter]);
 
   /*
   useEffect(() => {
@@ -396,6 +589,16 @@ function MapProvider({ children }) {
   useEffect(() => {
     filterPopup();
   }, [mapFilter, filterPopup]);
+
+  useEffect(() => {
+    var _ = require("lodash")
+    const ud = _.filter(statsData,(o) => o.address === popupAddress.current && o.unit === unit);
+    const ur = _.filter(histData,(o) => o.slug === popupSlug.current && o.unit === unit);
+    if (ud.length && ur.length) {
+      setUnitData(ud[0]);
+      setUnitRents(ur);
+    }
+  }, [unit, statsData, histData])
 
   return (
     <Provider
@@ -417,13 +620,14 @@ function MapProvider({ children }) {
         filterPopup,
         popupAddress,
         popupOwner,
-        popupSlug,
         popupMultipleOwners,
-        forceStatsUpdate,
+        //forceStatsUpdate,
         vacancyValues,
         setVacancyValues,
         ownerValues,
         setOwnerValues,
+        addressValue,
+        setAddressValue,
         regValue,
         setRegValue,
         rentValue,
@@ -435,6 +639,14 @@ function MapProvider({ children }) {
         styleLoaded,
         setStyleLoaded,
         setSearchParams,
+        resetFilters,
+        filtersSet,
+        thisFilterSet,
+        statsData,
+        unit,
+        setUnit,
+        unitData,
+        unitRents
       }}
     >
       {children}

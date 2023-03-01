@@ -1,4 +1,4 @@
-import { Chip, Stack, Text } from "@mantine/core";
+import { Chip, Divider, Group, Stack } from "@mantine/core";
 import { useContext } from "react";
 import { mapContext } from "../../context/mapContext";
 import FilterInfo from "./FilterInfo";
@@ -17,10 +17,10 @@ export const VacancySelect = () => {
   
     return (
       <Stack spacing="xs">
-        <Text fz="sm">
-          Vacancy status{" "}
-          <FilterInfo infoText="Is the unit vacant as of the reporting date?" />
-        </Text>
+        <Group position="apart">
+          Vacancy Status <FilterInfo infoText="Is the unit vacant as of the reporting date?" />
+          </Group>
+          <Divider />
         <Chip.Group
           position="center"
           multiple

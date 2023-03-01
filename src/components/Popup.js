@@ -11,13 +11,13 @@ const useStyles = createStyles((theme) => ({
   },
 
   dialog: {
-    height: 280,
+    height: 300,
     width: 1180,
-    
+
     [theme.fn.smallerThan("sm")]: {
       display: "none",
     },
-  }
+  },
 }));
 
 const PopupDrawer = ({ children, onClose, loading }) => {
@@ -33,8 +33,9 @@ const PopupDrawer = ({ children, onClose, loading }) => {
       closeOnClickOutside={false}
       withOverlay={false}
       className={classes.drawer}
+      size={"50%"}
     >
-      <LoadingOverlay visible={loading}/>
+      <LoadingOverlay visible={loading} />
       {children}
     </Drawer>
   );
@@ -43,40 +44,28 @@ const PopupDrawer = ({ children, onClose, loading }) => {
 const PopupDialog = ({ children, onClose, loading }) => {
   const { classes } = useStyles();
   return (
-    <Dialog
-      opened
-      withCloseButton
-      onClose={onClose}
-      className={classes.dialog}
-    >
-      <LoadingOverlay visible={loading}/>
+    <Dialog opened withCloseButton onClose={onClose} className={classes.dialog}>
+      <LoadingOverlay visible={loading} />
       {children}
     </Dialog>
   );
 };
 
 const Popup = ({ children, onClose }) => {
-  const { slug } = useParams();
-  const { popupFromSlug, map, styleLoaded } = useContext(mapContext);
-  const [ slugReady, setSlugReady ] = useState(false);
+  const { slug, unit } = useParams();
+  const { popupFromSlug, styleLoaded, statsData, setUnit } =
+    useContext(mapContext);
+  const [slugReady, setSlugReady] = useState(false);
 
-  // eslint-disable-next-line
   useEffect(() => {
+    // wait until style is loaded so that we can actually select the address on the map!!
     if (styleLoaded && !slugReady) {
-      var features = map.current.querySourceFeatures("units", {
-        sourceLayer: "ccrr-units-geojson",
-        filter: [
-          "in",
-          ["literal", slug],
-          ["get", "slug"],
-        ]
-      });
-      if (features.length) setSlugReady(true);
-    } 
-  });
+      if (statsData.length) setSlugReady(true);
+    }
+  }, [styleLoaded, statsData, slugReady]);
 
   useEffect(() => {
-    if(slugReady) {
+    if (slugReady) {
       popupFromSlug(slug);
     }
     // TODO:
@@ -86,18 +75,17 @@ const Popup = ({ children, onClose }) => {
     // mapFilter is the problem!!! mapFilter is being constantly updated!!! why?!?!?!
   }, [slug, slugReady, popupFromSlug]);
 
+  useEffect(() => {
+    if (slugReady) {
+      setUnit(unit);
+    }
+    // eslint-disable-next-line
+  }, [unit, slugReady]);
+
   return (
     <>
-        <PopupDialog
-          children={children}
-          onClose={onClose}
-          loading={!slugReady}
-        />
-        <PopupDrawer
-          children={children}
-          onClose={onClose}
-          loading={!slugReady}
-        />
+      <PopupDialog children={children} onClose={onClose} loading={!slugReady} />
+      <PopupDrawer children={children} onClose={onClose} loading={!slugReady} />
     </>
   );
 };

@@ -1,4 +1,4 @@
-import { Chip, Text, Stack } from "@mantine/core";
+import { Chip, Stack, Group, Divider } from "@mantine/core";
 import { useContext } from "react";
 import { mapContext } from "../../context/mapContext";
 import FilterInfo from "./FilterInfo";
@@ -18,10 +18,10 @@ export const BedsSelect = () => {
 
     return (
       <Stack spacing="xs">
-          <Text fz="sm">
-            Number of bedrooms{" "}
-            <FilterInfo infoText="How many bedrooms are included in the unit?" />
-          </Text>
+          <Group position="apart">
+            Bedrooms <FilterInfo infoText="How many bedrooms are included in the unit?" />
+          </Group>
+          <Divider />
           <Chip.Group
             position="center"
             multiple
@@ -48,7 +48,7 @@ export const BedsSelect = () => {
               5 Bedroom
             </Chip>
           </Chip.Group>
-        </Stack>
+          </Stack>
     )
   }
 

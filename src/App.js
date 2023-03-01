@@ -1,33 +1,24 @@
 import React, { useState } from "react";
 import {
   MantineProvider,
-  Header,
-  Title,
-  ActionIcon,
   ColorSchemeProvider,
-  Group,
   createStyles,
-  Burger,
-  Transition,
-  Paper,
   Box,
-  Space,
 } from "@mantine/core";
 import { useColorScheme, useDisclosure } from "@mantine/hooks";
-import {
-  IconSun,
-  IconMoonStars,
-  IconBuildingEstate,
-} from "@tabler/icons-react";
 import Map from "./components/Map";
 import { MapProvider } from "./context/mapContext";
 import { NavbarContent, NavbarStatic } from "./components/Navbar";
 import { Route, Routes } from "react-router-dom";
 import { QueryParamProvider } from "use-query-params";
 import { ReactRouter6Adapter } from "use-query-params/adapters/react-router-6";
+import HeaderMenu from "./components/Header";
+import { MobileMenu } from "./components/MobileMenu";
 
 const HEADER_HEIGHT = 60;
 const NAVBAR_WIDTH = 300;
+const FILTER_HEIGHT = 110;
+const PADDING = 10;
 
 const useStyles = createStyles((theme) => ({
   root: {
@@ -42,6 +33,8 @@ const useStyles = createStyles((theme) => ({
     [theme.fn.smallerThan("sm")]: {
       display: "none",
     },
+
+    display: "none",
   },
 
   body: {
@@ -51,15 +44,12 @@ const useStyles = createStyles((theme) => ({
 
   main: {
     flex: 1,
-    //width: "calc(100vw - 300px)",
     boxSizing: "border-box",
   },
 
   map: {
-    //width: "100vw",
-    //height: "100vh",
-    //minWidth: "600px",
-    width: `calc(100vw - ${NAVBAR_WIDTH}px)`,
+    //width: `calc(100vw - ${NAVBAR_WIDTH}px)`,
+    width: `100vw`,
     height: `calc(100vh - ${HEADER_HEIGHT}px)`,
 
     [theme.fn.smallerThan("sm")]: {
@@ -68,56 +58,30 @@ const useStyles = createStyles((theme) => ({
     },
   },
 
-  dropdown: {
-    position: "absolute",
-    top: 0,
-    left: 0,
-    right: 0,
-    zIndex: 6,
-    borderTopRightRadius: 0,
-    borderTopLeftRadius: 0,
-    borderTopWidth: 0,
-    overflow: "hidden",
-
-    [theme.fn.largerThan("sm")]: {
-      display: "none",
-    },
-  },
-
   header: {
-    //display: "flex",
-    //justifyContet: "space-between",
-    //alignItems: "center",
-    //height: "100%",
-
     [theme.fn.smallerThan("sm")]: {
       display: "none",
     },
   },
 
-  mobileHeader: {
+  filters: {
     position: "absolute",
-    top: 0,
-    left: 0,
-    right: 0,
-    zIndex: 3,
-    borderTopRightRadius: 0,
-    borderTopLeftRadius: 0,
-    borderTopWidth: 0,
+    left: 10,
+    [theme.fn.largerThan("sm")]: {
+      top: HEADER_HEIGHT + PADDING,
+    },
+    [theme.fn.smallerThan("sm")]: {
+      top: 10,
+    },
   },
 
-  burger: {
+  stats: {
     position: "absolute",
-    top: 10,
+    top: HEADER_HEIGHT + PADDING + FILTER_HEIGHT,
     left: 10,
-    right: 0,
-    zIndex: 7,
-    borderTopRightRadius: 0,
-    borderTopLeftRadius: 0,
-    borderTopWidth: 0,
-    [theme.fn.largerThan("sm")]: {
-      display: "none",
-    },
+    [theme.fn.smallerThan("sm")]: {
+      display: "none"
+    }
   },
 }));
 
@@ -130,82 +94,56 @@ export default function App() {
   const [opened, { toggle }] = useDisclosure(false);
   const { classes } = useStyles();
 
-  const filters = (<NavbarContent />);
+  const filters = <NavbarContent />;
 
   return (
     <QueryParamProvider adapter={ReactRouter6Adapter}>
-    <ColorSchemeProvider
-      colorScheme={colorScheme}
-      toggleColorScheme={toggleColorScheme}
-    >
-      <MantineProvider
-        theme={{
-          colorScheme,
-          headings: { fontFamily: "Greycliff CF, sans-serif" },
-        }}
-        withGlobalStyles
-        withNormalizeCSS
+      <ColorSchemeProvider
+        colorScheme={colorScheme}
+        toggleColorScheme={toggleColorScheme}
       >
-        <Routes>
-        <Route path="/*" element={
-        <MapProvider>
-          <Box className={classes.root}>
-            <Header height={HEADER_HEIGHT} className={classes.header}>
-              <Group sx={{ height: "100%" }} px={20} position="apart">
-                <Title order={2}>
-                  <IconBuildingEstate /> Culver City Rental Registry
-                </Title>
-                <ActionIcon
-                  variant="default"
-                  onClick={() => toggleColorScheme()}
-                  size={30}
-                >
-                  {colorScheme === "dark" ? (
-                    <IconSun size={16} />
-                  ) : (
-                    <IconMoonStars size={16} />
-                  )}
-                </ActionIcon>
-              </Group>
-            </Header>
-
-            <div className={classes.body}>
-              <NavbarStatic className={classes.navbar} width={NAVBAR_WIDTH} filters={filters} />
-              <main className={classes.main}>
-                <Map className={classes.map} />
-                <Burger
-                      opened={opened}
-                      onClick={toggle}
-                      className={classes.burger}
-                      size="sm"
+        <MantineProvider
+          theme={{
+            colorScheme,
+            headings: { fontFamily: "Greycliff CF, sans-serif" },
+            primaryColor: "grape",
+          }}
+          withGlobalStyles
+          withNormalizeCSS
+        >
+          <Routes>
+            <Route
+              path="/*"
+              element={
+                <MapProvider>
+                  <Box className={classes.root}>
+                    <HeaderMenu
+                      height={HEADER_HEIGHT}
+                      className={classes.header}
                     />
-              
-              <Transition
-                transition="pop-top-left"
-                duration={200}
-                mounted={opened}
-              >
-                {(styles) => (
-                  <div>
-                  <Paper className={classes.dropdown} withBorder style={styles}>
-                    <Space h="md" />
-                  <Title order={2} align="center">
-                    <IconBuildingEstate /> Culver City Rental Registry
-                  </Title>
-                  
-                    {filters}
-                  </Paper>
-                  </div>
-                )}
-              </Transition>
-              </main>
-            </div>
-          </Box>
-        </MapProvider>
-        } />
-        </Routes>
-      </MantineProvider>
-    </ColorSchemeProvider>
+
+                    <div className={classes.body}>
+                      <NavbarStatic
+                        className={classes.navbar}
+                        width={NAVBAR_WIDTH}
+                        filters={filters}
+                      />
+                      <main className={classes.main}>
+                        <Map className={classes.map} classes={classes} />
+                        <MobileMenu
+                          opened={opened}
+                          toggle={toggle}
+                          filters={filters}
+                        />
+                      </main>
+                    </div>
+                  </Box>
+                </MapProvider>
+              }
+            />
+          </Routes>
+        </MantineProvider>
+      </ColorSchemeProvider>
     </QueryParamProvider>
   );
 }

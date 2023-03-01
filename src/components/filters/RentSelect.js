@@ -1,4 +1,4 @@
-import { createStyles, Group, NumberInput, RangeSlider, Stack, Text } from "@mantine/core";
+import { createStyles, Divider, Group, NumberInput, RangeSlider, Stack } from "@mantine/core";
 import { useContext } from "react";
 import { mapContext } from "../../context/mapContext";
 import FilterInfo from "./FilterInfo";
@@ -50,10 +50,10 @@ const useStyles = createStyles((theme) => ({
   
     return (
       <Stack spacing="xs">
-          <Text fz="sm">
-            Rent{" "}
-            <FilterInfo infoText="What is the most recent monthly rent reported by the landlord?" />
-          </Text>
+          <Group position="apart">
+            Monthly Rent <FilterInfo infoText="What is the most recent monthly rent reported by the landlord?" />
+          </Group>
+          <Divider />
           <Group noWrap>
             <NumberInput
               value={rentValue[0]}

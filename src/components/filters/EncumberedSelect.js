@@ -1,4 +1,4 @@
-import { Chip, Stack, Text } from "@mantine/core";
+import { Chip, Divider, Group, Stack, } from "@mantine/core";
 import { useContext } from "react";
 import { mapContext } from "../../context/mapContext";
 import FilterInfo from "./FilterInfo";
@@ -18,10 +18,10 @@ export const EncumberedSelect = () => {
   
     return (
       <Stack spacing="xs">
-          <Text fz="sm">
-            Affordability restrictions{" "}
-            <FilterInfo infoText="Is the unit encumbered by an income and affordable unit restriction?" />
-          </Text>
+          <Group position="apart">
+            Affordability Restrictions <FilterInfo infoText="Is the unit encumbered by an income and affordable unit restriction?" />
+          </Group>
+          <Divider />
           <Chip.Group
             position="center"
             multiple

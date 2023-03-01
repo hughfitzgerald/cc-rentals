@@ -1,5 +1,5 @@
 import { Accordion, Navbar } from "@mantine/core";
-import RentalFilters from "./RentalFilters";
+import { RentalFiltersStack } from "./RentalFilters";
 import RentalStats from "./RentalStats";
 
 const NavbarContent = () => {
@@ -8,7 +8,7 @@ const NavbarContent = () => {
       <Accordion.Item value="filters">
         <Accordion.Control>Rental Filters</Accordion.Control>
         <Accordion.Panel>
-          <RentalFilters />
+          <RentalFiltersStack />
         </Accordion.Panel>
       </Accordion.Item>
       <Accordion.Item value="stats">
