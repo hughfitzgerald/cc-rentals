@@ -14,6 +14,7 @@ import { QueryParamProvider } from "use-query-params";
 import { ReactRouter6Adapter } from "use-query-params/adapters/react-router-6";
 import HeaderMenu from "./components/Header";
 import { MobileMenu } from "./components/MobileMenu";
+import { PrivacyPolicy } from "./components/PrivacyPolicy";
 
 const HEADER_HEIGHT = 60;
 const NAVBAR_WIDTH = 300;
@@ -83,10 +84,29 @@ const useStyles = createStyles((theme) => ({
       display: "none"
     }
   },
+
+  colorToggle: {
+    position: "absolute",
+    right: 11,
+    top: 145,
+    [theme.fn.largerThan("sm")]: {
+      display: "none"
+    }
+  },
+
+  aboutButton: {
+    position: "absolute",
+    right: 11,
+    top: 182,
+    [theme.fn.largerThan("sm")]: {
+      display: "none"
+    }
+  },
 }));
 
 export default function App() {
   const preferredColorScheme = useColorScheme();
+  console.log(preferredColorScheme)
   const [colorScheme, setColorScheme] = useState(preferredColorScheme);
   const toggleColorScheme = () =>
     setColorScheme(colorScheme === "dark" ? "light" : "dark");
@@ -112,6 +132,7 @@ export default function App() {
           withNormalizeCSS
         >
           <Routes>
+            <Route path="/PrivacyPolicy" element={<PrivacyPolicy />} />
             <Route
               path="/*"
               element={

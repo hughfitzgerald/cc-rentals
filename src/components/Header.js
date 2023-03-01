@@ -10,7 +10,7 @@ const HeaderMenu = ({ className, height }) => {
         <Title order={2}>
           <IconBuildingEstate /> Culver City Rental Registry
         </Title>
-        <ColorSchemeToggle variant="outline" />
+        <ColorSchemeToggle variant="outline" size={29} />
       </Group>
     </Header>
   );

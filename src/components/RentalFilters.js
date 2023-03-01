@@ -29,7 +29,6 @@ import { mapContext } from "../context/mapContext";
 import { AddressSelect } from "./filters/AddressSelect";
 import { useMediaQuery } from "@mantine/hooks";
 import RentalStats from "./RentalStats";
-import ColorSchemeToggle from "./ColorSchemeToggle";
 
 export const RentalFiltersStack = () => {
   return (
@@ -52,6 +51,11 @@ export const RentalFiltersStack = () => {
 
 const useStyles = createStyles((theme) => ({
   filterButton: {
+    color: 
+      theme.colorScheme === "dark"
+        ? theme.colors.dark[0]
+        : theme.colors.white,
+
     borderColor:
       theme.colorScheme === "dark"
         ? theme.colors.dark[4]
@@ -62,14 +66,28 @@ const useStyles = createStyles((theme) => ({
         : theme.colors.grape[6],
   },
   resetButton: {
+    color: 
+      theme.colorScheme === "dark"
+        ? theme.colors.dark[0]
+        : theme.colors.white,
     borderColor:
       theme.colorScheme === "dark"
         ? theme.colors.dark[4]
         : theme.colors.grape[9],
     backgroundColor:
       theme.colorScheme === "dark"
-        ? theme.colors.dark[6]
+        ? theme.colors.dark[9]
         : theme.colors.grape[9],
+    '&[disabled]': {
+      color: 
+        theme.colorScheme === "dark"
+          ? theme.colors.dark[6]
+          : theme.colors.gray[5],
+      backgroundColor:
+        theme.colorScheme === "dark"
+          ? theme.colors.dark[4]
+          : theme.colors.gray[2],
+    },
   },
 }));
 
@@ -240,8 +258,6 @@ export const RentalFiltersGrid = () => {
               Filters
             </Button>
             <ResetFilters compact />
-
-            <ColorSchemeToggle variant="filled" />
           </Stack>
         </Group>
       </>

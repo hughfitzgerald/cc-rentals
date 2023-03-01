@@ -22,6 +22,8 @@ import {
 import { useTimeout } from "@mantine/hooks";
 import { RentalFiltersGrid } from "./RentalFilters";
 import RentalStats from "./RentalStats";
+import ColorSchemeToggle from "./ColorSchemeToggle";
+import { AboutButton } from "./About";
 
 const ClearPopup = ({ popupAddress, map }) => {
   const { styleLoaded } = useContext(mapContext);
@@ -318,6 +320,9 @@ const Map = ({ className, classes }) => {
       <Card className={classes.stats} p="md" withBorder shadow="sm">
         <RentalStats />
       </Card>
+
+      <AboutButton variant="filled" className={classes.aboutButton} size={29}/>    
+      <ColorSchemeToggle variant="filled" className={classes.colorToggle} size={29}/>
 
       <Title sx={{ position: "absolute", top: 70, left: 310, display: "none" }}>
         {coords}

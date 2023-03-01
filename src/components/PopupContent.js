@@ -20,7 +20,7 @@ const useStyles = createStyles((theme) => ({
     [theme.fn.largerThan("sm")]: {
       height: 270,
       width: 1125,
-    },    
+    },
   },
 
   /*
@@ -156,8 +156,8 @@ export default function PopupContent() {
       <DataTable
         styles={(theme) => ({
           root: {
-              height: mediaQuery ? "100%" : "calc(50vh - 110px)",
-          }
+            height: mediaQuery ? "100%" : "calc(50vh - 110px)",
+          },
         })}
         withBorder
         borderRadius="sm"
@@ -225,17 +225,20 @@ export function Unit() {
           <Text fw={700}>{popupAddress.current}</Text>
           <Text fw={700}>Unit: {unitData.unit}</Text>
         </Box>
-        <Link to={"../" + unitData.slug}>
-          <Button variant="outline" leftIcon={<IconArrowNarrowLeft />}>
-            Back to {popupAddress.current}
-          </Button>
-        </Link>
+        <Button
+          component={Link}
+          to={"../" + unitData.slug}
+          variant="outline"
+          leftIcon={<IconArrowNarrowLeft />}
+        >
+          Back to {popupAddress.current}
+        </Button>
       </Group>
       <DataTable
         styles={(theme) => ({
           root: {
-              height: mediaQuery ? "100%" : "calc(50vh - 185px)",
-          }
+            height: mediaQuery ? "100%" : "calc(50vh - 185px)",
+          },
         })}
         withBorder
         borderRadius="sm"
