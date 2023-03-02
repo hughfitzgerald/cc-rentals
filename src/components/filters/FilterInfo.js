@@ -13,7 +13,7 @@ export const FilterInfo = ({ infoText }) => {
   ));
 
   return (
-    <HoverCard shadow="md" position="top-start">
+    <HoverCard shadow="md" width={300}>
       <HoverCard.Target>
         <InfoIcon />
       </HoverCard.Target>

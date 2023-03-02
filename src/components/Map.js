@@ -25,18 +25,6 @@ import RentalStats from "./RentalStats";
 import ColorSchemeToggle from "./ColorSchemeToggle";
 import { AboutButton } from "./About";
 
-const ClearPopup = ({ popupAddress, map }) => {
-  const { styleLoaded } = useContext(mapContext);
-  useEffect(() => {
-    if (styleLoaded) {
-      popupAddress.curent = null;
-      map.current.setLayoutProperty("selected-address", "visibility", "none");
-    }
-    // eslint-disable-next-line
-  }, []);
-  return <></>;
-};
-
 const Map = ({ className, classes }) => {
   const {
     map,
@@ -63,6 +51,17 @@ const Map = ({ className, classes }) => {
   const lightStyle = "mapbox://styles/hughfitzgerald/cldjdvxl7000001qqfr6kpnpv";
   const darkStyleID = "hughfitzgerald/clenh291g000401rq8lbzjzhu";
   const lightStyleID = "hughfitzgerald/cldjdvxl7000001qqfr6kpnpv";
+
+  const ClearPopup = () => {
+    useEffect(() => {
+      if (styleLoaded) {
+        popupAddress.curent = null;
+        map.current.setLayoutProperty("selected-address", "visibility", "none");
+      }
+      // eslint-disable-next-line
+    }, []);
+    return <></>;
+  };
 
   function onPopupClose() {
     navigate({
@@ -288,7 +287,7 @@ const Map = ({ className, classes }) => {
       <Routes>
         <Route
           path="/"
-          element={<ClearPopup popupAddress={popupAddress} map={map} />}
+          element={<ClearPopup />}
         />
         <Route
           path="/:slug"

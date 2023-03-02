@@ -5,16 +5,29 @@ import { Link } from "react-router-dom";
 
 const About = () => {
   return (
-    <Stack>
+    <Stack sx={{ maxWidth: 700 }}>
       <Text>
         This interactive Culver City rental registry map was created by Culver
-        City resident Stephen Jones with Culver City for More Homes, based on
-        data collected from landlords by the City of Culver City and obtained
-        via public records requests.
+        City resident Stephen Jones, in conjunction with{" "}
+        <a
+          rel="external noopener noreferrer"
+          target="_blank"
+          href="https://cc4mh.org/"
+        >
+          Culver City for More Homes
+        </a>
+        . The data in the map was collected by the City of Culver City directly
+        from landlords. We obtained the data from the city via public records requests.
       </Text>
       <Text>
-        Read our <Link to="PrivacyPolicy">Privacy Policy</Link> for more information about how we collect and
-        use data.
+        Read our{" "}
+        <Link to="PrivacyPolicy" rel="noopener" target="_blank">
+          Privacy Policy
+        </Link>{" "}
+        for more information about how we collect and use data.
+      </Text>
+      <Text>
+        Questions? You can reach us at <a href="mailto:info@ccrentals.org">info@ccrentals.org</a>.
       </Text>
     </Stack>
   );
@@ -27,16 +40,15 @@ export const AboutButton = ({ variant, className, size }) => {
       <Modal
         title="About"
         opened={opened}
-        onClose={() => {setOpened(false)}}
+        onClose={() => {
+          setOpened(false);
+        }}
         size="auto"
       >
         <About />
       </Modal>
 
-      <ActionIcon
-        className={className}
-        onClick={() => setOpened(true)}
-      >
+      <ActionIcon className={className} onClick={() => setOpened(true)}>
         <ThemeIcon variant={variant} size={size}>
           <IconInfoCircle size={18} />
         </ThemeIcon>

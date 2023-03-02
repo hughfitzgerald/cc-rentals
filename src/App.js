@@ -16,6 +16,7 @@ import HeaderMenu from "./components/Header";
 import { MobileMenu } from "./components/MobileMenu";
 import { PrivacyPolicy } from "./components/PrivacyPolicy";
 
+
 const HEADER_HEIGHT = 60;
 const NAVBAR_WIDTH = 300;
 const FILTER_HEIGHT = 110;
@@ -106,7 +107,6 @@ const useStyles = createStyles((theme) => ({
 
 export default function App() {
   const preferredColorScheme = useColorScheme();
-  console.log(preferredColorScheme)
   const [colorScheme, setColorScheme] = useState(preferredColorScheme);
   const toggleColorScheme = () =>
     setColorScheme(colorScheme === "dark" ? "light" : "dark");
@@ -131,17 +131,19 @@ export default function App() {
           withGlobalStyles
           withNormalizeCSS
         >
+                <MapProvider>
+                  <Box className={classes.root}>
+                    
+                  <HeaderMenu
+                      height={HEADER_HEIGHT}
+                      className={classes.header}
+                    />
+                    
           <Routes>
             <Route path="/PrivacyPolicy" element={<PrivacyPolicy />} />
             <Route
               path="/*"
               element={
-                <MapProvider>
-                  <Box className={classes.root}>
-                    <HeaderMenu
-                      height={HEADER_HEIGHT}
-                      className={classes.header}
-                    />
 
                     <div className={classes.body}>
                       <NavbarStatic
@@ -158,11 +160,11 @@ export default function App() {
                         />
                       </main>
                     </div>
-                  </Box>
-                </MapProvider>
               }
             />
           </Routes>
+                  </Box>
+                </MapProvider>
         </MantineProvider>
       </ColorSchemeProvider>
     </QueryParamProvider>

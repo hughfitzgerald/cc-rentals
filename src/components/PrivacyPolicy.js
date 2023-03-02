@@ -1,11 +1,12 @@
-import { Card, Center } from "@mantine/core";
+import { Card, Center, Title, Text, Space } from "@mantine/core";
 
 export const PrivacyPolicy = () => {
   return (
     <Center>
-      <Card sx={{ maxWidth: 600, top: 10 }} withBorder shadow="sm">
+      <Card sx={{ maxWidth: 700, top: 10 }} withBorder shadow="sm">
         <PrivacyText />
       </Card>
+      <Space />
     </Center>
   );
 };
@@ -13,7 +14,8 @@ export const PrivacyPolicy = () => {
 const PrivacyText = () => {
   return (
     <>
-      <h1>Privacy Policy</h1>
+      <Title>Privacy Policy</Title>
+      <Text>
       <p>Last updated: March 01, 2023</p>
       <p>
         This Privacy Policy describes Our policies and procedures on the
@@ -1456,6 +1458,7 @@ const PrivacyText = () => {
       <ul>
         <li>By email: <a href="mailto:info@ccrentals.org">info@ccrentals.org</a></li>
       </ul>
+      </Text>
     </>
   );
 };

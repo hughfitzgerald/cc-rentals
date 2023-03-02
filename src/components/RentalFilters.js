@@ -33,16 +33,16 @@ import RentalStats from "./RentalStats";
 export const RentalFiltersStack = () => {
   return (
     <Stack>
-      <Card withBorder shadow="sm">
+      <Card withBorder shadow="sm" sx={{overflow:"visible"}}>
         <VacancySelect />
       </Card>
-      <Card withBorder shadow="sm">
+      <Card withBorder shadow="sm" sx={{overflow:"visible"}}>
         <EncumberedSelect />
       </Card>
-      <Card withBorder shadow="sm">
+      <Card withBorder shadow="sm" sx={{overflow:"visible"}}>
         <BedsSelect />
       </Card>
-      <Card withBorder shadow="sm">
+      <Card withBorder shadow="sm" sx={{overflow:"visible"}}>
         <RentSelect />
       </Card>
     </Stack>
