@@ -1,12 +1,13 @@
-import { Autocomplete, Group, Stack, Text } from "@mantine/core";
+import { Autocomplete, CloseButton, Group, Stack, Text } from "@mantine/core";
 import { IconUser } from "@tabler/icons-react";
 import { forwardRef, useContext, useEffect, useState } from "react";
-import { mapContext } from "../../context/mapContext";
+import { mapContext, mapDispatchContext } from "../../context/mapContext";
 import FilterInfo from "./FilterInfo";
 
 export const OwnerSelect = ({ label }) => {
-  const { setOwnerValues, ownerValues, unreg, setSearchParams } =
-    useContext(mapContext);
+  const { defOwner, searchParams, reactSearchParams } = useContext(mapContext);
+  const { setSearchParams } = useContext(mapDispatchContext);
+  const [ownerValue, setOwnerValue] = useState(defOwner);
 
   const AutoCompleteItem = forwardRef(({ count, label, ...others }, ref) => (
     <div ref={ref} {...others}>
@@ -32,10 +33,25 @@ export const OwnerSelect = ({ label }) => {
     { value: "WISSNER, PETER A", label: "WISSNER, PETER A", count: 224 },
   ]);
 
-  function updateOwner(ownerValues) {
-    setSearchParams({ owner: ownerValues });
-    setOwnerValues(ownerValues);
+  function updateOwner(ownerValue) {
+    ownerValue = ownerValue.value;
+    setSearchParams({ owner: ownerValue });
+    setOwnerValue(ownerValue);
   }
+
+  useEffect(() => {
+    setOwnerValue(searchParams["owner"]);
+    //eslint-disable-next-line
+  }, [reactSearchParams]);
+
+  const ClearButton = () => {
+    return (
+      <CloseButton
+        variant="transparent"
+        onClick={() => updateOwner({ value: "" })}
+      />
+    );
+  };
 
   useEffect(() => {
     async function loadOwners() {
@@ -52,22 +68,23 @@ export const OwnerSelect = ({ label }) => {
 
   return (
     <Stack spacing="xs">
-      <Text fz="sm" sx={{ display: (label) ? "block" : "none" }}>
+      <Text fz="sm" sx={{ display: label ? "block" : "none" }}>
         Owner name{" "}
         <FilterInfo infoText="Who is registered with the city as the owner?" />
       </Text>
       <Autocomplete
-        sx={{width:250}}
+        sx={{ width: 250 }}
         placeholder="Landlord name"
-        onChange={updateOwner}
-        value={ownerValues}
+        onChange={setOwnerValue}
+        onItemSubmit={updateOwner}
+        value={ownerValue}
         data={data}
         nothingFound="Nothing found"
         limit={15}
         maxDropdownHeight={200}
         itemComponent={AutoCompleteItem}
-        disabled={unreg}
         icon={<IconUser />}
+        rightSection={<ClearButton />}
       />
     </Stack>
   );

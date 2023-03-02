@@ -1,6 +1,6 @@
 import { createStyles, Divider, Group, NumberInput, RangeSlider, Stack } from "@mantine/core";
-import { useContext } from "react";
-import { mapContext } from "../../context/mapContext";
+import { useContext, useEffect, useState } from "react";
+import { mapContext, mapDispatchContext } from "../../context/mapContext";
 import FilterInfo from "./FilterInfo";
 
 const useStyles = createStyles((theme) => ({
@@ -40,13 +40,20 @@ const useStyles = createStyles((theme) => ({
   }));
   
   export const RentSelect = () => {
-    const { setRentValue, rentValue, unreg, setSearchParams } = useContext(mapContext);
+    const { defRent, searchParams, reactSearchParams } = useContext(mapContext);
+    const { setSearchParams } = useContext(mapDispatchContext);
+    const [rentValue, setRentValue] = useState(defRent);
     const { classes } = useStyles();
   
     function updateRent(rentValue) {
       setSearchParams({ rent: rentValue });
       setRentValue(rentValue);
     }
+
+    useEffect(() => {
+      setRentValue(searchParams["rent"]);
+      //eslint-disable-next-line
+    }, [reactSearchParams]);
   
     return (
       <Stack spacing="xs">
@@ -63,7 +70,6 @@ const useStyles = createStyles((theme) => ({
               max={10000}
               hideControls
               classNames={{ input: classes.input, label: classes.label }}
-              disabled={unreg}
               parser={(v) => v.replace(/\$\s?|(,*)/g, "")}
               formatter={(v) =>
                 !Number.isNaN(parseFloat(v))
@@ -79,7 +85,6 @@ const useStyles = createStyles((theme) => ({
               max={10000}
               hideControls
               classNames={{ input: classes.input, label: classes.label }}
-              disabled={unreg}
               parser={(v) => v.replace(/\$\s?|(,*)/g, "")}
               formatter={(v) =>
                 !Number.isNaN(parseFloat(v))
@@ -99,7 +104,6 @@ const useStyles = createStyles((theme) => ({
             radius={0}
             className={classes.slider}
             classNames={{ thumb: classes.thumb, track: classes.track }}
-            disabled={unreg}
             showLabelOnHover={false}
             label={null}
           />

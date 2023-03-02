@@ -1,10 +1,12 @@
 import { Chip, Divider, Group, Stack, } from "@mantine/core";
-import { useContext } from "react";
-import { mapContext } from "../../context/mapContext";
+import { useContext, useEffect, useState } from "react";
+import { mapContext, mapDispatchContext } from "../../context/mapContext";
 import FilterInfo from "./FilterInfo";
 
 export const EncumberedSelect = () => {
-    const { setEncValues, encValues, unreg, setSearchParams } = useContext(mapContext);
+    const { defEnc, searchParams, reactSearchParams } = useContext(mapContext);
+    const { setSearchParams } = useContext(mapDispatchContext);
+    const [encValues, setEncValues] = useState(defEnc);
   
     function updateEnc(encValues) {
       if (!encValues.length) {
@@ -15,6 +17,11 @@ export const EncumberedSelect = () => {
   
       setEncValues(encValues);
     }
+
+    useEffect(() => {
+      setEncValues(searchParams["enc"]);
+      //eslint-disable-next-line
+    }, [reactSearchParams]);
   
     return (
       <Stack spacing="xs">
@@ -29,10 +36,10 @@ export const EncumberedSelect = () => {
             value={encValues}
             onChange={updateEnc}
           >
-            <Chip value="affordable" variant="filled" disabled={unreg}>
+            <Chip value="affordable" variant="filled">
               Restricted
             </Chip>
-            <Chip value="market" variant="filled" disabled={unreg}>
+            <Chip value="market" variant="filled">
               Unrestricted
             </Chip>
           </Chip.Group>

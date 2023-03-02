@@ -1,7 +1,7 @@
 import { Drawer, Dialog, createStyles, LoadingOverlay } from "@mantine/core";
 import { useContext, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { mapContext } from "../context/mapContext";
+import { mapContext, mapDispatchContext } from "../context/mapContext";
 
 const useStyles = createStyles((theme) => ({
   drawer: {
@@ -53,8 +53,9 @@ const PopupDialog = ({ children, onClose, loading }) => {
 
 const Popup = ({ children, onClose }) => {
   const { slug, unit } = useParams();
-  const { popupFromSlug, styleLoaded, statsData, setUnit } =
+  const { styleLoaded, statsData } =
     useContext(mapContext);
+  const { setUnit, popupFromSlug } = useContext(mapDispatchContext);
   const [slugReady, setSlugReady] = useState(false);
 
   useEffect(() => {

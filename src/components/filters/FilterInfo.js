@@ -14,7 +14,7 @@ export const FilterInfo = ({ infoText }) => {
 
   return (
     <HoverCard shadow="md" width={300}>
-      <HoverCard.Target>
+      <HoverCard.Target  sx={{ cursor: 'help' }}>
         <InfoIcon />
       </HoverCard.Target>
       <HoverCard.Dropdown>

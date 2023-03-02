@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useRef, useState } from "react";
 import mapboxgl from "!mapbox-gl"; // eslint-disable-line
 import "mapbox-gl/dist/mapbox-gl.css";
 //import styled from "@emotion/styled";
-import { mapContext } from "../context/mapContext";
+import { mapContext, mapDispatchContext } from "../context/mapContext";
 import { Popup } from "./Popup";
 import PopupContent, { Unit } from "./PopupContent";
 import {
@@ -30,11 +30,9 @@ const Map = ({ className, classes }) => {
     map,
     mapFilter,
     popupAddress,
-    //forceStatsUpdate,
-    popupFromClick,
-    setStyleLoaded,
     styleLoaded,
   } = useContext(mapContext);
+  const { popupFromClick, setStyleLoaded } = useContext( mapDispatchContext );
   const eventsSet = useRef(false);
   const { colorScheme } = useMantineColorScheme();
   const mapContainer = useRef(null);

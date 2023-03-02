@@ -2,11 +2,6 @@ import React, { useContext } from "react";
 import { Stack, Text, Group } from "@mantine/core";
 import { mapContext } from "../context/mapContext";
 
-export const RentalStats = () => {
-  const { unreg } = useContext(mapContext);
-  return unreg ? <UnregisteredRentalStats /> : <RegisteredRentalStats />;
-};
-
 const BigRentalStatBlock = ({ label, value }) => {
   return (
     <Stack align="center" spacing="xs">
@@ -33,23 +28,7 @@ const SmallRentalStatBlock = ({ label, value }) => {
   );
 };
 
-const UnregisteredRentalStats = () => {
-  const { totalUnregUnits } = useContext(mapContext);
-  const tu = new Intl.NumberFormat("en-US").format(totalUnregUnits);
-
-  return (
-    <Stack>
-      <Group position="center">
-        <BigRentalStatBlock
-          label="Addresses with Unregistered Rental Units"
-          value={tu}
-        />
-      </Group>
-    </Stack>
-  );
-};
-
-const RegisteredRentalStats = () => {
+const RentalStats = () => {
   const { avgRent, minRent, maxRent, totalUnits } = useContext(mapContext);
 
   const ar = new Intl.NumberFormat("en-US", {

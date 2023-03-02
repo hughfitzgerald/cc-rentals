@@ -25,7 +25,7 @@ import {
   IconTag,
 } from "@tabler/icons-react";
 import { useContext, useState } from "react";
-import { mapContext } from "../context/mapContext";
+import { mapDispatchContext } from "../context/mapContext";
 import { AddressSelect } from "./filters/AddressSelect";
 import { useMediaQuery } from "@mantine/hooks";
 import RentalStats from "./RentalStats";
@@ -93,7 +93,7 @@ const useStyles = createStyles((theme) => ({
 
 const FilterPopover = ({ label, filter, icon, filterString }) => {
   const { classes } = useStyles();
-  const { thisFilterSet } = useContext(mapContext);
+  const { thisFilterSet } = useContext(mapDispatchContext);
   const disabled = !thisFilterSet(filterString);
   return (
     <Popover trapFocus width={300}>
@@ -134,7 +134,7 @@ const StatsPopover = () => {
 };
 
 const ResetFilters = ({ compact }) => {
-  const { resetFilters, filtersSet } = useContext(mapContext);
+  const { resetFilters, filtersSet } = useContext(mapDispatchContext);
   const disabled = !filtersSet();
   const { classes } = useStyles();
   return (

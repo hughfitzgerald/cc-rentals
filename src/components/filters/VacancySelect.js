@@ -1,10 +1,12 @@
 import { Chip, Divider, Group, Stack } from "@mantine/core";
-import { useContext } from "react";
-import { mapContext } from "../../context/mapContext";
+import { useContext, useEffect, useState } from "react";
+import { mapContext, mapDispatchContext } from "../../context/mapContext";
 import FilterInfo from "./FilterInfo";
 
 export const VacancySelect = () => {
-    const { setVacancyValues, vacancyValues, unreg, setSearchParams } = useContext(mapContext);
+    const { defVacancy, searchParams, reactSearchParams } = useContext(mapContext);
+    const { setSearchParams } = useContext(mapDispatchContext);
+    const [vacancyValues, setVacancyValues] = useState(defVacancy);
     
     function updateVacancy(vacancyValues) {
       if (!vacancyValues.length) {
@@ -14,6 +16,11 @@ export const VacancySelect = () => {
       }
       setVacancyValues(vacancyValues);
     }
+
+    useEffect(() => {
+      setVacancyValues(searchParams["vac"]);
+      //eslint-disable-next-line
+    }, [reactSearchParams]);
   
     return (
       <Stack spacing="xs">
@@ -28,10 +35,10 @@ export const VacancySelect = () => {
           value={vacancyValues}
           onChange={updateVacancy}
         >
-          <Chip value="rented" variant="filled" disabled={unreg}>
+          <Chip value="rented" variant="filled">
             Rented
           </Chip>
-          <Chip value="vacant" variant="filled" disabled={unreg}>
+          <Chip value="vacant" variant="filled">
             Vacant
           </Chip>
         </Chip.Group>

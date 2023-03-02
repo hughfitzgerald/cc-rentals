@@ -12,7 +12,7 @@ import {
 import sortBy from "lodash/sortBy";
 import { mapContext } from "../context/mapContext.js";
 import { useMediaQuery } from "@mantine/hooks";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { IconArrowNarrowLeft } from "@tabler/icons-react";
 
 const useStyles = createStyles((theme) => ({
@@ -22,94 +22,12 @@ const useStyles = createStyles((theme) => ({
       width: 1125,
     },
   },
-
-  /*
-  dataTableBox: {
-    [theme.fn.largerThan("sm")]: {
-      height: 210,
-      width: 1125,
-    },
-    
-    [!theme.fn.largerThan("sm")]: {
-      height: 10,
-      width: "calc(100vw - 20px)",
-    },
-  },
-
-  histTableBox: {
-    [theme.fn.largerThan("sm")]: {
-      height: 185,
-      width: 1125,
-    },
-    
-    [!theme.fn.largerThan("sm")]: {
-      height: "calc(50% - 100px)",
-      width: "calc(100vw - 20px)",
-    },
-    
-  },*/
 }));
-
-const essential_columns = [
-  {
-    accessor: "unit",
-    sortable: true,
-    render: ({ unit }) => {
-      return <Link to={unit.toString()}>{unit}</Link>;
-    },
-  },
-  {
-    accessor: "rent",
-    render: ({ rent }) =>
-      new Intl.NumberFormat("en-US", {
-        style: "currency",
-        currency: "USD",
-      }).format(rent),
-    sortable: true,
-  },
-  {
-    accessor: "rentdate",
-    title: "Rent Reported On",
-    sortable: true,
-  },
-];
-const extra_columns = [
-  {
-    accessor: "beds",
-    sortable: true,
-  },
-  {
-    accessor: "baths",
-    sortable: true,
-  },
-  {
-    accessor: "built",
-    title: "Year Built",
-    sortable: true,
-  },
-  {
-    accessor: "encumbered",
-    title: "Restricted Unit",
-    sortable: true,
-  },
-  {
-    accessor: "status",
-    title: "Vacancy Status",
-    sortable: true,
-  },
-];
-
-const owner_columns = [
-  {
-    accessor: "owner",
-    title: "Owner",
-    sortable: true,
-  },
-];
 
 const PopupOwner = ({ popupMultipleOwners, popupOwner }) => {
   const theme = useMantineTheme();
   const mediaQuery = useMediaQuery(`(min-width: ${theme.breakpoints.sm}px)`);
+  
   if (popupMultipleOwners.current) {
     if (mediaQuery) {
       return (
@@ -138,11 +56,69 @@ export default function PopupContent() {
   const theme = useMantineTheme();
   const mediaQuery = useMediaQuery(`(min-width: ${theme.breakpoints.sm}px)`);
   const { classes } = useStyles();
+  const { search } = useLocation();
 
   useEffect(() => {
     const data = sortBy(popupUnits, sortStatus.columnAccessor);
     setRecords(sortStatus.direction === "desc" ? data.reverse() : data);
   }, [sortStatus, popupUnits]);
+
+  const essential_columns = [
+    {
+      accessor: "unit",
+      sortable: true,
+      render: ({ unit }) => {
+        return <Link to={unit.toString().concat(search)}>{unit}</Link>;
+      },
+    },
+    {
+      accessor: "rent",
+      render: ({ rent }) =>
+        new Intl.NumberFormat("en-US", {
+          style: "currency",
+          currency: "USD",
+        }).format(rent),
+      sortable: true,
+    },
+    {
+      accessor: "rentdate",
+      title: "Rent Reported On",
+      sortable: true,
+    },
+  ];
+  const extra_columns = [
+    {
+      accessor: "beds",
+      sortable: true,
+    },
+    {
+      accessor: "baths",
+      sortable: true,
+    },
+    {
+      accessor: "built",
+      title: "Year Built",
+      sortable: true,
+    },
+    {
+      accessor: "encumbered",
+      title: "Restricted Unit",
+      sortable: true,
+    },
+    {
+      accessor: "status",
+      title: "Vacancy Status",
+      sortable: true,
+    },
+  ];
+  
+  const owner_columns = [
+    {
+      accessor: "owner",
+      title: "Owner",
+      sortable: true,
+    },
+  ];
 
   return (
     <Stack className={classes.popupBox}>
@@ -182,24 +158,6 @@ export default function PopupContent() {
   );
 }
 
-const hist_columns = [
-  {
-    accessor: "rentdate",
-    title: "Date Reported",
-    sortable: true,
-  },
-  {
-    accessor: "rent",
-    title: "Rent Amount",
-    sortable: true,
-    render: ({ rent }) =>
-      new Intl.NumberFormat("en-US", {
-        style: "currency",
-        currency: "USD",
-      }).format(rent),
-  },
-];
-
 export function Unit() {
   const { popupAddress, unitData, unitRents } = useContext(mapContext);
   const [sortStatus, setSortStatus] = useState({
@@ -210,11 +168,30 @@ export function Unit() {
   const { classes } = useStyles();
   const theme = useMantineTheme();
   const mediaQuery = useMediaQuery(`(min-width: ${theme.breakpoints.sm}px)`);
+  const { search } = useLocation();
 
   useEffect(() => {
     const data = sortBy(unitRents, sortStatus.columnAccessor);
     setRecords(sortStatus.direction === "desc" ? data.reverse() : data);
   }, [sortStatus, unitRents]);
+
+  const hist_columns = [
+    {
+      accessor: "rentdate",
+      title: "Date Reported",
+      sortable: true,
+    },
+    {
+      accessor: "rent",
+      title: "Rent Amount",
+      sortable: true,
+      render: ({ rent }) =>
+        new Intl.NumberFormat("en-US", {
+          style: "currency",
+          currency: "USD",
+        }).format(rent),
+    },
+  ];
 
   if (!unitData || !unitRents) return <></>;
 
@@ -227,7 +204,7 @@ export function Unit() {
         </Box>
         <Button
           component={Link}
-          to={"../" + unitData.slug}
+          to={"../" + unitData.slug + search}
           variant="outline"
           leftIcon={<IconArrowNarrowLeft />}
         >
