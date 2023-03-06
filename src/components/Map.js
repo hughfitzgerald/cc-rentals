@@ -42,7 +42,6 @@ const Map = ({ className, classes }) => {
   const previousClick = useRef();
   const previousSourceLoad = useRef();
   const onSourceLoad = useRef(false);
-  const previousImageLoad = useRef();
   const [coords, setCoords] = useState("");
   const { start, clear } = useTimeout((event) => popupFromClick(event[0]), 500);
   const darkStyle = "mapbox://styles/hughfitzgerald/clenh291g000401rq8lbzjzhu";
@@ -130,24 +129,6 @@ const Map = ({ className, classes }) => {
     } else {
       switchBaseMap(darkStyleID);
     }
-
-    if (previousImageLoad.current) {
-      map.current.off(previousImageLoad.current);
-    }
-    previousImageLoad.current = () => {
-      map.current.loadImage(
-        "https://www.ccrentals.org/building_blue.png",
-        (error, image) => {
-          if (error) throw error;
-
-          if (map.current.hasImage("custom-marker")) {
-            return;
-          }
-          map.current.addImage("custom-marker", image);
-        }
-      );
-    };
-    map.current.on("styleimagemissing", previousImageLoad.current);
     // eslint-disable-next-line
   }, [colorScheme]);
 
@@ -215,41 +196,33 @@ const Map = ({ className, classes }) => {
         type: "circle",
         paint: {
           "circle-radius": 4,
-          "circle-color": "rgba(0, 0, 0, .75)",
+          "circle-color": colorScheme === "light" ? "rgba(0, 0, 0, .75)" : "rgba(252,156,199,.75)",
         },
       });
-
-      map.current.loadImage(
-        "https://www.ccrentals.org/building_blue.png",
-        (error, image) => {
-          if (error) throw error;
-          map.current.addImage("custom-marker", image);
-          // Add a GeoJSON source with 2 points
-
-          // Add a symbol layer
-          map.current.addLayer({
-            id: "selected-address",
-            type: "symbol",
-            source: "units",
-            layout: {
-              visibility: "none",
-              "icon-image": "custom-marker",
-              // get the title name from the source's "title" property
-              "text-field": ["get", "address"],
-              //"text-font": ["Open Sans Semibold", "Arial Unicode MS Bold"],
-              "text-font": ["DIN Pro Medium", "Arial Unicode MS Bold"],
-              "text-offset": [0, 1.25],
-              "text-anchor": "top",
-            },
-            paint: {
-              "text-color": "#07748c",
-              "text-halo-width": 2,
-              "text-halo-color": "#ffffff",
-              "text-halo-blur": 1,
-            },
-          });
-        }
-      );
+      
+      map.current.addLayer({
+        id: "selected-address",
+        type: "symbol",
+        source: "units",
+        layout: {
+          visibility: "none",
+          "icon-image": "building-light",
+          "icon-size": 1.5,
+          //"icon-color": "#07748c",
+          //"icon-text-fit": "height",
+          "text-field": ["get", "address"],
+          //"text-font": ["Open Sans Semibold", "Arial Unicode MS Bold"],
+          "text-font": ["DIN Pro Medium", "Arial Unicode MS Bold"],
+          "text-offset": [0, 1],
+          "text-anchor": "top",
+        },
+        paint: {
+          "text-color": "#07748c",
+          "text-halo-width": 2,
+          "text-halo-color": "#ffffff",
+          "text-halo-blur": 1,
+        },
+      });
 
       map.current.on("dblclick", (e) => clear());
 

@@ -1,11 +1,21 @@
-import { ActionIcon, Modal, Stack, Text, ThemeIcon } from "@mantine/core";
-import { IconInfoCircle } from "@tabler/icons-react";
+import {
+  ActionIcon,
+  Modal,
+  Stack,
+  Text,
+  ThemeIcon,
+  Title,
+} from "@mantine/core";
+import { IconInfoCircle, IconBuildingEstate } from "@tabler/icons-react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 
 const About = () => {
   return (
     <Stack sx={{ maxWidth: 700 }}>
+      <Title order={2}>
+        <IconBuildingEstate /> Culver City Rental Registry
+      </Title>
       <Text>
         This interactive Culver City rental registry map was developed by Culver
         City resident Stephen Jones, in conjunction with{" "}
@@ -21,9 +31,8 @@ const About = () => {
         records requests.
       </Text>
       <Text>
-        Any inaccuracies are due to errors in the original data submissions, and
-        we make no warranties as to the accuracy of any of the information
-        provided.
+        Any inaccuracies are due to errors in the original data submissions. We
+        make no warranties as to the accuracy of any of the information.
       </Text>
       <Text>
         Read our{" "}
