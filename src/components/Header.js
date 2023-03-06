@@ -7,7 +7,7 @@ import ColorSchemeToggle from "./ColorSchemeToggle";
 const useStyles = createStyles((theme) => ({
   headerLink: {
     textDecoration: 'none',
-    color: theme.colors.grape,
+    color: theme.colors.grape[9],
   },
 }));
 

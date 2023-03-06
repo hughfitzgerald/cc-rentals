@@ -13,7 +13,7 @@ import { Link } from "react-router-dom";
 const About = () => {
   return (
     <Stack sx={{ maxWidth: 700 }}>
-      <Title order={2}>
+      <Title order={2} color="grape.9">
         <IconBuildingEstate /> Culver City Rental Registry
       </Title>
       <Text>

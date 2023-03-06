@@ -44,6 +44,8 @@ const Map = ({ className, classes }) => {
   const onSourceLoad = useRef(false);
   const [coords, setCoords] = useState("");
   const { start, clear } = useTimeout((event) => popupFromClick(event[0]), 500);
+  const lightCircles = "rgba(0, 0, 0, .75)";
+  const darkCircles = "rgba(252,156,199,.75)";
   const darkStyle = "mapbox://styles/hughfitzgerald/clenh291g000401rq8lbzjzhu";
   const lightStyle = "mapbox://styles/hughfitzgerald/cldjdvxl7000001qqfr6kpnpv";
   const darkStyleID = "hughfitzgerald/clenh291g000401rq8lbzjzhu";
@@ -120,6 +122,8 @@ const Map = ({ className, classes }) => {
       ...appLayers,
       ...newStyle.layers.slice(labelIndex, -1),
     ];
+    let ccrrIndex = newStyle.layers.findIndex((el) => {return el.id === "ccrr-units-geojson";});
+    newStyle.layers[ccrrIndex].paint["circle-color"] = colorScheme === "light" ? lightCircles : darkCircles;
     map.current.setStyle(newStyle);
   }
 
@@ -196,7 +200,7 @@ const Map = ({ className, classes }) => {
         type: "circle",
         paint: {
           "circle-radius": 4,
-          "circle-color": colorScheme === "light" ? "rgba(0, 0, 0, .75)" : "rgba(252,156,199,.75)",
+          "circle-color": colorScheme === "light" ? lightCircles : darkCircles,
         },
       });
       
