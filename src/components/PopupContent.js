@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, forwardRef } from "react";
 import { DataTable } from "mantine-datatable";
 import {
   Text,
@@ -8,6 +8,8 @@ import {
   Button,
   Stack,
   createStyles,
+  ThemeIcon,
+  HoverCard,
 } from "@mantine/core";
 import sortBy from "lodash/sortBy";
 import { mapContext } from "../context/mapContext.js";
@@ -17,8 +19,9 @@ import {
   IconArrowBadgeDown,
   IconArrowBadgeUp,
   IconArrowNarrowLeft,
+  IconInfoCircle,
 } from "@tabler/icons-react";
-import FilterInfo from "./filters/FilterInfo";
+import styled from "@emotion/styled";
 
 const useStyles = createStyles((theme) => ({
   popupBox: {
@@ -27,11 +30,16 @@ const useStyles = createStyles((theme) => ({
       width: 1125,
     },
   },
+
+  rcText: {
+    color:
+      theme.colorScheme === "dark" ? theme.colors.dark[0] : theme.colors.black,
+  },
 }));
 
 const PopupOwner = ({ popupMultipleOwners, popupOwner }) => {
   const theme = useMantineTheme();
-  const mediaQuery = useMediaQuery(`(min-width: ${theme.breakpoints.sm}px)`);
+  const mediaQuery = useMediaQuery(`(min-width: ${theme.breakpoints.sm})`);
 
   if (popupMultipleOwners.current) {
     if (mediaQuery) {
@@ -137,7 +145,8 @@ export default function PopupContent() {
       <DataTable
         styles={(theme) => ({
           root: {
-            height: mediaQuery ? "100%" : "calc(50vh - 110px)",
+            height: mediaQuery ? "100%" : "calc(50vh - 110px)",      
+            display: "none"
           },
         })}
         withBorder
@@ -175,8 +184,28 @@ export function Unit() {
   const [sortedRecords, setRecords] = useState(sortBy(unitRents, "rentdate"));
   const { classes } = useStyles();
   const theme = useMantineTheme();
-  const mediaQuery = useMediaQuery(`(min-width: ${theme.breakpoints.sm}px)`);
+  const mediaQuery = useMediaQuery(`(min-width: ${theme.breakpoints.sm})`);
   const { search } = useLocation();
+
+  const RCInfo = ({ infoText }) => {
+    const InfoIcon = forwardRef((props, ref) => (
+      <ThemeIcon variant="outline" ref={ref} {...props}>
+        <IconInfoCircle
+          ref={ref}
+          size={16} // set custom `width` and `height`
+        />
+      </ThemeIcon>
+    ));
+
+    return (
+      <HoverCard shadow="md" width={300}>
+        <HoverCard.Target sx={{ cursor: "help" }}>
+          <InfoIcon />
+        </HoverCard.Target>
+        <HoverCard.Dropdown>{infoText}</HoverCard.Dropdown>
+      </HoverCard>
+    );
+  };
 
   useEffect(() => {
     const data = sortBy(unitRents, sortStatus.columnAccessor);
@@ -212,6 +241,7 @@ export function Unit() {
         PastRentReportDate_y,
         cumulative_increase,
         threshold,
+        rentdate
       }) => {
         if (perc_increase == null) return "";
         const number = Number(perc_increase).toLocaleString(undefined, {
@@ -220,53 +250,73 @@ export function Unit() {
         });
         var numberArrow = <></>;
         const infoText = (
-          <Text>
+          <Stack className={classes.rcText}>
+            <Text>
             This rent increase represents a cumulative increase of{" "}
-            {Number(cumulative_increase).toLocaleString(undefined, {
-              style: "percent",
-              minimumFractionDigits: 2,
-            })}{" "}
-            since {PastRentReportDate_y}. The maximum allowed rent increase was{" "}
-            {Number(threshold).toLocaleString(undefined, {
-              style: "percent",
-              minimumFractionDigits: 2,
-            })} under Culver City Municipal Code.
-          </Text>
+            <b>
+              {Number(cumulative_increase).toLocaleString(undefined, {
+                style: "percent",
+                minimumFractionDigits: 2,
+              })}
+            </b>{" "}
+            from {PastRentReportDate_y} to {rentdate}. 
+            </Text>
+            <Text>On {rentdate}, the
+            maximum allowed rent increase was only{" "}
+            <b>
+              {Number(threshold).toLocaleString(undefined, {
+                style: "percent",
+                minimumFractionDigits: 2,
+              })}
+            </b>{" "}
+            under Culver City Municipal Code.
+            </Text>
+          </Stack>
         );
         if (perc_increase > 0) {
-          const arrow = <IconArrowBadgeUp />;
+          const arrow = <IconArrowBadgeUp size={16} />;
           numberArrow = (
             <>
               {number}
-              {arrow}
+              <Text span color="red">{arrow}</Text>
             </>
           );
         } else if (perc_increase < 0) {
-          const arrow = <IconArrowBadgeDown />;
+          const arrow = <IconArrowBadgeDown size={16} />;
           numberArrow = (
             <>
               {number}
-              {arrow}
+              <Text span color="green">{arrow}</Text>
             </>
           );
         }
 
         return (
-          <Group position="left" spacing="xs">
-            {numberArrow}
-            {date_problem ? <FilterInfo infoText={infoText} /> : <></>}
+          <Group position="apart" spacing="xs">
+            <Text>{numberArrow}</Text>
+            {date_problem ? <RCInfo infoText={infoText} /> : <></>}
           </Group>
         );
       },
     },
   ];
 
+  const StyledDataTable = styled(DataTable)`
+  height: ${mediaQuery ? "100%" : "calc(50vh - 185px)"};
+  overflow: visible;
+  displaye: none;
+  & .mantine-ScrollArea-root {
+    overflow: visible;
+  }
+`;
+
   if (!unitData || !unitRents) return <></>;
 
   // const unit_problem = unitData.unit_problem;
+  
 
   return (
-    <Stack className={classes.popupBox}>
+    <Stack className={classes.popupBox} sx={{overflow:"visible"}}>
       <Group position="apart">
         <Box>
           <Text fw={700}>{popupAddress.current}</Text>
@@ -281,12 +331,7 @@ export function Unit() {
           Back to {popupAddress.current}
         </Button>
       </Group>
-      <DataTable
-        styles={(theme) => ({
-          root: {
-            height: mediaQuery ? "100%" : "calc(50vh - 185px)",
-          },
-        })}
+      <StyledDataTable
         withBorder
         borderRadius="sm"
         withColumnBorders

@@ -187,7 +187,7 @@ export const RentalFiltersGroup = () => {
 export const RentalFiltersGrid = () => {
   const { classes } = useStyles();
   const theme = useMantineTheme();
-  const mediaQuery = useMediaQuery(`(min-width: ${theme.breakpoints.sm}px)`);
+  const mediaQuery = useMediaQuery(`(min-width: ${theme.breakpoints.sm})`);
   const [opened, setOpened] = useState(false);
   if (mediaQuery) {
     return (

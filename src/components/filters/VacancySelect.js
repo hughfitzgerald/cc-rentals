@@ -4,30 +4,33 @@ import { mapContext, mapDispatchContext } from "../../context/mapContext";
 import FilterInfo from "./FilterInfo";
 
 export const VacancySelect = () => {
-    const { defVacancy, searchParams, reactSearchParams } = useContext(mapContext);
-    const { setSearchParams } = useContext(mapDispatchContext);
-    const [vacancyValues, setVacancyValues] = useState(defVacancy);
-    
-    function updateVacancy(vacancyValues) {
-      if (!vacancyValues.length) {
-        setSearchParams({ vac: ["none"] });
-      } else {
-        setSearchParams({ vac: vacancyValues });
-      }
-      setVacancyValues(vacancyValues);
-    }
+  const { defVacancy, searchParams, reactSearchParams } =
+    useContext(mapContext);
+  const { setSearchParams } = useContext(mapDispatchContext);
+  const [vacancyValues, setVacancyValues] = useState(defVacancy);
 
-    useEffect(() => {
-      setVacancyValues(searchParams["vac"]);
-      //eslint-disable-next-line
-    }, [reactSearchParams]);
-  
-    return (
-      <Stack spacing="xs">
-        <Group position="apart">
-          Vacancy Status <FilterInfo infoText="Is the unit vacant as of the reporting date?" />
-          </Group>
-          <Divider />
+  function updateVacancy(vacancyValues) {
+    if (!vacancyValues.length) {
+      setSearchParams({ vac: ["none"] });
+    } else {
+      setSearchParams({ vac: vacancyValues });
+    }
+    setVacancyValues(vacancyValues);
+  }
+
+  useEffect(() => {
+    setVacancyValues(searchParams["vac"]);
+    //eslint-disable-next-line
+  }, [reactSearchParams]);
+
+  return (
+    <Stack spacing="xs">
+      <Group position="apart">
+        Vacancy Status{" "}
+        <FilterInfo infoText="Is the unit vacant as of the reporting date?" />
+      </Group>
+      <Divider />
+      <Group position="center">
         <Chip.Group
           position="center"
           multiple
@@ -42,8 +45,9 @@ export const VacancySelect = () => {
             Vacant
           </Chip>
         </Chip.Group>
-      </Stack>
-    );
-  };
+      </Group>
+    </Stack>
+  );
+};
 
-  export default VacancySelect;
+export default VacancySelect;

@@ -4,7 +4,7 @@ import { useParams } from "react-router-dom";
 import { mapContext, mapDispatchContext } from "../context/mapContext";
 
 const useStyles = createStyles((theme) => ({
-  drawer: {
+  content: {
     [theme.fn.largerThan("sm")]: {
       display: "none",
     },
@@ -32,7 +32,7 @@ const PopupDrawer = ({ children, onClose, loading }) => {
       trapFocus={false}
       closeOnClickOutside={false}
       withOverlay={false}
-      className={classes.drawer}
+      className={classes.content}
       size={"50%"}
     >
       <LoadingOverlay visible={loading} />
