@@ -9,6 +9,8 @@ export const OwnerSelect = ({ label }) => {
   const { setSearchParams } = useContext(mapDispatchContext);
   const [ownerValue, setOwnerValue] = useState(defOwner);
 
+  const ownerURL = 'https://www.ccrentals.org/owner_counts_20230308.json'
+
   const AutoCompleteItem = forwardRef(({ count, label, ...others }, ref) => (
     <div ref={ref} {...others}>
       <Group noWrap position="apart">
@@ -56,7 +58,7 @@ export const OwnerSelect = ({ label }) => {
   useEffect(() => {
     async function loadOwners() {
       var response = await fetch(
-        "https://www.ccrentals.org/owner_counts.json"
+        ownerURL
       ).then((res) => {
         return res.json();
       });
@@ -84,7 +86,7 @@ export const OwnerSelect = ({ label }) => {
         maxDropdownHeight={200}
         itemComponent={AutoCompleteItem}
         icon={<IconUser />}
-        rightSection={<ClearButton />}
+        rightSection={(ownerValue !== "") && <ClearButton />}
       />
     </Stack>
   );

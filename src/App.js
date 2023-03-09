@@ -106,7 +106,7 @@ const useStyles = createStyles((theme) => ({
 }));
 
 export default function App() {
-  const preferredColorScheme = useColorScheme();
+  const preferredColorScheme = useColorScheme("dark");
   const [colorScheme, setColorScheme] = useState(preferredColorScheme);
   const toggleColorScheme = () =>
     setColorScheme(colorScheme === "dark" ? "light" : "dark");

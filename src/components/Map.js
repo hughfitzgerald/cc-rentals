@@ -44,12 +44,16 @@ const Map = ({ className, classes }) => {
   const onSourceLoad = useRef(false);
   const [coords, setCoords] = useState("");
   const { start, clear } = useTimeout((event) => popupFromClick(event[0]), 500);
+
   const lightCircles = "rgba(0, 0, 0, .75)";
   const darkCircles = "rgba(252,156,199,.75)";
+  const probCircles = "#ff0000"
   const darkStyle = "mapbox://styles/hughfitzgerald/clenh291g000401rq8lbzjzhu";
   const lightStyle = "mapbox://styles/hughfitzgerald/cldjdvxl7000001qqfr6kpnpv";
   const darkStyleID = "hughfitzgerald/clenh291g000401rq8lbzjzhu";
   const lightStyleID = "hughfitzgerald/cldjdvxl7000001qqfr6kpnpv";
+
+  const geoURL = "https://www.ccrentals.org/ccrr-geo-20230308-194158.json";
 
   const ClearPopup = () => {
     useEffect(() => {
@@ -123,7 +127,15 @@ const Map = ({ className, classes }) => {
       ...newStyle.layers.slice(labelIndex, -1),
     ];
     let ccrrIndex = newStyle.layers.findIndex((el) => {return el.id === "ccrr-units-geojson";});
-    newStyle.layers[ccrrIndex].paint["circle-color"] = colorScheme === "light" ? lightCircles : darkCircles;
+    newStyle.layers[ccrrIndex].paint["circle-color"] = [
+      'match',
+      ['to-string', ['get', 'address_problem']],
+      'true',
+      probCircles,
+      'false',
+      colorScheme === "light" ? lightCircles : darkCircles,
+      '#ccc'
+    ];
     map.current.setStyle(newStyle);
   }
 
@@ -186,7 +198,7 @@ const Map = ({ className, classes }) => {
       // Add a data source containing GeoJSON data.
       map.current.addSource("units", {
         type: "geojson",
-        data: "https://www.ccrentals.org/ccrr-geo-20230228-094102.json",
+        data: geoURL,
       });
 
       // Add a new layer with dots for the units.
@@ -200,7 +212,16 @@ const Map = ({ className, classes }) => {
         type: "circle",
         paint: {
           "circle-radius": 4,
-          "circle-color": colorScheme === "light" ? lightCircles : darkCircles,
+          //"circle-color": colorScheme === "light" ? lightCircles : darkCircles,
+          "circle-color" : [
+            'match',
+            ['to-string', ['get', 'address_problem']],
+            'true',
+            probCircles,
+            'false',
+            colorScheme === "light" ? lightCircles : darkCircles,
+            '#ccc'
+          ],
         },
       });
       

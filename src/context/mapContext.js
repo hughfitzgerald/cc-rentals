@@ -108,10 +108,13 @@ function MapProvider({ children }) {
   const [histData, setHistData] = useState([]);
   const [unitRents, setUnitRents] = useState([]);
 
+  const histURL = 'https://www.ccrentals.org/ccrr-hist-20230308-205200.json'
+  const dataURL = 'https://www.ccrentals.org/ccrr-data-20230308-194339.json'
+
   useEffect(() => {
     async function loadHistData() {
       var response = await fetch(
-        "https://www.ccrentals.org/ccrr-hist-20230228-122637.json"
+        histURL
       ).then((res) => {
         return res.json();
       });
@@ -124,7 +127,7 @@ function MapProvider({ children }) {
   useEffect(() => {
     async function loadStatsData() {
       var response = await fetch(
-        "https://www.ccrentals.org/ccrr-data-20230228-094223.json"
+        dataURL
       ).then((res) => {
         return res.json();
       });

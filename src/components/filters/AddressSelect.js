@@ -13,6 +13,8 @@ export const AddressSelect = ({ label }) => {
   const { setSearchParams } = useContext(mapDispatchContext);
   const [addressValue, setAddressValue] = useState(defAddress);
 
+  const addressURL = 'https://www.ccrentals.org/address_counts_20230308.json'
+
   const AutoCompleteItem = forwardRef(({ count, label, ...others }, ref) => (
     <div ref={ref} {...others}>
       <Group noWrap position="apart">
@@ -50,7 +52,7 @@ export const AddressSelect = ({ label }) => {
   useEffect(() => {
     async function loadAddress() {
       var response = await fetch(
-        "https://www.ccrentals.org/address_counts.json"
+        addressURL
       ).then((res) => {
         return res.json();
       });
@@ -78,7 +80,7 @@ export const AddressSelect = ({ label }) => {
         maxDropdownHeight={200}
         itemComponent={AutoCompleteItem}
         icon={<IconMapPin />}
-        rightSection={<ClearButton />}
+        rightSection={(addressValue !== "") && <ClearButton />}
       />
     </Stack>
   );

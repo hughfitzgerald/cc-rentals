@@ -13,7 +13,12 @@ import sortBy from "lodash/sortBy";
 import { mapContext } from "../context/mapContext.js";
 import { useMediaQuery } from "@mantine/hooks";
 import { Link, useLocation } from "react-router-dom";
-import { IconArrowNarrowLeft } from "@tabler/icons-react";
+import {
+  IconArrowBadgeDown,
+  IconArrowBadgeUp,
+  IconArrowNarrowLeft,
+} from "@tabler/icons-react";
+import FilterInfo from "./filters/FilterInfo";
 
 const useStyles = createStyles((theme) => ({
   popupBox: {
@@ -27,7 +32,7 @@ const useStyles = createStyles((theme) => ({
 const PopupOwner = ({ popupMultipleOwners, popupOwner }) => {
   const theme = useMantineTheme();
   const mediaQuery = useMediaQuery(`(min-width: ${theme.breakpoints.sm}px)`);
-  
+
   if (popupMultipleOwners.current) {
     if (mediaQuery) {
       return (
@@ -111,7 +116,7 @@ export default function PopupContent() {
       sortable: true,
     },
   ];
-  
+
   const owner_columns = [
     {
       accessor: "owner",
@@ -153,6 +158,9 @@ export default function PopupContent() {
         }
         sortStatus={sortStatus}
         onSortStatusChange={setSortStatus}
+        rowStyle={({ unit_problem }) =>
+          unit_problem ? { color: "#FA5639" } : undefined
+        }
       />
     </Stack>
   );
@@ -193,7 +201,69 @@ export function Unit() {
     },
   ];
 
+  const perc_columns = [
+    {
+      accessor: "perc_increase",
+      title: "% Change",
+      sortable: true,
+      render: ({
+        perc_increase,
+        date_problem,
+        PastRentReportDate_y,
+        cumulative_increase,
+        threshold,
+      }) => {
+        if (perc_increase == null) return "";
+        const number = Number(perc_increase).toLocaleString(undefined, {
+          style: "percent",
+          minimumFractionDigits: 2,
+        });
+        var numberArrow = <></>;
+        const infoText = (
+          <Text>
+            This rent increase represents a cumulative increase of{" "}
+            {Number(cumulative_increase).toLocaleString(undefined, {
+              style: "percent",
+              minimumFractionDigits: 2,
+            })}{" "}
+            since {PastRentReportDate_y}. The maximum allowed rent increase was{" "}
+            {Number(threshold).toLocaleString(undefined, {
+              style: "percent",
+              minimumFractionDigits: 2,
+            })} under Culver City Municipal Code.
+          </Text>
+        );
+        if (perc_increase > 0) {
+          const arrow = <IconArrowBadgeUp />;
+          numberArrow = (
+            <>
+              {number}
+              {arrow}
+            </>
+          );
+        } else if (perc_increase < 0) {
+          const arrow = <IconArrowBadgeDown />;
+          numberArrow = (
+            <>
+              {number}
+              {arrow}
+            </>
+          );
+        }
+
+        return (
+          <Group position="left" spacing="xs">
+            {numberArrow}
+            {date_problem ? <FilterInfo infoText={infoText} /> : <></>}
+          </Group>
+        );
+      },
+    },
+  ];
+
   if (!unitData || !unitRents) return <></>;
+
+  // const unit_problem = unitData.unit_problem;
 
   return (
     <Stack className={classes.popupBox}>
@@ -224,10 +294,13 @@ export function Unit() {
         highlightOnHover
         noRecordsText="No historical rent information available."
         shadow="sm"
-        columns={hist_columns}
+        columns={hist_columns.concat(perc_columns)}
         records={sortedRecords}
         sortStatus={sortStatus}
         onSortStatusChange={setSortStatus}
+        rowStyle={({ date_problem }) =>
+          date_problem ? { color: "#FA5639" } : undefined
+        }
       />
     </Stack>
   );
