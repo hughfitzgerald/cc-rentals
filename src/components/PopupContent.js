@@ -10,8 +10,6 @@ import {
   createStyles,
   ThemeIcon,
   HoverCard,
-  //Modal,
-  //ActionIcon,
 } from "@mantine/core";
 import sortBy from "lodash/sortBy";
 import { mapContext } from "../context/mapContext.js";
@@ -23,15 +21,13 @@ import {
   IconArrowNarrowLeft,
   IconInfoCircle,
 } from "@tabler/icons-react";
-//import styled from "@emotion/styled";
 
 const MOBILE_WIDTH = "calc(100% - 23px)";
+const PROBLEM_COLOR = "#E03131";
 
 const useStyles = createStyles((theme) => ({
   popupBox: {
     [theme.fn.largerThan("sm")]: {
-      //height: 270,
-      //width: 1125,
       height: "calc(100% + 2px)",
       width: MOBILE_WIDTH,
     },
@@ -45,7 +41,7 @@ const useStyles = createStyles((theme) => ({
 
 const PopupOwner = ({ popupMultipleOwners, popupOwner }) => {
   const theme = useMantineTheme();
-  const mediaQuery = useMediaQuery(`(min-width: ${theme.breakpoints.sm})`);
+  const mediaQuery = useMediaQuery(`(min-width: ${theme.breakpoints.sm}px)`);
 
   if (popupMultipleOwners.current) {
     if (mediaQuery) {
@@ -175,7 +171,7 @@ export default function PopupContent() {
         sortStatus={sortStatus}
         onSortStatusChange={setSortStatus}
         rowStyle={({ unit_problem }) =>
-          unit_problem ? { color: "#FA5639" } : undefined
+          unit_problem ? { color: PROBLEM_COLOR } : undefined
         }
       />
     </Stack>
@@ -191,17 +187,8 @@ export function Unit() {
   const [sortedRecords, setRecords] = useState(sortBy(unitRents, "rentdate"));
   const { classes } = useStyles();
   const theme = useMantineTheme();
-  const mediaQuery = useMediaQuery(`(min-width: ${theme.breakpoints.sm})`);
+  const mediaQuery = useMediaQuery(`(min-width: ${theme.breakpoints.sm}px)`);
   const { search } = useLocation();
-  //const [opened, { open, close }] = useDisclosure(false);
-  //const [infoModalText, setInfoModalText] = useState('');
-
-  /*
-  function openModal(infoText) {
-    setInfoModalText(infoText);
-    open();
-  }
-  */
 
   const RCInfo = ({ infoText }) => {
     const InfoIcon = forwardRef((props, ref) => (
@@ -221,8 +208,6 @@ export function Unit() {
         <HoverCard.Dropdown>{infoText}</HoverCard.Dropdown>
       </HoverCard>
     );
-
-    //return (<ActionIcon onClick={() => openModal(infoText)}><InfoIcon /></ActionIcon>)
   };
 
   useEffect(() => {
@@ -296,7 +281,7 @@ export function Unit() {
           numberArrow = (
             <>
               {number}
-              <Text span color="red">
+              <Text span color="red.8">
                 {arrow}
               </Text>
             </>
@@ -324,11 +309,6 @@ export function Unit() {
   ];
 
   if (!unitData || !unitRents) return <></>;
-
-  // const unit_problem = unitData.unit_problem;
-
-  // if you go back to modal, put this down below
-  // <Modal opened={opened} onClose={close} withCloseButton={false} size="auto" centered>{infoModalText}</Modal>
 
   return (
     <>
@@ -365,7 +345,7 @@ export function Unit() {
           sortStatus={sortStatus}
           onSortStatusChange={setSortStatus}
           rowStyle={({ date_problem }) =>
-            date_problem ? { color: "#FA5639" } : undefined
+            date_problem ? { color: PROBLEM_COLOR } : undefined
           }
         />
       </Stack>

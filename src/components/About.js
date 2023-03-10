@@ -17,6 +17,10 @@ const About = () => {
         <IconBuildingEstate /> Culver City Rental Registry
       </Title>
       <Text>
+        This site is not affiliated with or authorized by the City of Culver
+        City.
+      </Text>
+      <Text>
         This interactive Culver City rental registry map was developed by Culver
         City resident Stephen Jones, in conjunction with{" "}
         <a
@@ -30,9 +34,15 @@ const About = () => {
         directly from landlords. We obtained the data from the city via public
         records requests.
       </Text>
-      <Text>
-        Any inaccuracies are due to errors in the original data submissions. We
-        make no warranties as to the accuracy of any of the information.
+      <Text fw={700}>
+        This service has been provided to allow easy access and a visual display
+        of public records. Any inaccuracies are due to errors in the original
+        data submissions. We make no warranties as to the accuracy of any of the
+        information, and the maps and associated data are provided without
+        warranty of any kind, either expressed or implied, including but not
+        limited to, the implied warranties of merchantability and fitness for a
+        particular purpose. Do not rely on the accuracy of this information for
+        business decisions or other actions without first validating the data.
       </Text>
       <Text>
         Read our{" "}

@@ -53,7 +53,7 @@ const Map = ({ className, classes }) => {
   const darkStyleID = "hughfitzgerald/clenh291g000401rq8lbzjzhu";
   const lightStyleID = "hughfitzgerald/cldjdvxl7000001qqfr6kpnpv";
 
-  const geoURL = "https://www.ccrentals.org/ccrr-geo-20230308-194158.json";
+  const geoURL = "https://www.ccrentals.org/ccrr-geo-20230310-100611.json";
 
   const ClearPopup = () => {
     useEffect(() => {
@@ -127,6 +127,15 @@ const Map = ({ className, classes }) => {
       ...newStyle.layers.slice(labelIndex, -1),
     ];
     let ccrrIndex = newStyle.layers.findIndex((el) => {return el.id === "ccrr-units-geojson";});
+    newStyle.layers[ccrrIndex].paint['circle-stroke-width'] = [
+      'match',
+      ['to-string', ['get', 'address_problem']],
+      'true',
+      colorScheme === "light" ? 1 : 0,
+      'false',
+      0,
+      0
+    ];
     newStyle.layers[ccrrIndex].paint["circle-color"] = [
       'match',
       ['to-string', ['get', 'address_problem']],
@@ -213,6 +222,15 @@ const Map = ({ className, classes }) => {
         paint: {
           "circle-radius": 4,
           //"circle-color": colorScheme === "light" ? lightCircles : darkCircles,
+          "circle-stroke-width": [
+            'match',
+            ['to-string', ['get', 'address_problem']],
+            'true',
+            colorScheme === "light" ? 1 : 0,
+            'false',
+            0,
+            0
+          ],
           "circle-color" : [
             'match',
             ['to-string', ['get', 'address_problem']],
