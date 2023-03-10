@@ -10,6 +10,8 @@ import {
   createStyles,
   ThemeIcon,
   HoverCard,
+  //Modal,
+  //ActionIcon,
 } from "@mantine/core";
 import sortBy from "lodash/sortBy";
 import { mapContext } from "../context/mapContext.js";
@@ -21,13 +23,17 @@ import {
   IconArrowNarrowLeft,
   IconInfoCircle,
 } from "@tabler/icons-react";
-import styled from "@emotion/styled";
+//import styled from "@emotion/styled";
+
+const MOBILE_WIDTH = "calc(100% - 23px)";
 
 const useStyles = createStyles((theme) => ({
   popupBox: {
     [theme.fn.largerThan("sm")]: {
-      height: 270,
-      width: 1125,
+      //height: 270,
+      //width: 1125,
+      height: "calc(100% + 2px)",
+      width: MOBILE_WIDTH,
     },
   },
 
@@ -51,9 +57,11 @@ const PopupOwner = ({ popupMultipleOwners, popupOwner }) => {
     }
   } else {
     return (
-      <Text>
+      <Box sx={{maxWidth: MOBILE_WIDTH}}>
+      <Text truncate>
         Owner: <b>{popupOwner.current}</b>
       </Text>
+      </Box>
     );
   }
 };
@@ -145,8 +153,7 @@ export default function PopupContent() {
       <DataTable
         styles={(theme) => ({
           root: {
-            height: mediaQuery ? "100%" : "calc(50vh - 110px)",      
-            display: "none"
+            height: mediaQuery ? "100%" : "calc(50vh - 150px)",
           },
         })}
         withBorder
@@ -186,6 +193,15 @@ export function Unit() {
   const theme = useMantineTheme();
   const mediaQuery = useMediaQuery(`(min-width: ${theme.breakpoints.sm})`);
   const { search } = useLocation();
+  //const [opened, { open, close }] = useDisclosure(false);
+  //const [infoModalText, setInfoModalText] = useState('');
+
+  /*
+  function openModal(infoText) {
+    setInfoModalText(infoText);
+    open();
+  }
+  */
 
   const RCInfo = ({ infoText }) => {
     const InfoIcon = forwardRef((props, ref) => (
@@ -198,13 +214,15 @@ export function Unit() {
     ));
 
     return (
-      <HoverCard shadow="md" width={300}>
+      <HoverCard shadow="md" width={300} withinPortal>
         <HoverCard.Target sx={{ cursor: "help" }}>
           <InfoIcon />
         </HoverCard.Target>
         <HoverCard.Dropdown>{infoText}</HoverCard.Dropdown>
       </HoverCard>
     );
+
+    //return (<ActionIcon onClick={() => openModal(infoText)}><InfoIcon /></ActionIcon>)
   };
 
   useEffect(() => {
@@ -241,7 +259,7 @@ export function Unit() {
         PastRentReportDate_y,
         cumulative_increase,
         threshold,
-        rentdate
+        rentdate,
       }) => {
         if (perc_increase == null) return "";
         const number = Number(perc_increase).toLocaleString(undefined, {
@@ -252,24 +270,24 @@ export function Unit() {
         const infoText = (
           <Stack className={classes.rcText}>
             <Text>
-            This rent increase represents a cumulative increase of{" "}
-            <b>
-              {Number(cumulative_increase).toLocaleString(undefined, {
-                style: "percent",
-                minimumFractionDigits: 2,
-              })}
-            </b>{" "}
-            from {PastRentReportDate_y} to {rentdate}. 
+              This rent increase represents a cumulative increase of{" "}
+              <b>
+                {Number(cumulative_increase).toLocaleString(undefined, {
+                  style: "percent",
+                  minimumFractionDigits: 2,
+                })}
+              </b>{" "}
+              from {PastRentReportDate_y} to {rentdate}.
             </Text>
-            <Text>On {rentdate}, the
-            maximum allowed rent increase was only{" "}
-            <b>
-              {Number(threshold).toLocaleString(undefined, {
-                style: "percent",
-                minimumFractionDigits: 2,
-              })}
-            </b>{" "}
-            under Culver City Municipal Code.
+            <Text>
+              On {rentdate}, the maximum allowed rent increase was only{" "}
+              <b>
+                {Number(threshold).toLocaleString(undefined, {
+                  style: "percent",
+                  minimumFractionDigits: 2,
+                })}
+              </b>{" "}
+              under Culver City Municipal Code.
             </Text>
           </Stack>
         );
@@ -278,7 +296,9 @@ export function Unit() {
           numberArrow = (
             <>
               {number}
-              <Text span color="red">{arrow}</Text>
+              <Text span color="red">
+                {arrow}
+              </Text>
             </>
           );
         } else if (perc_increase < 0) {
@@ -286,7 +306,9 @@ export function Unit() {
           numberArrow = (
             <>
               {number}
-              <Text span color="green">{arrow}</Text>
+              <Text span color="green">
+                {arrow}
+              </Text>
             </>
           );
         }
@@ -301,52 +323,52 @@ export function Unit() {
     },
   ];
 
-  const StyledDataTable = styled(DataTable)`
-  height: ${mediaQuery ? "100%" : "calc(50vh - 185px)"};
-  overflow: visible;
-  displaye: none;
-  & .mantine-ScrollArea-root {
-    overflow: visible;
-  }
-`;
-
   if (!unitData || !unitRents) return <></>;
 
   // const unit_problem = unitData.unit_problem;
-  
+
+  // if you go back to modal, put this down below
+  // <Modal opened={opened} onClose={close} withCloseButton={false} size="auto" centered>{infoModalText}</Modal>
 
   return (
-    <Stack className={classes.popupBox} sx={{overflow:"visible"}}>
-      <Group position="apart">
-        <Box>
-          <Text fw={700}>{popupAddress.current}</Text>
-          <Text fw={700}>Unit: {unitData.unit}</Text>
-        </Box>
-        <Button
-          component={Link}
-          to={"../" + unitData.slug + search}
-          variant="outline"
-          leftIcon={<IconArrowNarrowLeft />}
-        >
-          Back to {popupAddress.current}
-        </Button>
-      </Group>
-      <StyledDataTable
-        withBorder
-        borderRadius="sm"
-        withColumnBorders
-        striped
-        highlightOnHover
-        noRecordsText="No historical rent information available."
-        shadow="sm"
-        columns={hist_columns.concat(perc_columns)}
-        records={sortedRecords}
-        sortStatus={sortStatus}
-        onSortStatusChange={setSortStatus}
-        rowStyle={({ date_problem }) =>
-          date_problem ? { color: "#FA5639" } : undefined
-        }
-      />
-    </Stack>
+    <>
+      <Stack className={classes.popupBox}>
+        <Group position="apart">
+          <Box>
+            <Text fw={700}>{popupAddress.current}</Text>
+            <Text fw={700}>Unit: {unitData.unit}</Text>
+          </Box>
+          <Button
+            component={Link}
+            to={"../" + unitData.slug + search}
+            variant="outline"
+            leftIcon={<IconArrowNarrowLeft />}
+          >
+            Back to {popupAddress.current}
+          </Button>
+        </Group>
+        <DataTable
+          styles={(theme) => ({
+            root: {
+              height: mediaQuery ? "100%" : "calc(50vh - 185px)",
+            },
+          })}
+          withBorder
+          borderRadius="sm"
+          withColumnBorders
+          striped
+          highlightOnHover
+          noRecordsText="No historical rent information available."
+          shadow="sm"
+          columns={hist_columns.concat(perc_columns)}
+          records={sortedRecords}
+          sortStatus={sortStatus}
+          onSortStatusChange={setSortStatus}
+          rowStyle={({ date_problem }) =>
+            date_problem ? { color: "#FA5639" } : undefined
+          }
+        />
+      </Stack>
+    </>
   );
 }

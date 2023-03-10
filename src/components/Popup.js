@@ -12,7 +12,8 @@ const useStyles = createStyles((theme) => ({
 
   dialog: {
     height: 300,
-    width: 1180,
+    width: "calc(100vw - 50px)",
+    maxWidth: 1180,
 
     [theme.fn.smallerThan("sm")]: {
       display: "none",

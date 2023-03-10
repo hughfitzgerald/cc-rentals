@@ -13,7 +13,7 @@ export const FilterInfo = ({ infoText }) => {
   ));
 
   return (
-    <HoverCard shadow="md" width={300}>
+    <HoverCard shadow="md" width={300} withinPortal>
       <HoverCard.Target  sx={{ cursor: 'help' }}>
         <InfoIcon />
       </HoverCard.Target>
