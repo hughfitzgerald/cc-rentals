@@ -53,10 +53,10 @@ const PopupOwner = ({ popupMultipleOwners, popupOwner }) => {
     }
   } else {
     return (
-      <Box sx={{maxWidth: MOBILE_WIDTH}}>
-      <Text truncate>
-        Owner: <b>{popupOwner.current}</b>
-      </Text>
+      <Box sx={{ maxWidth: MOBILE_WIDTH }}>
+        <Text truncate>
+          Owner: <b>{popupOwner.current}</b>
+        </Text>
       </Box>
     );
   }
@@ -272,6 +272,11 @@ export function Unit() {
                 })}
               </b>{" "}
               under Culver City Municipal Code.
+            </Text>
+            <Text>
+              Such high increases are only allowed following a vacancy. Although
+              reporting vacancies is required by law, some may be unreported and
+              not reflected in this data.
             </Text>
           </Stack>
         );
