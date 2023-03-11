@@ -13,7 +13,6 @@ const useStyles = createStyles((theme) => ({
 
 const HeaderMenu = ({ className, height }) => {
   const { classes } = useStyles();
-    //height = 100;
   return (
     <Header height={height} className={className}>
       <Group sx={{ height: "100%"}} px={20} position="apart">

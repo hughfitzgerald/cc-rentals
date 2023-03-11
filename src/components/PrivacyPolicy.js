@@ -1,13 +1,63 @@
-import { Card, Center, Title, Text, Space } from "@mantine/core";
+import {
+  Affix,
+  Box,
+  Button,
+  Card,
+  Group,
+  Title,
+  Text,
+  Transition,
+  Space,
+} from "@mantine/core";
+import { useWindowScroll } from "@mantine/hooks";
+import { IconArrowUp } from "@tabler/icons-react";
+import TableOfContents from "./TableOfContents";
 
 export const PrivacyPolicy = () => {
+  const [scroll, scrollTo] = useWindowScroll();
   return (
-    <Center>
-      <Card sx={{ maxWidth: 700, top: 10 }} withBorder shadow="sm">
-        <PrivacyText />
-      </Card>
+    <div>
+      <Group position="center" align="flex-start">
+        <Card sx={{ maxWidth: 700, top: 10 }} withBorder shadow="sm">
+          <main>
+            <PrivacyText />
+          </main>
+        </Card>
+        <Card
+          sx={(theme) => ({
+            maxWidth: 400,
+            top: 100,
+            position: "sticky",
+            [theme.fn.smallerThan("lg")]: {
+              display: "none",
+            },
+            a: {
+              textDecoration: "none",
+              color: theme.colors[theme.primaryColor],
+            }
+          })}
+          withBorder
+          shadow="sm"
+        >
+          <TableOfContents />
+        </Card>
+      </Group>
       <Space />
-    </Center>
+      <Box sx={{minHeight: 20}}></Box>
+      <Affix position={{ bottom: 20, right: 20 }}>
+        <Transition transition="slide-up" mounted={scroll.y > 0}>
+          {(transitionStyles) => (
+            <Button
+              leftIcon={<IconArrowUp size={16} />}
+              style={transitionStyles}
+              onClick={() => scrollTo({ y: 0 })}
+            >
+              Scroll to top
+            </Button>
+          )}
+        </Transition>
+      </Affix>
+    </div>
   );
 };
 
@@ -28,15 +78,17 @@ const PrivacyText = () => {
           the Service, You agree to the collection and use of information in
           accordance with this Privacy Policy.
         </p>
-        <h1>Interpretation and Definitions</h1>
-        <h2>Interpretation</h2>
+        <h2 id="interpretation-and-definitions">
+          Interpretation and Definitions
+        </h2>
+        <h3 id="interpretation">Interpretation</h3>
         <p>
           The words of which the initial letter is capitalized have meanings
           defined under the following conditions. The following definitions
           shall have the same meaning regardless of whether they appear in
           singular or in plural.
         </p>
-        <h2>Definitions</h2>
+        <h3 id="definitions">Definitions</h3>
         <p>For the purposes of this Privacy Policy:</p>
         <ul>
           <li>
@@ -178,9 +230,11 @@ const PrivacyText = () => {
             </p>
           </li>
         </ul>
-        <h1>Collecting and Using Your Personal Data</h1>
-        <h2>Types of Data Collected</h2>
-        <h3>Personal Data</h3>
+        <h2 id="collecting-and-using">
+          Collecting and Using Your Personal Data
+        </h2>
+        <h3>Types of Data Collected</h3>
+        <h4>Personal Data</h4>
         <p>
           While using Our Service, We may ask You to provide Us with certain
           personally identifiable information that can be used to contact or
@@ -204,7 +258,7 @@ const PrivacyText = () => {
             <p>Usage Data</p>
           </li>
         </ul>
-        <h3>Usage Data</h3>
+        <h4>Usage Data</h4>
         <p>Usage Data is collected automatically when using the Service.</p>
         <p>
           Usage Data may include information such as Your Device's Internet
@@ -226,7 +280,7 @@ const PrivacyText = () => {
           visit our Service or when You access the Service by or through a
           mobile device.
         </p>
-        <h3>Tracking Technologies and Cookies</h3>
+        <h4>Tracking Technologies and Cookies</h4>
         <p>
           We use Cookies and similar tracking technologies to track the activity
           on Our Service and store certain information. Tracking technologies
@@ -292,7 +346,7 @@ const PrivacyText = () => {
           regarding cookies, please visit our Cookies Policy or the Cookies
           section of our Privacy Policy.
         </p>
-        <h2>Use of Your Personal Data</h2>
+        <h3>Use of Your Personal Data</h3>
         <p>We may use Personal Data for the following purposes:</p>
         <ul>
           <li>
@@ -351,7 +405,7 @@ const PrivacyText = () => {
             information for any other purpose with Your consent.
           </li>
         </ul>
-        <h2>Retention of Your Personal Data</h2>
+        <h3>Retention of Your Personal Data</h3>
         <p>
           We will retain Your Personal Data only for as long as is necessary for
           the purposes set out in this Privacy Policy. We will retain and use
@@ -367,7 +421,7 @@ const PrivacyText = () => {
           functionality of Our Service, or We are legally obligated to retain
           this data for longer time periods.
         </p>
-        <h2>Transfer of Your Personal Data</h2>
+        <h3>Transfer of Your Personal Data</h3>
         <p>
           Your information, including Personal Data, is processed where the
           parties involved in the processing are located. This means that this
@@ -387,7 +441,7 @@ const PrivacyText = () => {
           country unless there are adequate controls in place including the
           security of Your data and other personal information.
         </p>
-        <h2>Delete Your Personal Data</h2>
+        <h3>Delete Your Personal Data</h3>
         <p>
           You have the right to delete or request that We assist in deleting the
           Personal Data that We have collected about You.
@@ -401,14 +455,14 @@ const PrivacyText = () => {
           have a legal obligation or lawful basis to do so, such as public
           records lawfully obtained from a public entity.
         </p>
-        <h2>Disclosure of Your Personal Data</h2>
-        <h3>Public authorities</h3>
+        <h3>Disclosure of Your Personal Data</h3>
+        <h4>Public authorities</h4>
         <p>
           Under certain circumstances, We may be required to disclose Your
           Personal Data if required to do so by law or in response to valid
           requests by public authorities (e.g. a court or a government agency).
         </p>
-        <h3>Other legal requirements</h3>
+        <h4>Other legal requirements</h4>
         <p>
           We may disclose Your Personal Data in the good faith belief that such
           action is necessary to:
@@ -425,7 +479,7 @@ const PrivacyText = () => {
           </li>
           <li>Protect against legal liability</li>
         </ul>
-        <h2>Security of Your Personal Data</h2>
+        <h3>Security of Your Personal Data</h3>
         <p>
           The security of Your Personal Data is important to Us, but remember
           that no method of transmission over the Internet, or method of
@@ -433,14 +487,16 @@ const PrivacyText = () => {
           acceptable means to protect Your Personal Data, We cannot guarantee
           its absolute security.
         </p>
-        <h1>Detailed Information on the Processing of Your Personal Data</h1>
+        <h2 id="detailed-information">
+          Detailed Information on the Processing of Your Personal Data
+        </h2>
         <p>
           The Service Providers We use may have access to Your Personal Data.
           These third-party vendors collect, store, use, process and transfer
           information about Your activity on Our Service in accordance with
           their Privacy Policies.
         </p>
-        <h2>Analytics</h2>
+        <h3>Analytics</h3>
         <p>
           We may use third-party Service providers to monitor and analyze the
           use of our Service.
@@ -478,7 +534,7 @@ const PrivacyText = () => {
             </p>
           </li>
         </ul>
-        <h2>Email Marketing</h2>
+        <h3>Email Marketing</h3>
         <p>
           We may use Your Personal Data to contact You with newsletters,
           marketing or promotional materials and other information that may be
@@ -512,13 +568,13 @@ const PrivacyText = () => {
             </p>
           </li>
         </ul>
-        <h1>CCPA/CPRA Privacy Notice</h1>
+        <h2 id="ccpa-cpra">CCPA/CPRA Privacy Notice</h2>
         <p>
           This privacy notice section for California residents supplements the
           information contained in Our Privacy Policy and it applies solely to
           all visitors, users, and others who reside in the State of California.
         </p>
-        <h2>Categories of Personal Information Collected</h2>
+        <h3>Categories of Personal Information Collected</h3>
         <p>
           We collect information that identifies, relates to, describes,
           references, is capable of being associated with, or could reasonably
@@ -713,7 +769,7 @@ const PrivacyText = () => {
             </ul>
           </li>
         </ul>
-        <h2>Sources of Personal Information</h2>
+        <h3>Sources of Personal Information</h3>
         <p>
           We obtain the categories of personal information listed above from the
           following categories of sources:
@@ -739,7 +795,7 @@ const PrivacyText = () => {
             third-party vendors that We use to provide the Service to You.
           </li>
         </ul>
-        <h2>Use of Personal Information</h2>
+        <h3>Use of Personal Information</h3>
         <p>
           We may use or disclose personal information We collect for
           &quot;business purposes&quot; or &quot;commercial purposes&quot; (as
@@ -786,7 +842,7 @@ const PrivacyText = () => {
           unrelated, or incompatible purposes We will update this Privacy
           Policy.
         </p>
-        <h2>Disclosure of Personal Information</h2>
+        <h3>Disclosure of Personal Information</h3>
         <p>
           We may use or disclose and may have used or disclosed in the last
           twelve (12) months the following categories of personal information
@@ -815,7 +871,7 @@ const PrivacyText = () => {
           confidential and not use it for any purpose except performing the
           contract.
         </p>
-        <h2>Share of Personal Information</h2>
+        <h3>Share of Personal Information</h3>
         <p>
           We may share, and have shared in the last twelve (12) months, Your
           personal information identified in the above categories with the
@@ -826,7 +882,7 @@ const PrivacyText = () => {
             <p>Service Providers</p>
           </li>
         </ul>
-        <h2>Sale of Personal Information</h2>
+        <h3>Sale of Personal Information</h3>
         <p>
           As defined in the CCPA/CPRA, &quot;sell&quot; and &quot;sale&quot;
           mean selling, renting, releasing, disclosing, disseminating, making
@@ -864,7 +920,7 @@ const PrivacyText = () => {
           the applicable category may be and may have been shared for value in
           return.
         </p>
-        <h2>Sale of Personal Information of Minors Under 16 Years of Age</h2>
+        <h3>Sale of Personal Information of Minors Under 16 Years of Age</h3>
         <p>
           We do not knowingly collect personal information from minors under the
           age of 16 through our Service, although certain third party websites
@@ -889,7 +945,7 @@ const PrivacyText = () => {
           has provided Us with personal information, please contact Us with
           sufficient detail to enable Us to delete that information.
         </p>
-        <h2>Your Rights under the CCPA/CPRA</h2>
+        <h3>Your Rights under the CCPA/CPRA</h3>
         <p>
           The CCPA/CPRA provides California residents with specific rights
           regarding their personal information. If You are a resident of
@@ -1045,7 +1101,7 @@ const PrivacyText = () => {
             </ul>
           </li>
         </ul>
-        <h2>Exercising Your CCPA/CPRA Data Protection Rights</h2>
+        <h3>Exercising Your CCPA/CPRA Data Protection Rights</h3>
         <p>
           Please see the &quot;Do Not Sell My Personal Information&quot; section
           and &quot;Limit the Use or Disclosure of My Sensitive Personal
@@ -1102,7 +1158,7 @@ const PrivacyText = () => {
           transmit the information from one entity to another entity without
           hindrance.
         </p>
-        <h2>Do Not Sell My Personal Information</h2>
+        <h3>Do Not Sell My Personal Information</h3>
         <p>
           As defined in the CCPA/CPRA, &quot;sell&quot; and &quot;sale&quot;
           mean selling, renting, releasing, disclosing, disseminating, making
@@ -1138,7 +1194,7 @@ const PrivacyText = () => {
           Please note that any opt out is specific to the browser You use. You
           may need to opt out on every browser that You use.
         </p>
-        <h3>Website</h3>
+        <h4>Website</h4>
         <p>
           If applicable, click &quot;Privacy Preferences&quot;, &quot;Update
           Privacy Preferences&quot; or &quot;Do Not Sell My Personal
@@ -1189,7 +1245,7 @@ const PrivacyText = () => {
           browser You use to opt out. If you change browsers or delete the
           cookies saved by your browser, You will need to opt out again.
         </p>
-        <h3>Mobile Devices</h3>
+        <h4>Mobile Devices</h4>
         <p>
           Your mobile device may give You the ability to opt out of the use of
           information about the apps You use in order to serve You ads that are
@@ -1206,9 +1262,9 @@ const PrivacyText = () => {
           You can also stop the collection of location information from Your
           mobile device by changing the preferences on Your mobile device.
         </p>
-        <h2>
+        <h3>
           Limit the Use or Disclosure of My Sensitive Personal Information
-        </h2>
+        </h3>
         <p>
           If You are a California resident, You have the right to limit the use
           and disclosure of Your sensitive personal information to that use
@@ -1222,10 +1278,10 @@ const PrivacyText = () => {
           We use Your personal information, please see the &quot;Use of Your
           Personal Data&quot; section or contact us.
         </p>
-        <h1>
+        <h2 id="do-not-track">
           &quot;Do Not Track&quot; Policy as Required by California Online
           Privacy Protection Act (CalOPPA)
-        </h1>
+        </h2>
         <p>Our Service does not respond to Do Not Track signals.</p>
         <p>
           However, some third party websites do keep track of Your browsing
@@ -1234,9 +1290,9 @@ const PrivacyText = () => {
           want to be tracked. You can enable or disable DNT by visiting the
           preferences or settings page of Your web browser.
         </p>
-        <h1>
+        <h2 id="your-ca-privacy-rights">
           Your California Privacy Rights (California's Shine the Light law)
-        </h1>
+        </h2>
         <p>
           Under California Civil Code Section 1798 (California's Shine the Light
           law), California residents with an established business relationship
@@ -1249,10 +1305,10 @@ const PrivacyText = () => {
           the Light law, and if You are a California resident, You can contact
           Us using the contact information provided below.
         </p>
-        <h1>
+        <h2 id="ca-minor-users">
           California Privacy Rights for Minor Users (California Business and
           Professions Code Section 22581)
-        </h1>
+        </h2>
         <p>
           California Business and Professions Code Section 22581 allows
           California residents under the age of 18 who are registered users of
@@ -1269,7 +1325,7 @@ const PrivacyText = () => {
           comprehensive removal of content or information posted online and that
           the law may not permit or require removal in certain circumstances.
         </p>
-        <h1>Children's Privacy</h1>
+        <h2 id="childrens-privacy">Children's Privacy</h2>
         <p>
           Our Service does not address anyone under the age of 13. We do not
           knowingly collect personally identifiable information from anyone
@@ -1285,7 +1341,7 @@ const PrivacyText = () => {
           require Your parent's consent before We collect and use that
           information.
         </p>
-        <h1>Links to Other Websites</h1>
+        <h2 id="links">Links to Other Websites</h2>
         <p>
           Our Service may contain links to other websites that are not operated
           by Us. If You click on a third party link, You will be directed to
@@ -1296,7 +1352,7 @@ const PrivacyText = () => {
           We have no control over and assume no responsibility for the content,
           privacy policies or practices of any third party sites or services.
         </p>
-        <h1>Changes to this Privacy Policy</h1>
+        <h2 id="changes">Changes to this Privacy Policy</h2>
         <p>
           We may update Our Privacy Policy from time to time. We will notify You
           of any changes by posting the new Privacy Policy on this page.
@@ -1311,7 +1367,7 @@ const PrivacyText = () => {
           changes. Changes to this Privacy Policy are effective when they are
           posted on this page.
         </p>
-        <h1>Contact Us</h1>
+        <h2 id="contact-us">Contact Us</h2>
         <p>
           If you have any questions about this Privacy Policy, You can contact
           us:

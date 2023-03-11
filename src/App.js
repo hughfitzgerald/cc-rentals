@@ -126,7 +126,7 @@ export default function App() {
           theme={{
             colorScheme,
             headings: { fontFamily: "Greycliff CF, sans-serif" },
-            primaryColor: "grape",
+            primaryColor: "grape"
           }}
           withGlobalStyles
           withNormalizeCSS
