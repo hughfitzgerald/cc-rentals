@@ -102,38 +102,40 @@ export default function PopupContent() {
       title: "Rent Reported On",
       sortable: true,
     },
-  ];
-  const extra_columns = [
     {
       accessor: "beds",
       sortable: true,
+      hidden: !mediaQuery,
     },
     {
       accessor: "baths",
       sortable: true,
+      hidden: !mediaQuery,
     },
     {
       accessor: "built",
       title: "Year Built",
       sortable: true,
+      hidden: !mediaQuery,
     },
     {
       accessor: "encumbered",
       title: "Restricted Unit",
       sortable: true,
+      hidden: !mediaQuery,
     },
     {
       accessor: "status",
       title: "Vacancy Status",
       sortable: true,
+      hidden: !mediaQuery,
     },
-  ];
-
-  const owner_columns = [
     {
       accessor: "owner",
       title: "Owner",
       sortable: true,
+      ellipsis: true,
+      hidden: !(mediaQuery && popupMultipleOwners.current),
     },
   ];
 
@@ -161,13 +163,7 @@ export default function PopupContent() {
         noRecordsText="No rent information available."
         shadow="sm"
         records={sortedRecords}
-        columns={
-          !mediaQuery
-            ? essential_columns
-            : !popupMultipleOwners.current
-            ? essential_columns.concat(extra_columns)
-            : essential_columns.concat(extra_columns).concat(owner_columns)
-        }
+        columns={essential_columns}
         sortStatus={sortStatus}
         onSortStatusChange={setSortStatus}
         rowStyle={({ unit_problem }) =>
@@ -222,6 +218,12 @@ export function Unit() {
       sortable: true,
     },
     {
+      accessor: "Unit Status",
+      title: "Vacancy Status",
+      sortable: true,
+      hidden: !mediaQuery,
+    },
+    {
       accessor: "rent",
       title: "Rent Amount",
       sortable: true,
@@ -231,9 +233,6 @@ export function Unit() {
           currency: "USD",
         }).format(rent),
     },
-  ];
-
-  const perc_columns = [
     {
       accessor: "perc_increase",
       title: "% Change",
@@ -340,7 +339,7 @@ export function Unit() {
           highlightOnHover
           noRecordsText="No historical rent information available."
           shadow="sm"
-          columns={hist_columns.concat(perc_columns)}
+          columns={hist_columns}
           records={sortedRecords}
           sortStatus={sortStatus}
           onSortStatusChange={setSortStatus}

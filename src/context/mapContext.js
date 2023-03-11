@@ -12,6 +12,7 @@ import {
   useSearchParams,
 } from "react-router-dom";
 import {
+  BooleanParam,
   createEnumArrayParam,
   DelimitedNumericArrayParam,
   StringParam,
@@ -69,6 +70,7 @@ function MapProvider({ children }) {
   const defEnc = ["affordable", "market"];
   const defOwner = "";
   const defAddress = "";
+  const defIncreases = false;
   const defaultFilters = {
     vac: defVacancy,
     rent: defRent,
@@ -76,6 +78,7 @@ function MapProvider({ children }) {
     enc: defEnc,
     owner: defOwner,
     address: defAddress,
+    inc: defIncreases,
   };
 
   const [mapFilter, setFilter] = useState([
@@ -100,6 +103,7 @@ function MapProvider({ children }) {
     enc: withDefault(EncumberedEnumParam, defEnc),
     owner: withDefault(StringParam, defOwner),
     address: withDefault(StringParam, defAddress),
+    inc: withDefault(BooleanParam, defIncreases),
   });
 
   const [reactSearchParams] = useSearchParams();
@@ -108,7 +112,7 @@ function MapProvider({ children }) {
   const [histData, setHistData] = useState([]);
   const [unitRents, setUnitRents] = useState([]);
 
-  const histURL = 'https://www.ccrentals.org/ccrr-hist-20230310-100951.json'
+  const histURL = 'https://www.ccrentals.org/ccrr-hist-20230310-223921.json'
   const dataURL = 'https://www.ccrentals.org/ccrr-data-20230310-100950.json'
 
   useEffect(() => {
@@ -152,7 +156,8 @@ function MapProvider({ children }) {
       searchParams["beds"] === defBeds &&
       searchParams["enc"] === defEnc &&
       searchParams["owner"] === defOwner &&
-      searchParams["address"] === defAddress
+      searchParams["address"] === defAddress &&
+      searchParams["inc"] === defIncreases
     );
     // eslint-disable-next-line
   }, [reactSearchParams]);
@@ -174,6 +179,7 @@ function MapProvider({ children }) {
       const encValues = searchParams["enc"].filter((e) => e !== "none");
       const ownerValue = searchParams["owner"];
       const addressValue = searchParams["address"];
+      const increases = searchParams["inc"];
 
       const ownerCondition = o.owner.includes(ownerValue);
 
@@ -209,13 +215,19 @@ function MapProvider({ children }) {
         encCondition = neitherEncCondition;
       }
 
+      var incCondition = true;
+      if (increases) {
+        incCondition = o.unit_problem;
+      }
+
       return (
         ownerCondition &&
         addressCondition &&
         rentCondition &&
         bedsValueCondition &&
         statusCondition &&
-        encCondition
+        encCondition &&
+        incCondition
       );
     },
     //eslint-disable-next-line
@@ -314,6 +326,7 @@ function MapProvider({ children }) {
       const encValues = searchParams["enc"].filter((e) => e !== "none");
       const ownerValue = searchParams["owner"];
       const addressValue = searchParams["address"];
+      const increases = searchParams["inc"];
 
       var ownerCondition = ["boolean", true];
       if (ownerValue) {
@@ -375,6 +388,11 @@ function MapProvider({ children }) {
         encCondition = neitherEncCondition;
       }
 
+      var incCondition = ["boolean", true];
+      if (increases) {
+        incCondition = ["get", "address_problem"];
+      }
+
       var filterCondition;
       filterCondition = [
         "all",
@@ -384,6 +402,7 @@ function MapProvider({ children }) {
         encCondition,
         ownerCondition,
         addressCondition,
+        incCondition,
       ];
 
       setFilter(filterCondition);
@@ -449,6 +468,7 @@ function MapProvider({ children }) {
         defRent,
         defBeds,
         defEnc,
+        defIncreases,
         styleLoaded,
         searchParams,
         reactSearchParams,
