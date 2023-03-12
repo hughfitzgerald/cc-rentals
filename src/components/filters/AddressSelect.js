@@ -15,7 +15,17 @@ export const AddressSelect = ({ label }) => {
 
   const addressURL = 'https://www.ccrentals.org/address_counts_20230308.json'
 
-  const AutoCompleteItem = forwardRef(({ count, label, ...others }, ref) => (
+  function AutocompleteFilter(value, item) {
+    var array = value.toLowerCase().trim().split(' ');
+    for (let e in array) {
+      if (!item.value.toLowerCase().trim().includes(array[e])) {
+        return false;
+      }
+    };
+    return true;
+  }
+
+  const AutocompleteItem = forwardRef(({ count, label, ...others }, ref) => (
     <div ref={ref} {...others}>
       <Group noWrap position="apart">
         <div style={{ width: 160 }}>
@@ -78,7 +88,8 @@ export const AddressSelect = ({ label }) => {
         limit={15}
         data={data}
         maxDropdownHeight={200}
-        itemComponent={AutoCompleteItem}
+        itemComponent={AutocompleteItem}
+        filter={AutocompleteFilter}
         icon={<IconMapPin />}
         rightSection={(addressValue !== "") && <ClearButton />}
       />

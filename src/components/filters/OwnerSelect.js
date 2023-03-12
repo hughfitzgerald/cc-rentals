@@ -11,7 +11,7 @@ export const OwnerSelect = ({ label }) => {
 
   const ownerURL = 'https://www.ccrentals.org/owner_counts_20230308.json'
 
-  const AutoCompleteItem = forwardRef(({ count, label, ...others }, ref) => (
+  const AutocompleteItem = forwardRef(({ count, label, ...others }, ref) => (
     <div ref={ref} {...others}>
       <Group noWrap position="apart">
         <div style={{ width: 160 }}>
@@ -22,6 +22,16 @@ export const OwnerSelect = ({ label }) => {
       </Group>
     </div>
   ));
+
+  function AutocompleteFilter(value, item) {
+    var array = value.toLowerCase().trim().split(' ');
+    for (let e in array) {
+      if (!item.value.toLowerCase().trim().includes(array[e])) {
+        return false;
+      }
+    };
+    return true;
+  }
 
   const [data, setData] = useState([
     {
@@ -84,9 +94,10 @@ export const OwnerSelect = ({ label }) => {
         nothingFound="Nothing found"
         limit={15}
         maxDropdownHeight={200}
-        itemComponent={AutoCompleteItem}
+        itemComponent={AutocompleteItem}
         icon={<IconUser />}
         rightSection={(ownerValue !== "") && <ClearButton />}
+        filter={AutocompleteFilter}
       />
     </Stack>
   );
