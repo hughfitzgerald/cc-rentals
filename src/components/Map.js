@@ -53,7 +53,7 @@ const Map = ({ className, classes }) => {
   const darkStyleID = "hughfitzgerald/clenh291g000401rq8lbzjzhu";
   const lightStyleID = "hughfitzgerald/cldjdvxl7000001qqfr6kpnpv";
 
-  const geoURL = "https://www.ccrentals.org/ccrr-geo-20230310-100611.json";
+  const geoURL = "https://www.ccrentals.org/ccrr-geo-20230311-172130.json";
 
   const ClearPopup = () => {
     useEffect(() => {
