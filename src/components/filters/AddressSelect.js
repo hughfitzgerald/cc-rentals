@@ -13,7 +13,7 @@ export const AddressSelect = ({ label }) => {
   const { setSearchParams } = useContext(mapDispatchContext);
   const [addressValue, setAddressValue] = useState(defAddress);
 
-  const addressURL = 'https://www.ccrentals.org/address_counts_20230308.json'
+  const addressURL = 'https://www.ccrentals.org/address_counts.json'
 
   function AutocompleteFilter(value, item) {
     var array = value.toLowerCase().trim().split(' ');

@@ -9,7 +9,7 @@ export const OwnerSelect = ({ label }) => {
   const { setSearchParams } = useContext(mapDispatchContext);
   const [ownerValue, setOwnerValue] = useState(defOwner);
 
-  const ownerURL = 'https://www.ccrentals.org/owner_counts_20230308.json'
+  const ownerURL = 'https://www.ccrentals.org/owner_counts.json'
 
   const AutocompleteItem = forwardRef(({ count, label, ...others }, ref) => (
     <div ref={ref} {...others}>
