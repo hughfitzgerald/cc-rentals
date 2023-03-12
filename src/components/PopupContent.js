@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useContext, forwardRef } from "react";
 import { DataTable } from "mantine-datatable";
 import {
+  Badge,
   Text,
   Box,
   useMantineTheme,
@@ -120,15 +121,29 @@ export default function PopupContent() {
     },
     {
       accessor: "encumbered",
-      title: "Restricted Unit",
+      title: "Affordability",
       sortable: true,
       hidden: !mediaQuery,
+      render: ({ encumbered }) => {
+        if (encumbered === "Yes") {
+          return (<Badge color="lime">Restricted</Badge>);
+        } else {
+          return (<Badge>Unrestricted</Badge>);
+        }
+      },
     },
     {
       accessor: "status",
       title: "Vacancy Status",
       sortable: true,
       hidden: !mediaQuery,
+      render: ({ status }) => {
+        if (status === "Rented") {
+          return (<Badge>Rented</Badge>);
+        } else {
+          return (<Badge color="lime">Vacant</Badge>);
+        }
+      },
     },
     {
       accessor: "owner",
@@ -218,10 +233,17 @@ export function Unit() {
       sortable: true,
     },
     {
-      accessor: "Unit Status",
+      accessor: "status",
       title: "Vacancy Status",
       sortable: true,
       hidden: !mediaQuery,
+      render: ({ status }) => {
+        if (status === "Rented") {
+          return (<Badge>Rented</Badge>);
+        } else {
+          return (<Badge color="lime">Vacant</Badge>);
+        }
+      },
     },
     {
       accessor: "rent",

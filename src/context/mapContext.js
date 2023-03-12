@@ -112,7 +112,7 @@ function MapProvider({ children }) {
   const [histData, setHistData] = useState([]);
   const [unitRents, setUnitRents] = useState([]);
 
-  const histURL = 'https://www.ccrentals.org/ccrr-hist-20230311-172353.json'
+  const histURL = 'https://www.ccrentals.org/ccrr-hist-20230311-193408.json'
   const dataURL = 'https://www.ccrentals.org/ccrr-data-20230311-172353.json'
 
   useEffect(() => {
